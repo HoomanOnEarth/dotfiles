@@ -12,10 +12,13 @@ local default_opts = themes.get_ivy(ivy_theme_config)
 
 telescope.setup {
     defaults = vim.tbl_deep_extend("force", {
+        preview = {
+            hide_on_startup = true
+        },
         mappings = {
             i = {
                 ["<C-x>"] =  false,
-                ["<M-p>"] = action_layout.toggle_preview,
+                ["<C-h>"] = action_layout.toggle_preview,
                 ["<M-m>"] = action_layout.toggle_mirror,
             },
         },
