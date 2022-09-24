@@ -1,13 +1,18 @@
-require('aerial').setup {
-    layout = {
-        max_width = { 40, 0.25 }
-    }
-}
-
 local keymap = require("utils.keymap")
 local nmap = keymap.nmap
 local imap = keymap.imap
 
 local api = require('api.telescope-aerial')
-nmap({ "<Leader>o", ":AerialToggle<Cr>" })
-nmap({ '<C-f>', api.outline })
+
+require('aerial').setup {
+    layout = {
+        min_width = 10,
+        max_width = { 40, 0.25 },
+        default_direction = 'prefer_left'
+    },
+    on_attach = function(bufrn)
+        nmap({ "<Leader>o", ":AerialToggle<Cr>" })
+        nmap({ '<C-f>', api.outline })
+    end
+}
+
