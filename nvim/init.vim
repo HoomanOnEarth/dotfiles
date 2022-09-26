@@ -1,6 +1,7 @@
 set shada=!,'1000,<50,s10,h
 set clipboard+=unnamedplus
 
+set updatetime=500
 set nowrap
 set scrolloff=4
 set number
