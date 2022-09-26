@@ -43,6 +43,7 @@ Plug 'MaxMEllon/vim-jsx-pretty'
 Plug 'tpope/vim-liquid'
 Plug 'airblade/vim-gitgutter'
 Plug 'stevearc/aerial.nvim'
+Plug 'gbprod/stay-in-place.nvim'
 call plug#end()
 
 set background=light
