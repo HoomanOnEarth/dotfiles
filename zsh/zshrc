@@ -60,10 +60,10 @@ alias wd=workdir
 alias wt=worktree
 
 # Tree
-alias tree='tree -CIa "node_modules|.git|.cache|.next|.turbo" --dirsfirst'
-alias t1='tree -L 1 -CIa "node_modules|.git|.cache|.next|.turbo" --dirsfirst'
-alias t2='tree -L 2 -CIa "node_modules|.git|.cache|.next|.turbo" --dirsfirst'
-alias t3='tree -L 3 -CIa "node_modules|.git|.cache|.next|.turbo" --dirsfirst'
+alias tree='tree -CIa "node_modules|.git|.cache|.next|.turbo|.undodir" --dirsfirst'
+alias t1='tree -L 1 -CIa "node_modules|.git|.cache|.next|.turbo|.undodir" --dirsfirst'
+alias t2='tree -L 2 -CIa "node_modules|.git|.cache|.next|.turbo|.undodir" --dirsfirst'
+alias t3='tree -L 3 -CIa "node_modules|.git|.cache|.next|.turbo|.undodir" --dirsfirst'
 
 # ls
 alias ls="gls --group-directories-first --color=auto"

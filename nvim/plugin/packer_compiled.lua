@@ -74,15 +74,85 @@ end
 time([[try_loadstring definition]], false)
 time([[Defining packer_plugins]], true)
 _G.packer_plugins = {
+  ["aerial.nvim"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/aerial.nvim",
+    url = "https://github.com/stevearc/aerial.nvim"
+  },
+  ["cmp-cmdline"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/cmp-cmdline",
+    url = "https://github.com/hrsh7th/cmp-cmdline"
+  },
+  ["cmp-nvim-lsp"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/cmp-nvim-lsp",
+    url = "https://github.com/hrsh7th/cmp-nvim-lsp"
+  },
+  ["cmp-nvim-lua"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/cmp-nvim-lua",
+    url = "https://github.com/hrsh7th/cmp-nvim-lua"
+  },
+  ["cmp-path"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/cmp-path",
+    url = "https://github.com/hrsh7th/cmp-path"
+  },
+  ["cmp-vsnip"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/cmp-vsnip",
+    url = "https://github.com/hrsh7th/cmp-vsnip"
+  },
+  ["lsp_signature.nvim"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/lsp_signature.nvim",
+    url = "https://github.com/ray-x/lsp_signature.nvim"
+  },
+  ["lua-dev.nvim"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/lua-dev.nvim",
+    url = "https://github.com/folke/lua-dev.nvim"
+  },
   neovim = {
     loaded = true,
     path = "/Users/alex/.local/share/nvim/site/pack/packer/start/neovim",
     url = "https://github.com/rose-pine/neovim"
   },
+  ["nvim-cmp"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/nvim-cmp",
+    url = "https://github.com/hrsh7th/nvim-cmp"
+  },
+  ["nvim-lspconfig"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/nvim-lspconfig",
+    url = "https://github.com/neovim/nvim-lspconfig"
+  },
+  ["nvim-treesitter"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/nvim-treesitter",
+    url = "https://github.com/nvim-treesitter/nvim-treesitter"
+  },
+  ["nvim-treesitter-context"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/nvim-treesitter-context",
+    url = "https://github.com/nvim-treesitter/nvim-treesitter-context"
+  },
+  ["nvim-treesitter-textobjects"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/nvim-treesitter-textobjects",
+    url = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects"
+  },
   ["packer.nvim"] = {
     loaded = true,
     path = "/Users/alex/.local/share/nvim/site/pack/packer/start/packer.nvim",
     url = "https://github.com/wbthomason/packer.nvim"
+  },
+  playground = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/playground",
+    url = "https://github.com/nvim-treesitter/playground"
   },
   ["plenary.nvim"] = {
     loaded = true,
@@ -93,6 +163,36 @@ _G.packer_plugins = {
     loaded = true,
     path = "/Users/alex/.local/share/nvim/site/pack/packer/start/telescope.nvim",
     url = "https://github.com/nvim-telescope/telescope.nvim"
+  },
+  ["tree-sitter-javascript"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/tree-sitter-javascript",
+    url = "https://github.com/tree-sitter/tree-sitter-javascript"
+  },
+  ["tree-sitter-query"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/tree-sitter-query",
+    url = "https://github.com/nvim-treesitter/tree-sitter-query"
+  },
+  ["vim-jsx-pretty"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/vim-jsx-pretty",
+    url = "https://github.com/MaxMEllon/vim-jsx-pretty"
+  },
+  ["vim-polyglot"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/vim-polyglot",
+    url = "https://github.com/sheerun/vim-polyglot"
+  },
+  ["vim-vsnip"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/vim-vsnip",
+    url = "https://github.com/hrsh7th/vim-vsnip"
+  },
+  ["vim-vsnip-integ"] = {
+    loaded = true,
+    path = "/Users/alex/.local/share/nvim/site/pack/packer/start/vim-vsnip-integ",
+    url = "https://github.com/hrsh7th/vim-vsnip-integ"
   }
 }
 
