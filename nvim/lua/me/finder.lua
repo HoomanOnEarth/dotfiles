@@ -49,6 +49,7 @@ function finder.bindings(map)
 	map("n", "<Leader>f", "<CMD>lua require 'telescope.builtin'.live_grep()<CR>", {})
 	map("n", "<C-s>", "<CMD>lua require 'telescope.builtin'.current_buffer_fuzzy_find()<CR>", {})
 	map("n", "<C-p>", "<CMD>lua require 'telescope.builtin'.find_files()<CR>", {})
+	map("n", "<Leader>p", "<CMD>lua require 'telescope.builtin'.git_files()<CR>", {})
 	map("n", "<C-g>", require("api.telescope").change_project, {})
 end
 

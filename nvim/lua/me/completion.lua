@@ -1,7 +1,6 @@
 local completion = {}
 
 function completion.plugins(use)
-	use("windwp/nvim-autopairs")
 	use("hrsh7th/vim-vsnip")
 	use("hrsh7th/vim-vsnip-integ")
 	use("hrsh7th/nvim-cmp")
@@ -46,13 +45,6 @@ function completion.setup()
 			{ name = "path" },
 		}),
 	})
-
-	require("nvim-autopairs").setup({
-		check_ts = true,
-	})
-
-	local cmp_autopairs = require("nvim-autopairs.completion.cmp")
-	cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
 end
 
 function completion.bindings(map)

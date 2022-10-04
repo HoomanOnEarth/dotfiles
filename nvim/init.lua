@@ -27,6 +27,7 @@ local layers = {
 
 	require("languages.javascript"),
 	require("languages.javascriptreact"),
+	require("languages.liquid"),
 	require("languages.lua"),
 }
 
