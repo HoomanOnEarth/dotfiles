@@ -17,11 +17,15 @@ function lsp.setup()
 				vim.api.nvim_create_autocmd("BufWritePre", {
 					group = formatting_autogroup,
 					buffer = bufnr,
-					callback = vim.lsp.buf.formatting,
+					callback = function()
+						vim.lsp.buf.format({ async = false })
+					end,
 				})
 			end
 
-			vim.keymap.set("n", "<leader>cf", vim.lsp.buf.formatting, { noremap = true, silent = true, buffer = bufnr })
+			vim.keymap.set("n", "<leader>cf", function()
+				vim.lsp.buf.format({ async = true })
+			end, { noremap = true, silent = true, buffer = bufnr })
 		end,
 	})
 end
@@ -63,7 +67,7 @@ end
 
 function lsp.make_capabilities()
 	local capabilities = vim.lsp.protocol.make_client_capabilities()
-	return require("cmp_nvim_lsp").update_capabilities(capabilities)
+	return require("cmp_nvim_lsp").default_capabilities(capabilities)
 end
 
 function lsp.should_format()

@@ -3,7 +3,6 @@ local syntax = {}
 function syntax.plugins(use)
 	use("sheerun/vim-polyglot")
 	use({ "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" })
-	use("nvim-treesitter/nvim-treesitter-context")
 	use("nvim-treesitter/nvim-treesitter-textobjects")
 	use("nvim-treesitter/playground")
 end
@@ -26,13 +25,6 @@ function syntax.setup()
 				},
 			},
 		},
-	})
-
-	require("treesitter-context").setup({
-		enable = true,
-		max_lines = 0,
-		trim_scope = "outer",
-		min_window_height = 0,
 	})
 
 	vim.opt.foldmethod = "expr"

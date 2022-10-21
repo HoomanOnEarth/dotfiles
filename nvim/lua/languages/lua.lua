@@ -2,7 +2,7 @@ local lua = {}
 
 function lua.plugins(use)
 	use({ "nvim-treesitter/tree-sitter-query", run = ":TSInstall query" })
-	use("folke/lua-dev.nvim")
+	use("folke/neodev.nvim")
 end
 
 function lua.setup()
@@ -11,17 +11,26 @@ function lua.setup()
 		runtime_condition = require("me.lsp").should_format,
 	}))
 
-	local luadev = require("lua-dev").setup({
-		lspconfig = {
-			on_attach = function(client, bufnr)
-				client.resolved_capabilities.document_formatting = false
-				require("me.lsp").on_attach(client, bufnr)
-			end,
-			capabilities = require("me.lsp").make_capabilities(),
+	require("neodev").setup({
+		library = {
+			enabled = true, -- when not enabled, neodev will not change any settings to the LSP server
+			runtime = true, -- runtime path
+			types = true, -- full signature, docs and completion of vim.api, vim.treesitter, vim.lsp and others
+			plugins = true, -- installed opt or start plugins in packpath
 		},
 	})
 
-	require("lspconfig").sumneko_lua.setup(luadev)
+	require("lspconfig").sumneko_lua.setup({
+		on_attach = require("me.lsp").on_attach,
+		capabilities = require("me.lsp").make_capabilities(),
+		settings = {
+			Lua = {
+				completion = {
+					callSnippet = "Replace",
+				},
+			},
+		},
+	})
 end
 
 return lua

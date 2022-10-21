@@ -12,10 +12,10 @@ end
 
 function ui.bindings()
 	vim.cmd([[
-    cnoreabbrev h vertical help
-    cnoreabbrev qa confirm qa
-    cnoreabbrev q confirm q
-    ]])
+	cnoreabbrev h vertical help
+	cnoreabbrev qa confirm qa
+	cnoreabbrev q confirm q
+	]])
 end
 
 return ui
