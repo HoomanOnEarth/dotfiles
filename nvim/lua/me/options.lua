@@ -6,10 +6,10 @@ local opt = vim.opt
 function options.setup()
 	global.mapleader = " "
 	opt.clipboard = "unnamedplus"
-	opt.updatetime = 500
+	opt.updatetime = 1000
 	opt.wrap = false
-	opt.scrolloff = 4
-	opt.sidescrolloff = 4
+	opt.scrolloff = 2
+	opt.sidescrolloff = 2
 	opt.number = true
 	opt.relativenumber = true
 	opt.signcolumn = "yes"
