@@ -28,7 +28,7 @@ function completion.setup()
 			["<C-p>"] = cmp.mapping(cmp.mapping.select_prev_item(), opts),
 			["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), opts),
 			["<S-Tab>"] = cmp.mapping(cmp.mapping.select_prev_item(), opts),
-			["<C-Space>"] = cmp.mapping(cmp.mapping.complete({}), opts),
+			["<C-n>"] = cmp.mapping(cmp.mapping.complete({}), opts),
 			["<C-e>"] = cmp.mapping(cmp.mapping.close(), opts),
 			["<CR>"] = cmp.mapping.confirm({ select = true }),
 		},
