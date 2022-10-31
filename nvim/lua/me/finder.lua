@@ -20,7 +20,6 @@ function finder.setup()
 				i = {
 					["<C-x>"] = false,
 					["<C-h>"] = action_layout.toggle_preview,
-					["<M-m>"] = action_layout.toggle_mirror,
 				},
 			},
 			buffer_previewer_maker = function(filepath, bufnr, opts)
