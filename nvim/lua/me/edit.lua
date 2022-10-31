@@ -4,11 +4,11 @@ function edit.plugins(use)
 	use("mbbill/undotree")
 	use("gbprod/stay-in-place.nvim")
 	use("windwp/nvim-autopairs")
-	use("windwp/nvim-ts-autotag")
+	--use("windwp/nvim-ts-autotag")
 end
 
 function edit.setup()
-	require("nvim-ts-autotag").setup()
+	--require("nvim-ts-autotag").setup()
 
 	require("stay-in-place").setup()
 

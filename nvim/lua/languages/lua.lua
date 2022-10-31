@@ -6,10 +6,7 @@ function lua.plugins(use)
 end
 
 function lua.setup()
-	local null_ls = require("null-ls")
-	null_ls.register(null_ls.builtins.formatting.stylua.with({
-		runtime_condition = require("me.lsp").should_format,
-	}))
+	require("null-ls").register(require("null-ls").builtins.formatting.stylua)
 
 	require("neodev").setup({
 		library = {

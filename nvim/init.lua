@@ -29,6 +29,7 @@ local layers = {
 	require("languages.javascriptreact"),
 	require("languages.liquid"),
 	require("languages.lua"),
+	require("languages.yaml"),
 }
 
 local packer = require("packer")

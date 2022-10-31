@@ -6,28 +6,34 @@ function lsp.plugins(use)
 	use("stevearc/aerial.nvim")
 end
 
-function lsp.setup()
-	local formatting_autogroup = vim.api.nvim_create_augroup("LspFormatting", {})
-	require("null-ls").setup({
-		debug = false,
-		update_on_insert = false,
-		on_attach = function(client, bufnr)
-			if client.supports_method("textDocument/formatting") then
-				vim.api.nvim_clear_autocmds({ group = formatting_autogroup, buffer = bufnr })
-				vim.api.nvim_create_autocmd("BufWritePre", {
-					group = formatting_autogroup,
-					buffer = bufnr,
-					callback = function()
-						vim.lsp.buf.format({ async = false })
-					end,
-				})
-			end
+function lsp.format_on_save(client, bufnr)
+	local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
-			vim.keymap.set("n", "<leader>cf", function()
-				vim.lsp.buf.format({ async = true })
-			end, { noremap = true, silent = true, buffer = bufnr })
-		end,
-	})
+	if client.supports_method("textDocument/formatting") then
+		vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+		vim.api.nvim_create_autocmd("BufWritePre", {
+			group = augroup,
+			buffer = bufnr,
+			callback = function()
+				vim.lsp.buf.format({
+					filter = function()
+						return client.name == "null-ls"
+					end,
+					bufnr = bufnr,
+				})
+			end,
+		})
+	end
+end
+
+function lsp.setup()
+	if lsp.should_format() then
+		require("null-ls").setup({
+			on_attach = function(client, bufnr)
+				lsp.format_on_save(client, bufnr)
+			end,
+		})
+	end
 end
 
 function lsp.on_attach(client, bufnr)
@@ -53,8 +59,8 @@ function lsp.on_attach(client, bufnr)
 	map("n", "gT", vim.lsp.buf.type_definition, opts)
 	map("n", "K", vim.lsp.buf.hover, opts)
 	map("n", "<C-k>", vim.lsp.buf.signature_help, opts)
-	map("n", "<M-n>", vim.diagnostic.goto_next, opts)
-	map("n", "<M-p>", vim.diagnostic.goto_prev, opts)
+	map("n", "<leader>n", vim.diagnostic.goto_next, opts)
+	map("n", "<leader>p", vim.diagnostic.goto_prev, opts)
 
 	map("n", "gr", "<CMD>Telescope lsp_references<CR>", opts)
 	map("n", "gi", "<CMD>Telescope lsp_implementations<CR>", opts)
@@ -63,6 +69,10 @@ function lsp.on_attach(client, bufnr)
 	map("n", "<leader>s", "<CMD>Telescope lsp_document_symbols<CR>", opts)
 	map("n", "<C-Space>", vim.lsp.buf.code_action, opts)
 	map("x", "<C-Space>", "<CMD>'<,'>lua vim.lsp.buf.range_code_action()<CR>", opts)
+
+	map("n", "<leader>cf", function()
+		vim.lsp.buf.format({ async = true, bufnr = bufnr })
+	end, opts)
 end
 
 function lsp.make_capabilities()
