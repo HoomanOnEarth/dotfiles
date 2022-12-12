@@ -1,9 +1,5 @@
 local liquid = {}
 
-function liquid.plugins(use)
-	use("jose-elias-alvarez/null-ls.nvim")
-end
-
 function liquid.setup()
 	local null_ls = require("null-ls")
 	null_ls.register(null_ls.builtins.formatting.prettierd.with({

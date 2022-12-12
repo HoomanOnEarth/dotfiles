@@ -1,9 +1,5 @@
 local javascript = {}
 
-function javascript.plugins(use)
-	use("jose-elias-alvarez/null-ls.nvim")
-end
-
 function javascript.setup()
 	require("lspconfig").tsserver.setup({
 		on_attach = function(client, bufnr)

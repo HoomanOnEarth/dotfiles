@@ -4,42 +4,10 @@ function lsp.plugins(use)
 	use("neovim/nvim-lspconfig")
 	use("ray-x/lsp_signature.nvim")
 	use("stevearc/aerial.nvim")
+	use("jose-elias-alvarez/null-ls.nvim")
 end
 
-function lsp.format_on_save(client, bufnr)
-	local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
-
-	if client.supports_method("textDocument/formatting") then
-		vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-		vim.api.nvim_create_autocmd("BufWritePre", {
-			group = augroup,
-			buffer = bufnr,
-			callback = function()
-				vim.lsp.buf.format({
-					filter = function()
-						return client.name == "null-ls"
-					end,
-					bufnr = bufnr,
-				})
-			end,
-		})
-	end
-end
-
-function lsp.setup()
-	if lsp.should_format() then
-		require("null-ls").setup({
-			on_attach = function(client, bufnr)
-				lsp.format_on_save(client, bufnr)
-			end,
-		})
-	end
-end
-
-function lsp.on_attach(client, bufnr)
-	-- code outline
-	require("aerial").on_attach(client, bufnr)
-
+function lsp.on_attach(_, bufnr)
 	-- function signature
 	require("lsp_signature").on_attach({
 		bind = true,
@@ -61,6 +29,7 @@ function lsp.on_attach(client, bufnr)
 	map("n", "<C-k>", vim.lsp.buf.signature_help, opts)
 	map("n", "<leader>n", vim.diagnostic.goto_next, opts)
 	map("n", "<leader>p", vim.diagnostic.goto_prev, opts)
+	map("n", "<leader>cf", vim.lsp.buf.format, opts)
 
 	map("n", "gr", "<CMD>Telescope lsp_references<CR>", opts)
 	map("n", "gi", "<CMD>Telescope lsp_implementations<CR>", opts)

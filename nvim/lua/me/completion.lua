@@ -24,15 +24,21 @@ function completion.setup()
 		mapping = {
 			["<C-g>"] = cmp.mapping.scroll_docs(-4),
 			["<C-f>"] = cmp.mapping.scroll_docs(4),
-			["<C-n>"] = cmp.mapping(cmp.mapping.select_next_item(), opts),
+			["<C-n>"] = cmp.mapping(function()
+				if cmp.visible() then
+					cmp.select_next_item()
+				else
+					cmp.complete({})
+				end
+			end, opts),
 			["<C-p>"] = cmp.mapping(cmp.mapping.select_prev_item(), opts),
 			["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), opts),
 			["<S-Tab>"] = cmp.mapping(cmp.mapping.select_prev_item(), opts),
-			["<C-n>"] = cmp.mapping(cmp.mapping.complete({}), opts),
 			["<C-e>"] = cmp.mapping(cmp.mapping.close(), opts),
 			["<CR>"] = cmp.mapping.confirm({ select = true }),
 		},
 		sources = {
+			{ name = 'buffer' },
 			{ name = "nvim_lsp" },
 			{ name = "vsnip" },
 			{ name = "nvim_lua" },

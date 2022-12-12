@@ -7,7 +7,8 @@ export LC_ALL=en_US.UTF-8
 export ZSH_CUSTOM=~/.config/zsh/custom/
 export ZSH_ENV_HOME=$HOME/
 export XDG_CONFIG_HOME=$HOME/.config
-export PATH="$HOME/.local/bin/:$PATH"
+export LOCAL_NODE_BIN=./node_modules/.bin
+export PATH="$HOME/.local/bin/:$LOCAL_NODE_BIN:$PATH"
 
 # ZSH options
 setopt emacs
@@ -58,6 +59,8 @@ alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
 alias wf=workfile
 alias wd=workdir
 alias wt=worktree
+alias j2v=json2csv
+alias pg=/Applications/Postgres.app/Contents/Versions/15/bin/psql
 
 # Tree
 alias tree='tree -CIa "node_modules|.git|.cache|.next|.turbo|.undodir" --dirsfirst'
@@ -90,7 +93,7 @@ function workdir() {
   local selection=$(echo $result | fzy)
   if [ -z "$selection" ] && return
 
-  cd $(echo $selection)
+  cd $selection
 }
 
 zle -N workdir
