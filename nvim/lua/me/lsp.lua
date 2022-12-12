@@ -4,7 +4,12 @@ function lsp.plugins(use)
 	use("neovim/nvim-lspconfig")
 	use("ray-x/lsp_signature.nvim")
 	use("stevearc/aerial.nvim")
-	use("jose-elias-alvarez/null-ls.nvim")
+end
+
+function lsp.setup()
+	if lsp.should_format() then
+		require("null-ls").setup()
+	end
 end
 
 function lsp.on_attach(_, bufnr)

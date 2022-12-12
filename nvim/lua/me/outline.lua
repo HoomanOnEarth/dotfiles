@@ -12,7 +12,7 @@ end
 
 function aerial.bindings(map)
 	map("n", "<Leader>o", "<CMD>AerialToggle<Cr>", {})
-	map("n", "<C-f>", require("api.telescope-aerial").get_symbols, { silent = true })
+	map("n", "<C-f>", "<CMD>Telescope aerial<Cr>", { silent = true })
 end
 
 return aerial
