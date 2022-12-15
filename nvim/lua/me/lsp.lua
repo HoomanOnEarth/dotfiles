@@ -16,14 +16,17 @@ function lsp.on_attach(_, bufnr)
 	-- function signature
 	require("lsp_signature").on_attach({
 		bind = true,
-		padding = " ",
-		hint_enable = false,
-		toggle_key = "<C-k>",
+		always_trigger = false,
 		hi_parameter = "Search",
+		hint_enable = false,
+		padding = " ",
+		toggle_key = "<C-k>",
 	})
 
+	-- autocomplete
 	vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
 
+	-- mapping
 	local map = vim.keymap.set
 	local opts = { noremap = true, silent = true, buffer = bufnr }
 
@@ -31,11 +34,10 @@ function lsp.on_attach(_, bufnr)
 	map("n", "gD", vim.lsp.buf.declaration, opts)
 	map("n", "gT", vim.lsp.buf.type_definition, opts)
 	map("n", "K", vim.lsp.buf.hover, opts)
-	map("n", "<C-k>", vim.lsp.buf.signature_help, opts)
-	map("n", "<leader>n", vim.diagnostic.goto_next, opts)
-	map("n", "<leader>p", vim.diagnostic.goto_prev, opts)
+	map("n", "<C-h>", vim.lsp.buf.signature_help, opts)
+	map("n", "<C-j>", vim.diagnostic.goto_next, opts)
+	map("n", "<C-k>", vim.diagnostic.goto_prev, opts)
 	map("n", "<leader>cf", vim.lsp.buf.format, opts)
-
 	map("n", "gr", "<CMD>Telescope lsp_references<CR>", opts)
 	map("n", "gi", "<CMD>Telescope lsp_implementations<CR>", opts)
 	map("n", "<leader>rr", "<CMD>LspRestart<CR>", opts)
@@ -49,9 +51,9 @@ function lsp.on_attach(_, bufnr)
 	end, opts)
 end
 
-function lsp.make_capabilities()
+function lsp.default_capabilities()
 	local capabilities = vim.lsp.protocol.make_client_capabilities()
-	return require("cmp_nvim_lsp").default_capabilities(capabilities)
+	require("cmp_nvim_lsp").default_capabilities(capabilities)
 end
 
 function lsp.should_format()

@@ -6,7 +6,8 @@ function lua.plugins(use)
 end
 
 function lua.setup()
-	require("null-ls").register(require("null-ls").builtins.formatting.stylua)
+	local null_ls = require("null-ls")
+	null_ls.register(null_ls.builtins.formatting.stylua)
 
 	require("neodev").setup({
 		library = {
@@ -19,7 +20,7 @@ function lua.setup()
 
 	require("lspconfig").sumneko_lua.setup({
 		on_attach = require("me.lsp").on_attach,
-		capabilities = require("me.lsp").make_capabilities(),
+		capabilities = require("me.lsp").default_capabilities(),
 		settings = {
 			Lua = {
 				completion = {
