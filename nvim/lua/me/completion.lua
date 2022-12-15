@@ -1,14 +1,13 @@
 local completion = {}
 
 function completion.plugins(use)
-	use("hrsh7th/vim-vsnip")
-	use("hrsh7th/vim-vsnip-integ")
 	use("hrsh7th/nvim-cmp")
 	use("hrsh7th/cmp-cmdline")
 	use("hrsh7th/cmp-path")
-	use("hrsh7th/cmp-vsnip")
 	use("hrsh7th/cmp-nvim-lsp")
-	use("hrsh7th/cmp-nvim-lua")
+
+	use("hrsh7th/vim-vsnip")
+	use("hrsh7th/cmp-vsnip")
 end
 
 local has_words_before = function()
@@ -46,7 +45,7 @@ function completion.setup()
 				else
 					fallback() -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
 				end
-			end, { "i", "s" }),
+			end, { "i", "s", "c" }),
 			["<S-Tab>"] = cmp.mapping(function(fallback)
 				if cmp.visible() then
 					cmp.select_prev_item()
@@ -55,14 +54,14 @@ function completion.setup()
 				else
 					fallback()
 				end
-			end, { "i", "s" }),
+			end, { "i", "s", "c" }),
 		}),
-		sources = {
-			{ name = "buffer" },
+		sources = cmp.config.sources({
 			{ name = "nvim_lsp" },
 			{ name = "vsnip" },
-			{ name = "nvim_lua" },
-		},
+		}, {
+			{ name = "buffer" },
+		}),
 	})
 
 	cmp.setup.cmdline(":", {

@@ -22,7 +22,7 @@ local layers = {
 	require("me.edit"),
 	require("me.completion"),
 	require("me.lsp"),
-	require("me.outline"),
+	--require("me.outline"),
 	require("me.git"),
 
 	require("languages.javascript"),
