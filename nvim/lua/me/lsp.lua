@@ -16,12 +16,13 @@ function lsp.on_attach(_, bufnr)
 	-- function signature
 	require("lsp_signature").on_attach({
 		bind = true,
-		always_trigger = false,
-		hi_parameter = "Search",
-		hint_enable = false,
+		max_width = vim.fn.winwidth(bufnr),
 		padding = " ",
+		hint_enable = false,
+		hi_parameter = "LspSignatureActiveParameter",
 		toggle_key = "<C-k>",
-	})
+		select_signature_key = "<C-j>",
+	}, bufnr)
 
 	-- autocomplete
 	vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
@@ -34,9 +35,6 @@ function lsp.on_attach(_, bufnr)
 	map("n", "gD", vim.lsp.buf.declaration, opts)
 	map("n", "gT", vim.lsp.buf.type_definition, opts)
 	map("n", "K", vim.lsp.buf.hover, opts)
-	map("n", "<C-h>", vim.lsp.buf.signature_help, opts)
-	map("n", "<C-j>", vim.diagnostic.goto_next, opts)
-	map("n", "<C-k>", vim.diagnostic.goto_prev, opts)
 	map("n", "<leader>cf", vim.lsp.buf.format, opts)
 	map("n", "gr", "<CMD>Telescope lsp_references<CR>", opts)
 	map("n", "gi", "<CMD>Telescope lsp_implementations<CR>", opts)
