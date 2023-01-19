@@ -2,7 +2,6 @@ local lsp = {}
 
 function lsp.plugins(use)
 	use("neovim/nvim-lspconfig")
-	use("ray-x/lsp_signature.nvim")
 	use("stevearc/aerial.nvim")
 	use("jose-elias-alvarez/null-ls.nvim")
 end
@@ -10,17 +9,6 @@ end
 function lsp.on_attach(client, bufnr)
 	-- disable LSP highlight
 	client.server_capabilities.semanticTokensProvider = nil
-
-	-- function signature
-	require("lsp_signature").on_attach({
-		bind = true,
-		max_width = vim.fn.winwidth(bufnr),
-		padding = " ",
-		hint_enable = false,
-		hi_parameter = "LspSignatureActiveParameter",
-		toggle_key = "<C-k>",
-		select_signature_key = "<C-j>",
-	}, bufnr)
 
 	-- mapping
 	local map = vim.keymap.set

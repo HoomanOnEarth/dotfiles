@@ -63,15 +63,15 @@ alias j2v=json2csv
 alias pg=/Applications/Postgres.app/Contents/Versions/15/bin/psql
 
 # Tree
-alias tree='tree -CIa "node_modules|.git|.cache|.next|.turbo|.undodir" --dirsfirst'
-alias t1='tree -L 1 -CIa "node_modules|.git|.cache|.next|.turbo|.undodir" --dirsfirst'
-alias t2='tree -L 2 -CIa "node_modules|.git|.cache|.next|.turbo|.undodir" --dirsfirst'
-alias t3='tree -L 3 -CIa "node_modules|.git|.cache|.next|.turbo|.undodir" --dirsfirst'
+alias tree='tree -CIa    "node_modules|dist|.git|.cache|.next|.turbo|.parcel-cache|.undodir" --dirsfirst'
+alias t1='tree -L 1 -CIa "node_modules|dist|.git|.cache|.next|.turbo|.parcel-cache|.undodir" --dirsfirst'
+alias t2='tree -L 2 -CIa "node_modules|dist|.git|.cache|.next|.turbo|.parcel-cache|.undodir" --dirsfirst'
+alias t3='tree -L 3 -CIa "node_modules|dist|.git|.cache|.next|.turbo|.parcel-cache|.undodir" --dirsfirst'
 
 # ls
 alias ls="gls --group-directories-first --color=auto"
-alias la="gls -la --group-directories-first --color=auto"
-alias ll="gls -l --group-directories-first --color=auto"
+alias la="gls -lah --group-directories-first --color=auto"
+alias ll="gls -lh --group-directories-first --color=auto"
 
 # quickly jump to workdir
 # workdir pattern?
@@ -81,9 +81,9 @@ function workdir() {
   if [ $# -gt 1 ] && echo "Too many agruments" && return
 
   if [ $# -gt 0 ]; then
-    result=$(fd --type directory $1 ~/projects)
+    result=$(fd --type directory $1 ~/coding)
   else
-    result=$(fd --type directory . ~/projects)
+    result=$(fd --type directory . ~/coding)
   fi
 
   # validate fd command before pipe to fzy
