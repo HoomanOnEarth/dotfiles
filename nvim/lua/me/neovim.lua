@@ -1,9 +1,17 @@
-local options = {}
+local neovim = {}
 
-local global = vim.g
-local opt = vim.opt
+function neovim.plugins(use)
+	use("nvim-lua/plenary.nvim")
+end
 
-function options.setup()
+function neovim.bindings(map)
+	map("i", "<C-c>", "<ESC>", {})
+end
+
+function neovim.setup()
+	local global = vim.g
+	local opt = vim.opt
+
 	global.mapleader = " "
 	opt.clipboard = "unnamedplus"
 	opt.updatetime = 100
@@ -27,4 +35,4 @@ function options.setup()
 	opt.expandtab = true
 end
 
-return options
+return neovim

@@ -14,15 +14,13 @@ end
 
 -- bootstrap
 local layers = {
-	require("me.system"),
-	require("me.options"),
+	require("me.neovim"),
 	require("me.ui"),
 	require("me.finder"),
 	require("me.syntax"),
 	require("me.edit"),
 	require("me.completion"),
 	require("me.lsp"),
-	--require("me.outline"),
 	require("me.git"),
 
 	require("languages.javascript"),

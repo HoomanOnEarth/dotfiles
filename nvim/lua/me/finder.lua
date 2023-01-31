@@ -39,8 +39,6 @@ function finder.setup()
 			end,
 		}, default_opts),
 	})
-
-	require('telescope').load_extension('aerial')
 end
 
 function finder.bindings(map)
