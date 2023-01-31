@@ -44,12 +44,12 @@ done
 alias vim='nvim'
 alias reload='source ~/.zshrc'
 alias cleanup='fd --no-ignore --hidden .DS_Store . | xargs rm'
-alias dotconf='cd ~/projects/dotfiles; vim'
-alias vimconf='vim ~/projects/dotfiles/nvim/init.lua'
-alias zshconf='vim ~/projects/dotfiles/zsh/zshrc'
-alias yaconf='vim ~/projects/dotfiles/yabai/yabairc'
-alias bashconf='vim ~/projects/dotfiles/bash/bashrc'
-alias tmuxconf='vim ~/projects/dotfiles/tmux/tmux.conf'
+alias dotconf='cd ~/coding/dotfiles; vim'
+alias vimconf='vim ~/coding/dotfiles/nvim/init.lua'
+alias zshconf='vim ~/coding/dotfiles/zsh/zshrc'
+alias yaconf='vim ~/coding/dotfiles/yabai/yabairc'
+alias bashconf='vim ~/coding/dotfiles/bash/bashrc'
+alias tmuxconf='vim ~/coding/dotfiles/tmux/tmux.conf'
 alias tn='tmuxinator n'
 alias to='tmuxinator o'
 alias ts='tmuxinator s'
@@ -133,7 +133,7 @@ csview() {
 }
 
 # shopify env
-source $HOME/projects/dotfiles/shopify_alias.sh
+source $HOME/coding/dotfiles/shopify_alias.sh
 alias theme='shopify theme'
 
 # bun completions
