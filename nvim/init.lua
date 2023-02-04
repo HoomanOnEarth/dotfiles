@@ -28,6 +28,7 @@ local layers = {
 	require("languages.liquid"),
 	require("languages.lua"),
 	require("languages.yaml"),
+	require("languages.rust"),
 }
 
 local packer = require("packer")
