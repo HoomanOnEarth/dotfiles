@@ -29,6 +29,10 @@ end
 
 function edit.bindings(map)
 	map("n", "<leader>u", "<CMD>UndotreeToggle<CR>", { noremap = true })
+	map("n", "j", "gj", { noremap = true })
+	map("n", "k", "gk", { noremap = true })
+	map("n", "gj", "j", { noremap = true })
+	map("n", "gk", "k", { noremap = true })
 end
 
 return edit

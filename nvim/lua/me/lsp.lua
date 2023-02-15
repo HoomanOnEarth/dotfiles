@@ -1,9 +1,5 @@
 local lsp = {}
 
-lsp.format_async = function ()
-	vim.lsp.buf.format({ asycn = true })
-end
-
 function lsp.plugins(use)
 	use("neovim/nvim-lspconfig")
 	use("jose-elias-alvarez/null-ls.nvim")
@@ -22,7 +18,8 @@ function lsp.on_attach(client, bufnr)
 	map("n", "gT", vim.lsp.buf.type_definition, opts)
 	map("n", "<C-k>", vim.lsp.buf.signature_help, opts)
 	map("n", "K", vim.lsp.buf.hover, opts)
-	map("n", "<leader>cf", lsp.format_async, opts)
+	map("v", "gq", vim.lsp.buf.format, opts)
+	map("n", "gq", vim.lsp.buf.format, opts)
 	map("n", "gr", "<CMD>Telescope lsp_references<CR>", opts)
 	map("n", "gi", "<CMD>Telescope lsp_implementations<CR>", opts)
 	map("n", "<leader>rr", "<CMD>LspRestart<CR>", opts)

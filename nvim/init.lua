@@ -23,12 +23,14 @@ local layers = {
 	require("me.lsp"),
 	require("me.git"),
 
+	require("languages.typescript"),
 	require("languages.javascript"),
 	require("languages.javascriptreact"),
 	require("languages.liquid"),
 	require("languages.lua"),
 	require("languages.yaml"),
 	require("languages.rust"),
+	require("languages.markdown"),
 }
 
 local packer = require("packer")

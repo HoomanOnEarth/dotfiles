@@ -1,18 +1,8 @@
 local completion = {}
 
-local function get_small_buffers_only()
-	local buf = vim.api.nvim_get_current_buf()
-	local byte_size = vim.api.nvim_buf_get_offset(buf, vim.api.nvim_buf_line_count(buf))
-	if byte_size > 1024 * 1024 then -- 1 Megabyte max
-		return {}
-	end
-	return { buf }
-end
-
 function completion.plugins(use)
 	use("hrsh7th/nvim-cmp")
 	use("hrsh7th/cmp-vsnip")
-	use("hrsh7th/cmp-buffer")
 	use("hrsh7th/cmp-path")
 	use("hrsh7th/cmp-cmdline")
 	use("hrsh7th/cmp-nvim-lsp")
@@ -43,7 +33,9 @@ function completion.setup()
 
 			-- disable in prompt
 			local buftype = vim.api.nvim_buf_get_option(0, "buftype")
-			if buftype == "prompt" then return false end
+			if buftype == "prompt" then
+				return false
+			end
 
 			-- keep command mode completion enabled when cursor is in a comment
 			if vim.api.nvim_get_mode().mode == "c" then
@@ -57,13 +49,6 @@ function completion.setup()
 			{ name = "vsnip" },
 			{ name = "nvim_lsp" },
 			{ name = "nvim_lsp_document_symbol" },
-		}, {
-			{
-				name = "buffer",
-				option = {
-					get_bufnrs = get_small_buffers_only,
-				},
-			},
 		}),
 
 		completion = {

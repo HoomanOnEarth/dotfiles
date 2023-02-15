@@ -1,13 +1,16 @@
 local javascript = {}
+local nvim_lsp = require("lspconfig")
 
 function javascript.setup()
-	require("lspconfig").tsserver.setup({
+	nvim_lsp.tsserver.setup({
+		single_file_support = false,
 		init_options = {
 			preferences = {
 				disableAutomaticTypingAcquisition = true,
 				disableSuggestions = true,
 			},
 		},
+		root_dir = nvim_lsp.util.root_pattern("package.json"),
 		on_attach = require("me.lsp").on_attach,
 	})
 

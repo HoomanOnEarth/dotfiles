@@ -1,5 +1,8 @@
+[core]
+    editor = nvim
+    excludesfile = ~/.gitignore_global
 [user]
-    email = hello@thealemazing.com
+    email = lekhacduyanh@gmail.com
     name = 0xlkda
 [init]
     templateDir = ~/.git-template
@@ -10,19 +13,6 @@
     helper = !/usr/local/bin/gh auth git-credential
 [credential "https://gist.github.com"]
     helper = !/usr/local/bin/gh auth git-credential
-[core]
-    editor = nvim
-    pager = delta
-    excludesfile = ~/.gitignore_global
-[interactive]
-    diffFilter = delta --color-only
-[diff]
-    colorMoved = default
-[delta]
-    light = true
-    navigate = true    # use n and N to move between diff sections
-    features = side-by-side
-    syntax-theme = none
 [alias]
     view = !/usr/local/bin/gh browse
     wt = worktree

@@ -3,12 +3,13 @@ export SHELL=/usr/local/bin/zsh
 export LANG=en_US.UTF8
 export LC_ALL=en_US.UTF-8
 
+autoload -Uz compinit
+compinit
+
+setopt auto_cd
+
 # Import locations
-export ZSH_CUSTOM=~/.config/zsh/custom/
-export ZSH_ENV_HOME=$HOME/
 export XDG_CONFIG_HOME=$HOME/.config
-export LOCAL_NODE_BIN=./node_modules/.bin
-export PATH="$HOME/.local/bin/:$LOCAL_NODE_BIN:$PATH"
 
 # ZSH options
 setopt emacs
@@ -22,7 +23,7 @@ export HISTFILE=$HOME/.local/zsh_history
 # Plugins
 source $XDG_CONFIG_HOME/antigen/antigen.zsh
 
-antigen bundle git
+antigen bundle 'git'
 antigen bundle 'zsh-users/zsh-syntax-highlighting'
 antigen bundle 'zsh-users/zsh-autosuggestions'
 
@@ -136,6 +137,10 @@ csview() {
 source $HOME/coding/dotfiles/shopify_alias.sh
 alias theme='shopify theme'
 
+# Deno
+export DENO_INSTALL="/Users/alex/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH"
+
 # bun completions
 [ -s "/Users/alex/.bun/_bun" ] && source "/Users/alex/.bun/_bun"
 
@@ -164,6 +169,7 @@ function history-fzy() {
 }
 
 zle -N history-fzy
+bindkey -e
 bindkey '^r' history-fzy
 
 function slugify() {
