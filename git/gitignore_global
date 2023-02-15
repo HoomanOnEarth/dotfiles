@@ -3,3 +3,14 @@
 
 # Application specific files
 node_modules
+.vscode
+
+# build
+build
+dist
+
+# cache
+.cache
+
+# typescript buildinfo
+.tsbuildinfo
