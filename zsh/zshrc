@@ -2,46 +2,101 @@
 export SHELL=/usr/local/bin/zsh
 export LANG=en_US.UTF8
 export LC_ALL=en_US.UTF-8
+export CONFIG_HOME=$HOME/.config
+export HISTFILE=$HOME/.local/zsh_history
 
 autoload -Uz compinit
 compinit
 
-setopt auto_cd
+# Changing Directories
+setopt auto_cd                 # if a command isn't valid, but is a directory, cd to that dir
+setopt auto_pushd              # make cd push the old directory onto the directory stack
+setopt pushd_ignore_dups       # don’t push multiple copies of the same directory onto the directory stack
+#
+# Completions
+setopt always_to_end           # move cursor to the end of a completed word
+setopt auto_list               # automatically list choices on ambiguous completion
+setopt auto_menu               # show completion menu on a successive tab press
+setopt auto_param_slash        # if completed parameter is a directory, add a trailing slash
+setopt complete_in_word        # complete from both ends of a word
+unsetopt menu_complete         # don't autoselect the first completion entry
 
-# Import locations
-export XDG_CONFIG_HOME=$HOME/.config
+# Expansion and Globbing
+setopt extended_glob           # use more awesome globbing features
+setopt glob_dots               # include dotfiles when globbing
 
-# ZSH options
-setopt emacs
-setopt functionargzero
-setopt hist_ignore_space
+# History
+setopt append_history          # append to history file
+setopt extended_history        # write the history file in the ':start:elapsed;command' format
+unsetopt hist_beep             # don't beep when attempting to access a missing history entry
+setopt hist_expire_dups_first  # expire a duplicate event first when trimming history
+setopt hist_find_no_dups       # don't display a previously found event
+setopt hist_ignore_all_dups    # delete an old recorded event if a new event is a duplicate
+setopt hist_ignore_dups        # don't record an event that was just recorded again
+setopt hist_ignore_space       # don't record an event starting with a space
+setopt hist_no_store           # don't store history commands
+setopt hist_reduce_blanks      # remove superfluous blanks from each command line being added to the history list
+setopt hist_save_no_dups       # don't write a duplicate event to the history file
+setopt hist_verify             # don't execute immediately upon history expansion
+setopt inc_append_history      # write to the history file immediately, not when the shell exits
+unsetopt share_history         # don't share history between all sessions
 
-export HISTSIZE=100000000
-export SAVEHIST=$HISTSIZE
-export HISTFILE=$HOME/.local/zsh_history
+# Input/Output
+unsetopt clobber               # must use >| to truncate existing files
+unsetopt correct               # don't try to correct the spelling of commands
+unsetopt correct_all           # don't try to correct the spelling of all arguments in a line
+unsetopt flow_control          # disable start/stop characters in shell editor
+setopt interactive_comments    # enable comments in interactive shell
+setopt path_dirs               # perform path search even on command names with slashes
+setopt rc_quotes               # allow 'Henry''s Garage' instead of 'Henry'\''s Garage'
+unsetopt rm_star_silent        # ask for confirmation for `rm *' or `rm path/*'
+
+# Prompting
+setopt prompt_subst           # expand parameters in prompt variables
+
+# Zle
+# http://zsh.sourceforge.net/Doc/Release/Options.html#Zle
+unsetopt beep                 # be quiet!
+setopt combining_chars        # combine zero-length punctuation characters (accents) with the base character
+setopt emacs                  # use emacs keybindings in the shell
 
 # Plugins
-source $XDG_CONFIG_HOME/antigen/antigen.zsh
-
+source $CONFIG_HOME/antigen/antigen.zsh
 antigen bundle 'git'
 antigen bundle 'zsh-users/zsh-syntax-highlighting'
 antigen bundle 'zsh-users/zsh-autosuggestions'
-
 antigen apply
-
-# Key bindings
-bindkey '^n' autosuggest-accept
-
-# starship prompt
-eval "$(starship init zsh)"
 
 # My "Plugins"
 sources=()
 
 for s in "${sources[@]}"; do
-  source $HOME/.config/zsh/include/${s}.zsh
+  source $CONFIG_HOME/zsh/include/${s}.zsh
 done
 
+# starship prompt
+eval "$(starship init zsh)"
+
+# better history
+zle -N history-fzy
+bindkey '^r' history-fzy
+
+function history-fzy() {
+  local tac
+
+  if which tac > /dev/null; then
+    tac="tac"
+  else
+    tac="tail -r"
+  fi
+
+  BUFFER=$(history -n 1 | eval $tac | awk '!a[$0]++' | fzy --query "$LBUFFER")
+  CURSOR=$#BUFFER
+
+  zle reset-prompt
+}
+
+# Alias
 alias vim='nvim'
 alias reload='source ~/.zshrc'
 alias cleanup='fd --no-ignore --hidden .DS_Store . | xargs rm'
@@ -70,19 +125,26 @@ alias t2='tree -L 2 -CIa "node_modules|dist|.git|.cache|.next|.turbo|.parcel-cac
 alias t3='tree -L 3 -CIa "node_modules|dist|.git|.cache|.next|.turbo|.parcel-cache|.undodir" --dirsfirst'
 
 # ls
-alias ls="gls --group-directories-first --color=auto"
-alias la="gls -lah --group-directories-first --color=auto"
+alias ls="gls --width 42 --group-directories-first --color=auto"
+alias lsr="gls -R" # list recursive
+alias lsrf="gls -Rohg" # list recursive full details
 alias ll="gls -lh --group-directories-first --color=auto"
+alias la="gls -lAh --group-directories-first --color=auto"
 
-# quickly jump to workdir
-# workdir pattern?
+# quick jump
+zle -N workdir
+zle -N worktree
+
+bindkey '^g' workdir
+bindkey '^t' worktree
+
 function workdir() {
   local result=""
 
   if [ $# -gt 1 ] && echo "Too many agruments" && return
 
   if [ $# -gt 0 ]; then
-    result=$(fd --type directory $1 ~/coding)
+    result=$(fd --type directory . $1)
   else
     result=$(fd --type directory . ~/coding)
   fi
@@ -97,11 +159,6 @@ function workdir() {
   cd $selection
 }
 
-zle -N workdir
-bindkey '^g' workdir
-
-# quickly change to worktree
-# worktree pattern?
 function worktree() {
   local result=$(git worktree list)
 
@@ -117,15 +174,12 @@ function worktree() {
   cd $target
 }
 
-zle -N worktree
-bindkey '^t' worktree
-
 # NPM
-alias nr="npm run"
-alias np="npm version patch && npm publish && git push origin master --tags"
-
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+
+alias nr="npm run"
+alias np="npm version patch && npm publish && git push origin master --tags"
 
 # csv viewer
 csview() {
@@ -148,30 +202,14 @@ export PATH="$DENO_INSTALL/bin:$PATH"
 export BUN_INSTALL="/Users/alex/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
+# ruby
+export PATH="/usr/local/opt/ruby/bin:$PATH"
+
 # pnpm
 export PNPM_HOME="/Users/alex/Library/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 
-# better history
-function history-fzy() {
-  local tac
-
-  if which tac > /dev/null; then
-    tac="tac"
-  else
-    tac="tail -r"
-  fi
-
-  BUFFER=$(history -n 1 | eval $tac | awk '!a[$0]++' | fzy --query "$LBUFFER")
-  CURSOR=$#BUFFER
-
-  zle reset-prompt
-}
-
-zle -N history-fzy
-bindkey -e
-bindkey '^r' history-fzy
-
+# utils
 function slugify() {
   # Forcing the POSIX local so alnum is only 0-9A-Za-z
   export LANG=POSIX
