@@ -19,6 +19,7 @@ vim.o.clipboard = "unnamedplus"
 vim.o.undofile = true
 vim.o.breakindent = true
 vim.o.hlsearch = false
+vim.o.wrap = false
 
 vim.o.ignorecase = true
 vim.o.smartcase = true
@@ -29,6 +30,12 @@ vim.o.updatetime = 250
 vim.o.timeout = true
 vim.o.timeoutlen = 420
 vim.o.completeopt = "menuone,noselect"
+vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+	callback = function()
+		-- disable auto comment on new line
+		vim.o.formatoptions = vim.o.formatoptions:gsub("cro", "")
+	end,
+})
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -44,8 +51,45 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
+	-- UI
+	{
+		"rose-pine/neovim",
+		lazy = false, -- make sure we load this during startup if it is your main colorscheme
+		priority = 1000,
+		dependencies = { "kyazdani42/nvim-web-devicons" },
+		config = function()
+			vim.o.background = "light"
+			vim.cmd("colorscheme rose-pine")
+		end,
+	},
+
 	-- Syntax
 	"sheerun/vim-polyglot",
+
+	-- Code folds
+	{
+		"kevinhwang91/nvim-ufo",
+		dependencies = { "kevinhwang91/promise-async" },
+		config = function()
+			vim.o.foldcolumn = "1"
+			vim.o.foldlevel = 5
+			vim.o.foldlevelstart = 5
+			vim.o.foldenable = true
+
+			vim.keymap.set({ "n", "v" }, "zR", require("ufo").openAllFolds)
+			vim.keymap.set({ "n", "v" }, "zM", require("ufo").closeAllFolds)
+			vim.keymap.set({ "n", "v" }, "zr", require("ufo").openFoldsExceptKinds)
+			vim.keymap.set({ "n", "v" }, "zm", require("ufo").closeFoldsWith)
+			vim.keymap.set("n", "K", function()
+				local winid = require("ufo").peekFoldedLinesUnderCursor()
+				if not winid then
+					vim.lsp.buf.hover()
+				end
+			end, { noremap = true })
+
+			require("ufo").setup()
+		end,
+	},
 
 	-- Undotree
 	{
@@ -66,17 +110,6 @@ require("lazy").setup({
 		end,
 	},
 
-	-- UI
-	{
-		"rose-pine/neovim",
-		priority = 1000,
-		dependencies = { "kyazdani42/nvim-web-devicons" },
-		config = function()
-			vim.o.background = "light"
-			vim.cmd("colorscheme rose-pine")
-		end,
-	},
-
 	-- Tmux plugins
 	"christoomey/vim-tmux-navigator",
 
@@ -86,21 +119,296 @@ require("lazy").setup({
 		dependencies = {
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
+			"jose-elias-alvarez/null-ls.nvim",
 			{ "j-hui/fidget.nvim", opts = {} },
 			"folke/neodev.nvim",
 		},
-	},
+		config = function()
+			require("neodev").setup()
+			require("mason").setup()
 
-	"jose-elias-alvarez/null-ls.nvim",
+			local servers = {
+				rust_analyzer = {},
+				tsserver = {},
+				lua_ls = {
+					Lua = {
+						workspace = { checkThirdParty = false },
+						telemetry = { enable = false },
+					},
+				},
+			}
+
+			local on_attach = function(client, bufnr)
+				-- disable LSP highlight
+				client.server_capabilities.semanticTokensProvider = nil
+
+				-- mapping
+				local map = vim.keymap.set
+				local nmap = function(keys, func, desc)
+					if desc then
+						desc = "LSP: " .. desc
+					end
+					map("n", keys, func, { buffer = bufnr, desc = desc })
+				end
+
+				nmap("<leader>rr", ":LspRestart<CR>")
+				nmap("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
+				nmap("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
+
+				nmap("gd", vim.lsp.buf.definition, "[G]oto [D]efinition")
+				nmap("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
+				nmap("gI", vim.lsp.buf.implementation, "[G]oto [I]mplementation")
+				nmap("gT", vim.lsp.buf.type_definition, "[G]oto [T]ype Definition")
+				nmap("<leader>ds", require("telescope.builtin").lsp_document_symbols, "[D]ocument [S]ymbols")
+				nmap("<leader>ws", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[W]orkspace [S]ymbols")
+				nmap("<C-s>", vim.lsp.buf.signature_help, "Signature Documentation")
+
+				vim.api.nvim_buf_create_user_command(bufnr, "Format", function()
+					vim.lsp.buf.format()
+				end, { desc = "Format current buffer with LSP" })
+
+				map({ "n", "v" }, "gq", ":Format<CR>")
+			end
+
+			local capabilities = vim.lsp.protocol.make_client_capabilities()
+			capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
+			capabilities.textDocument.foldingRange = {
+				dynamicRegistration = false,
+				lineFoldingOnly = true,
+			}
+
+			local mason_lspconfig = require("mason-lspconfig")
+			mason_lspconfig.setup({ ensure_installed = vim.tbl_keys(servers) })
+			mason_lspconfig.setup_handlers({
+				function(server_name)
+					local opts = {
+						on_attach = on_attach,
+						capabilities = capabilities,
+						settings = servers[server_name],
+					}
+
+					if server_name == "tsserver" then
+						opts.init_options = {
+							preferences = {
+								disableAutomaticTypingAcquisition = true,
+								disableSuggestions = true,
+							},
+						}
+					end
+
+					require("lspconfig")[server_name].setup(opts)
+				end,
+			})
+
+			local null_ls = require("null-ls")
+			null_ls.setup({
+				on_attach = on_attach,
+				sources = {
+					null_ls.builtins.formatting.stylua,
+					null_ls.builtins.formatting.prettier.with({
+						extra_args = { "--no-semi", "--single-quote" },
+					}),
+				},
+			})
+		end,
+	},
 
 	-- Autocomplete
 	{
 		"hrsh7th/nvim-cmp",
-		dependencies = { "hrsh7th/cmp-nvim-lsp", "L3MON4D3/LuaSnip", "saadparwaiz1/cmp_luasnip" },
+		dependencies = {
+			"hrsh7th/cmp-nvim-lsp",
+			"hrsh7th/cmp-buffer",
+			"L3MON4D3/LuaSnip",
+			"saadparwaiz1/cmp_luasnip",
+			"rafamadriz/friendly-snippets",
+		},
+		config = function()
+			local cmp = require("cmp")
+			local luasnip = require("luasnip")
+			luasnip.config.setup({})
+			require("luasnip.loaders.from_vscode").lazy_load()
+
+			local lspkind_comparator = function(conf)
+				local lsp_types = require("cmp.types").lsp
+				return function(entry1, entry2)
+					if entry1.source.name ~= "nvim_lsp" then
+						if entry2.source.name == "nvim_lsp" then
+							return false
+						else
+							return nil
+						end
+					end
+					local kind1 = lsp_types.CompletionItemKind[entry1:get_kind()]
+					local kind2 = lsp_types.CompletionItemKind[entry2:get_kind()]
+
+					local priority1 = conf.kind_priority[kind1] or 0
+					local priority2 = conf.kind_priority[kind2] or 0
+					if priority1 == priority2 then
+						return nil
+					end
+					return priority2 < priority1
+				end
+			end
+
+			local label_comparator = function(entry1, entry2)
+				return entry1.completion_item.label < entry2.completion_item.label
+			end
+
+			cmp.setup({
+				sorting = {
+					comparators = {
+						lspkind_comparator({
+							kind_priority = {
+								Snippet = 12,
+								Field = 11,
+								Property = 11,
+								Constant = 10,
+								Enum = 10,
+								EnumMember = 10,
+								Event = 10,
+								Function = 10,
+								Method = 10,
+								Operator = 10,
+								Reference = 10,
+								Struct = 10,
+								Variable = 9,
+								File = 8,
+								Folder = 8,
+								Class = 5,
+								Color = 5,
+								Module = 5,
+								Keyword = 2,
+								Constructor = 1,
+								Interface = 1,
+								Text = 1,
+								TypeParameter = 1,
+								Unit = 1,
+								Value = 1,
+							},
+						}),
+						label_comparator,
+					},
+				},
+				snippet = {
+					expand = function(args)
+						luasnip.lsp_expand(args.body)
+					end,
+				},
+				mapping = cmp.mapping.preset.insert({
+					["<C-d>"] = cmp.mapping.scroll_docs(-4),
+					["<C-f>"] = cmp.mapping.scroll_docs(4),
+					["<C-Space>"] = cmp.mapping.complete({}),
+					["<CR>"] = cmp.mapping.confirm({
+						behavior = cmp.ConfirmBehavior.Replace,
+						select = true,
+					}),
+					["<Tab>"] = cmp.mapping(function(fallback)
+						if cmp.visible() then
+							cmp.select_next_item()
+						elseif luasnip.expand_or_jumpable() then
+							luasnip.expand_or_jump()
+						else
+							fallback()
+						end
+					end, { "i", "s" }),
+					["<S-Tab>"] = cmp.mapping(function(fallback)
+						if cmp.visible() then
+							cmp.select_prev_item()
+						elseif luasnip.jumpable(-1) then
+							luasnip.jump(-1)
+						else
+							fallback()
+						end
+					end, { "i", "s" }),
+				}),
+				sources = {
+					{ name = "buffer" },
+					{ name = "nvim_lsp" },
+					{ name = "luasnip" },
+				},
+				completion = {
+					max_item_count = 10,
+					keyword_length = 2,
+				},
+			})
+		end,
 	},
 
 	-- Fuzzy Finder (files, lsp, etc)
-	{ "nvim-telescope/telescope.nvim", version = "*", dependencies = { "nvim-lua/plenary.nvim" } },
+	{
+		"nvim-telescope/telescope.nvim",
+		version = "*",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		config = function()
+			local action_layout = require("telescope.actions.layout")
+			local previewers = require("telescope.previewers")
+			local themes = require("telescope.themes")
+			local ivy_theme_config = { sorting_strategy = "ascending", prompt_position = "bottom" }
+			local default_opts = themes.get_ivy(ivy_theme_config)
+
+			require("telescope").setup({
+				defaults = vim.tbl_deep_extend("force", {
+					preview = {
+						hide_on_startup = true,
+					},
+					mappings = {
+						i = {
+							["<C-u>"] = false,
+							["<C-d>"] = false,
+							["<C-x>"] = false,
+							["<C-h>"] = action_layout.toggle_preview,
+						},
+					},
+					buffer_previewer_maker = function(filepath, bufnr, opts)
+						opts = opts or {}
+						filepath = vim.fn.expand(filepath)
+						vim.loop.fs_stat(filepath, function(_, stat)
+							if not stat then
+								return
+							end
+							if stat.size > 100000 then
+								return
+							else
+								previewers.buffer_previewer_maker(filepath, bufnr, opts)
+							end
+						end)
+					end,
+				}, default_opts),
+			})
+
+			vim.keymap.set(
+				"n",
+				"<leader>?",
+				require("telescope.builtin").oldfiles,
+				{ desc = "[?] Find recently opened files" }
+			)
+			vim.keymap.set(
+				"n",
+				"<leader><space>",
+				require("telescope.builtin").buffers,
+				{ desc = "[ ] Find existing buffers" }
+			)
+			vim.keymap.set("n", "<C-p>", require("telescope.builtin").find_files, { desc = "[S]earch [F]iles" })
+			vim.keymap.set("n", "<leader>p", require("telescope.builtin").git_files, { desc = "[S]earch [G]it Files" })
+			vim.keymap.set("n", "<leader>sh", require("telescope.builtin").help_tags, { desc = "[S]earch [H]elp" })
+			vim.keymap.set(
+				"n",
+				"<leader>sw",
+				require("telescope.builtin").grep_string,
+				{ desc = "[S]earch current [W]ord" }
+			)
+			vim.keymap.set("n", "<leader>sg", require("telescope.builtin").live_grep, { desc = "[S]earch by [G]rep" })
+			vim.keymap.set(
+				"n",
+				"<leader>sd",
+				require("telescope.builtin").diagnostics,
+				{ desc = "[S]earch [D]iagnostics" }
+			)
+			vim.keymap.set("n", "<C-f>", ":lua require 'telescope.builtin'.current_buffer_fuzzy_find()<CR>", {})
+			vim.keymap.set("n", "<C-g>", require("api.telescope").change_project, {})
+		end,
+	},
 
 	-- Adds git releated signs to the gutter, as well as utilities for managing changes
 	{
@@ -117,257 +425,97 @@ require("lazy").setup({
 		},
 	},
 
-	-- Set lualine as statusline
-	{
-		"nvim-lualine/lualine.nvim",
-		-- See `:help lualine.txt`
-		opts = {
-			options = {
-				icons_enabled = false,
-				component_separators = "|",
-				section_separators = "",
-			},
-		},
-	},
-
 	-- Editing
 	{ "gbprod/stay-in-place.nvim", opts = {} },
-})
 
-local action_layout = require("telescope.actions.layout")
-local previewers = require("telescope.previewers")
-local themes = require("telescope.themes")
-local ivy_theme_config = { sorting_strategy = "ascending", prompt_position = "bottom" }
-local default_opts = themes.get_ivy(ivy_theme_config)
-
-require("telescope").setup({
-	defaults = vim.tbl_deep_extend("force", {
-		preview = {
-			hide_on_startup = true,
-		},
-		mappings = {
-			i = {
-				["<C-u>"] = false,
-				["<C-d>"] = false,
-				["<C-x>"] = false,
-				["<C-h>"] = action_layout.toggle_preview,
-			},
-		},
-		buffer_previewer_maker = function(filepath, bufnr, opts)
-			opts = opts or {}
-			filepath = vim.fn.expand(filepath)
-			vim.loop.fs_stat(filepath, function(_, stat)
-				if not stat then
-					return
-				end
-				if stat.size > 100000 then
-					return
-				else
-					previewers.buffer_previewer_maker(filepath, bufnr, opts)
-				end
-			end)
-		end,
-	}, default_opts),
-})
-
-vim.keymap.set("n", "<leader>?", require("telescope.builtin").oldfiles, { desc = "[?] Find recently opened files" })
-vim.keymap.set("n", "<leader><space>", require("telescope.builtin").buffers, { desc = "[ ] Find existing buffers" })
-vim.keymap.set("n", "<C-p>", require("telescope.builtin").find_files, { desc = "[S]earch [F]iles" })
-vim.keymap.set("n", "<leader>p", require("telescope.builtin").git_files, { desc = "[S]earch [G]it Files" })
-vim.keymap.set("n", "<leader>sh", require("telescope.builtin").help_tags, { desc = "[S]earch [H]elp" })
-vim.keymap.set("n", "<leader>sw", require("telescope.builtin").grep_string, { desc = "[S]earch current [W]ord" })
-vim.keymap.set("n", "<leader>sg", require("telescope.builtin").live_grep, { desc = "[S]earch by [G]rep" })
-vim.keymap.set("n", "<leader>sd", require("telescope.builtin").diagnostics, { desc = "[S]earch [D]iagnostics" })
-vim.keymap.set("n", "<C-f>", ":lua require 'telescope.builtin'.current_buffer_fuzzy_find()<CR>", {})
-vim.keymap.set("n", "<C-g>", require("api.telescope").change_project, {})
-
--- LSP
-require("neodev").setup()
-require("mason").setup()
-
-local servers = {
-	rust_analyzer = {},
-	tsserver = {},
-	lua_ls = {
-		Lua = {
-			workspace = { checkThirdParty = false },
-			telemetry = { enable = false },
-		},
-	},
-}
-
-local on_attach = function(client, bufnr)
-	-- disable LSP highlight
-	client.server_capabilities.semanticTokensProvider = nil
-
-	-- mapping
-	local map = vim.keymap.set
-	local nmap = function(keys, func, desc)
-		if desc then
-			desc = "LSP: " .. desc
-		end
-		map("n", keys, func, { buffer = bufnr, desc = desc })
-	end
-
-	nmap("<leader>rr", ":LspRestart<CR>")
-	nmap("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
-	nmap("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
-
-	nmap("gd", vim.lsp.buf.definition, "[G]oto [D]efinition")
-	nmap("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
-	nmap("gI", vim.lsp.buf.implementation, "[G]oto [I]mplementation")
-	nmap("gT", vim.lsp.buf.type_definition, "[G]oto [T]ype Definition")
-	nmap("<leader>ds", require("telescope.builtin").lsp_document_symbols, "[D]ocument [S]ymbols")
-	nmap("<leader>ws", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[W]orkspace [S]ymbols")
-
-	nmap("K", vim.lsp.buf.hover, "Hover Documentation")
-	nmap("<C-s>", vim.lsp.buf.signature_help, "Signature Documentation")
-
-	vim.api.nvim_buf_create_user_command(bufnr, "Format", function()
-		vim.lsp.buf.format()
-	end, { desc = "Format current buffer with LSP" })
-
-	map({ "n", "v" }, "gq", ":Format<CR>")
-end
-
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
-
-local mason_lspconfig = require("mason-lspconfig")
-mason_lspconfig.setup({ ensure_installed = vim.tbl_keys(servers) })
-mason_lspconfig.setup_handlers({
-	function(server_name)
-		local opts = {
-			on_attach = on_attach,
-			capabilities = capabilities,
-			settings = servers[server_name],
-		}
-
-		if server_name == "tsserver" then
-			opts.init_options = {
-				preferences = {
-					disableAutomaticTypingAcquisition = true,
-					disableSuggestions = true,
+	-- Useful plugins
+	{
+		"echasnovski/mini.animate",
+		config = function()
+			local animate = require("mini.animate")
+			local subscroll_120 = animate.gen_subscroll.equal({ max_output_steps = 120 })
+			animate.setup({
+				cursor = {
+					timing = animate.gen_timing.linear({ duration = 50, unit = "total" }),
+					subscroll = subscroll_120,
 				},
-			}
-		end
-
-		require("lspconfig")[server_name].setup(opts)
-	end,
-})
-
-local null_ls = require("null-ls")
-null_ls.setup({
-	sources = {
-		null_ls.builtins.formatting.stylua,
-		null_ls.builtins.formatting.prettier
-	},
-})
-
--- Autocomplete
-local cmp = require("cmp")
-local luasnip = require("luasnip")
-luasnip.config.setup({})
-
-local lspkind_comparator = function(conf)
-	local lsp_types = require("cmp.types").lsp
-	return function(entry1, entry2)
-		if entry1.source.name ~= "nvim_lsp" then
-			if entry2.source.name == "nvim_lsp" then
-				return false
-			else
-				return nil
-			end
-		end
-		local kind1 = lsp_types.CompletionItemKind[entry1:get_kind()]
-		local kind2 = lsp_types.CompletionItemKind[entry2:get_kind()]
-
-		local priority1 = conf.kind_priority[kind1] or 0
-		local priority2 = conf.kind_priority[kind2] or 0
-		if priority1 == priority2 then
-			return nil
-		end
-		return priority2 < priority1
-	end
-end
-
-local label_comparator = function(entry1, entry2)
-	return entry1.completion_item.label < entry2.completion_item.label
-end
-
-cmp.setup({
-	sorting = {
-		comparators = {
-			lspkind_comparator({
-				kind_priority = {
-					Snippet = 12,
-					Field = 11,
-					Property = 11,
-					Constant = 10,
-					Enum = 10,
-					EnumMember = 10,
-					Event = 10,
-					Function = 10,
-					Method = 10,
-					Operator = 10,
-					Reference = 10,
-					Struct = 10,
-					Variable = 9,
-					File = 8,
-					Folder = 8,
-					Class = 5,
-					Color = 5,
-					Module = 5,
-					Keyword = 2,
-					Constructor = 1,
-					Interface = 1,
-					Text = 1,
-					TypeParameter = 1,
-					Unit = 1,
-					Value = 1,
+				scroll = {
+					timing = animate.gen_timing.linear({ duration = 50, unit = "total" }),
+					subscroll = subscroll_120,
 				},
-			}),
-			label_comparator,
-		},
-	},
-	snippet = {
-		expand = function(args)
-			luasnip.lsp_expand(args.body)
+				resize = { enable = false },
+				open = { enable = false },
+				close = { enable = false },
+			})
 		end,
 	},
-	mapping = cmp.mapping.preset.insert({
-		["<C-d>"] = cmp.mapping.scroll_docs(-4),
-		["<C-f>"] = cmp.mapping.scroll_docs(4),
-		["<C-Space>"] = cmp.mapping.complete({}),
-		["<CR>"] = cmp.mapping.confirm({
-			behavior = cmp.ConfirmBehavior.Replace,
-			select = true,
-		}),
-		["<Tab>"] = cmp.mapping(function(fallback)
-			if cmp.visible() then
-				cmp.select_next_item()
-			elseif luasnip.expand_or_jumpable() then
-				luasnip.expand_or_jump()
-			else
-				fallback()
-			end
-		end, { "i", "s" }),
-		["<S-Tab>"] = cmp.mapping(function(fallback)
-			if cmp.visible() then
-				cmp.select_prev_item()
-			elseif luasnip.jumpable(-1) then
-				luasnip.jump(-1)
-			else
-				fallback()
-			end
-		end, { "i", "s" }),
-	}),
-	sources = {
-		{ name = "nvim_lsp" },
-		{ name = "luasnip" },
+	{
+		"echasnovski/mini.statusline",
+		config = function()
+			require("mini.statusline").setup()
+			vim.api.nvim_exec("hi link MiniStatuslineModeNormal Search", false)
+		end,
 	},
-	completion = {
-		max_item_count = 10,
-		keyword_length = 2,
+	{
+		"echasnovski/mini.bufremove",
+		config = function()
+			require("mini.bufremove").setup()
+		end,
+	},
+	{
+		"echasnovski/mini.comment",
+		config = function()
+			require("mini.comment").setup()
+		end,
+	},
+	{
+		"echasnovski/mini.indentscope",
+		config = function()
+			require("mini.indentscope").setup()
+		end,
+	},
+	{
+		"echasnovski/mini.jump",
+		config = function()
+			require("mini.jump").setup()
+		end,
+	},
+	{
+		"echasnovski/mini.jump2d",
+		config = function()
+			require("mini.jump2d").setup({
+				mappings = {
+					start_jumpings = "",
+				},
+			})
+			vim.keymap.set(
+				{ "n", "v" },
+				"<CR>",
+				':lua MiniJump2d.start(require("mini.jump2d").builtin_opts.single_character)<CR>'
+			)
+		end,
+	},
+	{
+		"echasnovski/mini.misc",
+		config = function()
+			require("mini.misc").setup()
+		end,
+	},
+	{
+		"echasnovski/mini.pairs",
+		config = function()
+			require("mini.pairs").setup()
+		end,
+	},
+	{
+		"echasnovski/mini.surround",
+		config = function()
+			require("mini.surround").setup({ n_lines = 42 })
+		end,
+	},
+	"godlygeek/tabular",
+}, {
+	install = {
+		colorscheme = { "rose-pine" },
 	},
 })

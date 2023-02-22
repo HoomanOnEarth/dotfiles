@@ -65,6 +65,7 @@ source $CONFIG_HOME/antigen/antigen.zsh
 antigen bundle 'git'
 antigen bundle 'zsh-users/zsh-syntax-highlighting'
 antigen bundle 'zsh-users/zsh-autosuggestions'
+antigen bundle 'zsh-users/zsh-completions'
 antigen apply
 
 # My "Plugins"
@@ -176,6 +177,7 @@ function worktree() {
 
 # NPM
 export NVM_DIR="$HOME/.nvm"
+export PATH="./node_modules/.bin:$PATH"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
 alias nr="npm run"
