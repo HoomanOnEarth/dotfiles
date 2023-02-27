@@ -13,27 +13,74 @@ vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
 vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float)
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist)
 
+-- create empty lines
+vim.keymap.set("n", "[<space>", ":<c-u>put! =repeat(nr2char(10), v:count1)<cr>'[")
+vim.keymap.set("n", "]<space>", ":<c-u>put =repeat(nr2char(10), v:count1)<cr>")
+
+-- quick moving lines
+vim.keymap.set("n", "[e", ":<c-u>execute 'move -1-'. v:count1<cr>")
+vim.keymap.set("n", "]e", ":<c-u>execute 'move +'. v:count1<cr>")
+
+-- quickly edit macro
+vim.keymap.set(
+	"n",
+	"<leader>m",
+	":<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>"
+)
+
 vim.o.mouse = "a"
 vim.o.termguicolors = true
+vim.o.cursorline = true
 vim.o.clipboard = "unnamedplus"
 vim.o.undofile = true
 vim.o.breakindent = true
-vim.o.hlsearch = false
+vim.o.hlsearch = true
+vim.o.incsearch = true
 vim.o.wrap = false
+vim.o.statusline = 2
+vim.o.synmaxcol = 200
+vim.o.complete = vim.o.complete:gsub("ti", "")
+
+vim.o.tabstop = 4 -- number of visual spaces per TAB
+vim.o.softtabstop = 4 -- number of spaces in tab when editing
+vim.o.shiftwidth = 4 -- number of spaces to use for autoindent
+vim.o.expandtab = true -- tabs are space
+vim.o.autoindent = true
 
 vim.o.ignorecase = true
 vim.o.smartcase = true
 vim.wo.signcolumn = "yes"
 vim.wo.number = true
+vim.wo.relativenumber = true
 
 vim.o.updatetime = 250
 vim.o.timeout = true
 vim.o.timeoutlen = 420
 vim.o.completeopt = "menuone,noselect"
+
+vim.api.nvim_create_autocmd({ "InsertLeave", "WinEnter" }, {
+	callback = function()
+		vim.o.cursorline = true
+	end,
+})
+
+vim.api.nvim_create_autocmd({ "InsertEnter", "WinLeave" }, {
+	callback = function()
+		vim.o.cursorline = false
+	end,
+})
+
 vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
 	callback = function()
 		-- disable auto comment on new line
 		vim.o.formatoptions = vim.o.formatoptions:gsub("cro", "")
+
+		-- remember cursor position
+		vim.cmd([[
+		if line("'\"") > 1 && line("'\"") <= line("$")
+			execute "normal! g`\"zz"
+		endif
+		]])
 	end,
 })
 
@@ -63,6 +110,30 @@ require("lazy").setup({
 		end,
 	},
 
+	{
+		"akinsho/toggleterm.nvim",
+		config = function()
+			require("toggleterm").setup({
+				shade_terminals = false,
+				open_mapping = [[<C-\>]],
+				direction = "vertical",
+				size = 80,
+			})
+
+			function _G.set_terminal_keymaps()
+				local opts = { buffer = 0 }
+				vim.keymap.set("t", "<ESC>", [[<C-\><C-n>]], opts)
+				vim.keymap.set("t", "<C-h>", [[<Cmd>wincmd h<CR>]], opts)
+				vim.keymap.set("t", "<C-j>", [[<Cmd>wincmd j<CR>]], opts)
+				vim.keymap.set("t", "<C-k>", [[<Cmd>wincmd k<CR>]], opts)
+				vim.keymap.set("t", "<C-l>", [[<Cmd>wincmd l<CR>]], opts)
+			end
+
+			-- if you only want these mappings for toggle term use term://*toggleterm#* instead
+			vim.cmd("autocmd! TermOpen term://* lua set_terminal_keymaps()")
+		end,
+	},
+
 	-- Syntax
 	"sheerun/vim-polyglot",
 
@@ -72,8 +143,8 @@ require("lazy").setup({
 		dependencies = { "kevinhwang91/promise-async" },
 		config = function()
 			vim.o.foldcolumn = "1"
-			vim.o.foldlevel = 5
-			vim.o.foldlevelstart = 5
+			vim.o.foldlevel = 99
+			vim.o.foldlevelstart = 99
 			vim.o.foldenable = true
 
 			vim.keymap.set({ "n", "v" }, "zR", require("ufo").openAllFolds)
@@ -207,6 +278,16 @@ require("lazy").setup({
 					null_ls.builtins.formatting.stylua,
 					null_ls.builtins.formatting.prettier.with({
 						extra_args = { "--no-semi", "--single-quote" },
+					}),
+				},
+			})
+
+			null_ls.register({
+				name = "svg",
+				filetypes = { "svg" },
+				sources = {
+					null_ls.builtins.formatting.prettier.with({
+						extra_args = { "--no-semi", "--single-quote", "--parser", "html" },
 					}),
 				},
 			})

@@ -100,11 +100,10 @@ function history-fzy() {
 # Alias
 alias vim='nvim'
 alias reload='source ~/.zshrc'
-alias cleanup='fd --no-ignore --hidden .DS_Store . | xargs rm'
+# alias cleanup='fd --no-ignore --hidden .DS_Store . | xargs rm'
 alias dotconf='cd ~/coding/dotfiles; vim'
 alias vimconf='vim ~/coding/dotfiles/nvim/init.lua'
 alias zshconf='vim ~/coding/dotfiles/zsh/zshrc'
-alias yaconf='vim ~/coding/dotfiles/yabai/yabairc'
 alias bashconf='vim ~/coding/dotfiles/bash/bashrc'
 alias tmuxconf='vim ~/coding/dotfiles/tmux/tmux.conf'
 alias tn='tmuxinator n'
