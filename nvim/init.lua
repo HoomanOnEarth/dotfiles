@@ -110,6 +110,7 @@ require("lazy").setup({
 		end,
 	},
 
+	-- Terminals
 	{
 		"akinsho/toggleterm.nvim",
 		config = function()
@@ -595,6 +596,36 @@ require("lazy").setup({
 		end,
 	},
 	"godlygeek/tabular",
+
+	{
+		"lalitmee/browse.nvim",
+		config = function()
+			local browse = require("browse")
+			browse.setup({
+				provider = "google", -- duckduckgo, bing
+			})
+
+			function Command(name, rhs, opts)
+				opts = opts or {}
+				vim.api.nvim_create_user_command(name, rhs, opts)
+			end
+
+			Command("Google", function()
+				browse.input_search()
+			end)
+
+			Command("GitHubSearch", function()
+				local github = {
+					["Code"] = "https://github.com/search?q=%s&type=code",
+					["Repo"] = "https://github.com/search?q=%s&type=repositories",
+					["Issues"] = "https://github.com/search?q=%s&type=issues",
+					["Pulls"] = "https://github.com/search?q=%s&type=pullrequests",
+				}
+
+				require("browse").open_bookmarks({ bookmarks = github, prompt_title = "Search Github" })
+			end)
+		end,
+	},
 }, {
 	install = {
 		colorscheme = { "rose-pine" },
