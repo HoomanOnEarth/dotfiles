@@ -1,5 +1,6 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
+vim.keymap.set({ "n", "i" }, "<ESC>", ":nohl<CR><ESC>", { silent = true })
 vim.keymap.set({ "n", "i", "v" }, "<C-c>", "<ESC>")
 vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
 
@@ -333,8 +334,9 @@ require("lazy").setup({
 				end
 			end
 
+			-- lowercase first
 			local label_comparator = function(entry1, entry2)
-				return entry1.completion_item.label < entry2.completion_item.label
+				return entry1.completion_item.label > entry2.completion_item.label
 			end
 
 			cmp.setup({
@@ -405,9 +407,9 @@ require("lazy").setup({
 					end, { "i", "s" }),
 				}),
 				sources = {
-					{ name = "buffer" },
 					{ name = "nvim_lsp" },
 					{ name = "luasnip" },
+					{ name = "buffer" },
 				},
 				completion = {
 					max_item_count = 10,
