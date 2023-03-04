@@ -1,2 +1,2 @@
 #!/bin/sh
-sed -i '' -e 's/dark.yml/light.yml/g' ~/projects/dotfiles/alacritty/alacritty.yml
+sed -i '' -e 's/dark.yml/light.yml/g' ~/code/dotfiles/alacritty/alacritty.yml

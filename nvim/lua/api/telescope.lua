@@ -7,7 +7,7 @@ local action_state = require('telescope.actions.state')
 local conf = require('telescope.config').values
 local utils = require('telescope.utils')
 
-function api.change_project(path)
+function api.change_directory(path)
     path = path or '~/coding'
     local cmd = { vim.o.shell, '-c', "fd . -td " .. path }
     local directories = utils.get_os_command_output(cmd)
