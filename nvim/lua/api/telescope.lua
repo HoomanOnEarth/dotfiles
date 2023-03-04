@@ -8,7 +8,7 @@ local conf = require('telescope.config').values
 local utils = require('telescope.utils')
 
 function api.change_directory(path)
-    path = path or '~/coding'
+    path = path or '~/code'
     local cmd = { vim.o.shell, '-c', "fd . -td " .. path }
     local directories = utils.get_os_command_output(cmd)
     local theme = themes.get_dropdown()

@@ -36,6 +36,9 @@ vim.o.timeoutlen = 420
 vim.o.completeopt = "menuone,noselect"
 
 vim.cmd([[
+	" auto cd to open buffer
+	autocmd! BufEnter * silent! lcd %:p:h
+
 	augroup SmartCursorLine
 		au!
 		au InsertLeave,WinEnter * set cursorline
