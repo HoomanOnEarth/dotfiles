@@ -1,29 +1,30 @@
-# Set the shell to zsh
-export SHELL=/usr/local/bin/zsh
-export LANG=en_US.UTF8
-export LC_ALL=en_US.UTF-8
-export CONFIG_HOME=$HOME/.config
 export HISTFILE=$HOME/.local/zsh_history
+export XDG_CONFIG_HOME=$HOME/.config
 
-autoload -Uz compinit
-compinit
+# TEMP Alias
+alias fm=/Users/alex/code/personal/find-macbook
+
+# using Vi bindings
+bindkey -v
+bindkey -M viins "^A" beginning-of-line
+bindkey -M viins "^E" end-of-line
+bindkey -M viins "^D" delete-char-or-list
+bindkey -M viins "^N" down-line-or-history
+bindkey -M viins "^P" up-line-or-history
 
 # Changing Directories
 setopt auto_cd                 # if a command isn't valid, but is a directory, cd to that dir
 setopt auto_pushd              # make cd push the old directory onto the directory stack
 setopt pushd_ignore_dups       # don’t push multiple copies of the same directory onto the directory stack
-#
-# Completions
-setopt always_to_end           # move cursor to the end of a completed word
-setopt auto_list               # automatically list choices on ambiguous completion
-setopt auto_menu               # show completion menu on a successive tab press
-setopt auto_param_slash        # if completed parameter is a directory, add a trailing slash
-setopt complete_in_word        # complete from both ends of a word
-unsetopt menu_complete         # don't autoselect the first completion entry
 
 # Expansion and Globbing
 setopt extended_glob           # use more awesome globbing features
 setopt glob_dots               # include dotfiles when globbing
+
+# Completions
+setopt auto_list               # automatically list choices on ambiguous completion
+setopt auto_menu               # show completion menu on a successive tab press
+setopt complete_in_word        # complete from both ends of a word
 
 # History
 setopt append_history          # append to history file
@@ -42,81 +43,43 @@ setopt inc_append_history      # write to the history file immediately, not when
 unsetopt share_history         # don't share history between all sessions
 
 # Input/Output
-unsetopt clobber               # must use >| to truncate existing files
-unsetopt correct               # don't try to correct the spelling of commands
-unsetopt correct_all           # don't try to correct the spelling of all arguments in a line
-unsetopt flow_control          # disable start/stop characters in shell editor
-setopt interactive_comments    # enable comments in interactive shell
-setopt path_dirs               # perform path search even on command names with slashes
-setopt rc_quotes               # allow 'Henry''s Garage' instead of 'Henry'\''s Garage'
 unsetopt rm_star_silent        # ask for confirmation for `rm *' or `rm path/*'
 
-# Prompting
-setopt prompt_subst           # expand parameters in prompt variables
-
-# Zle
-# http://zsh.sourceforge.net/Doc/Release/Options.html#Zle
-unsetopt beep                 # be quiet!
-setopt combining_chars        # combine zero-length punctuation characters (accents) with the base character
-setopt emacs                  # use emacs keybindings in the shell
-
-# Plugins
-source $CONFIG_HOME/antigen/antigen.zsh
-antigen bundle 'git'
-antigen bundle 'zsh-users/zsh-syntax-highlighting'
-antigen bundle 'zsh-users/zsh-autosuggestions'
-antigen bundle 'zsh-users/zsh-completions'
-antigen apply
-
-# My "Plugins"
-sources=()
-
-for s in "${sources[@]}"; do
-  source $CONFIG_HOME/zsh/include/${s}.zsh
-done
-
-# starship prompt
+# Prompt
 eval "$(starship init zsh)"
 
-# better history
-zle -N history-fzy
-bindkey '^r' history-fzy
+# Plugins
+source $XDG_CONFIG_HOME/antigen/antigen.zsh
+antigen bundle 'git'
+antigen bundle 'zsh-users/zsh-autosuggestions'
+antigen apply
 
-function history-fzy() {
-  local tac
-
-  if which tac > /dev/null; then
-    tac="tac"
-  else
-    tac="tail -r"
-  fi
-
-  BUFFER=$(history -n 1 | eval $tac | awk '!a[$0]++' | fzy --query "$LBUFFER")
-  CURSOR=$#BUFFER
-
-  zle reset-prompt
-}
-
-# Alias
+# Aliases
 alias vim='nvim'
-alias reload='source ~/.zshrc'
-# alias cleanup='fd --no-ignore --hidden .DS_Store . | xargs rm'
-alias dotconf='cd ~/coding/dotfiles; vim'
-alias vimconf='vim ~/coding/dotfiles/nvim/init.lua'
-alias zshconf='vim ~/coding/dotfiles/zsh/zshrc'
-alias bashconf='vim ~/coding/dotfiles/bash/bashrc'
-alias tmuxconf='vim ~/coding/dotfiles/tmux/tmux.conf'
+alias zc='vim ~/code/dotfiles/zsh/zshrc'
+alias vc='vim ~/code/dotfiles/nvim/init.lua'
+alias bc='vim ~/code/dotfiles/bash/bashrc'
+alias tc='vim ~/code/dotfiles/tmux/tmux.conf'
+alias s='source ~/.zshrc'
+alias c='clear'
+alias pm='pnpm'
+
+# Apps
+alias pg=/Applications/Postgres.app/Contents/Versions/15/bin/psql
+alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
+
+# Tmux
 alias tn='tmuxinator n'
 alias to='tmuxinator o'
 alias ts='tmuxinator s'
-alias pm='pnpm'
+
+# Listing
+alias ls="gls --width 42 --group-directories-first --color=auto"
+alias lsr="gls -R" # list recursive
+alias lsrf="gls -Rohg" # list recursive full details
+alias ll="gls -lh --group-directories-first --color=auto"
+alias la="gls -lAh --group-directories-first --color=auto"
 alias cpwd="pwd | tr -d '\n' | pbcopy && echo 'pwd copied to clipboard'"
-alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
-alias wf=workfile
-alias wd=workdir
-alias wt=worktree
-alias j2v=json2csv
-alias pg=/Applications/Postgres.app/Contents/Versions/15/bin/psql
 
 # Tree
 alias tree='tree -CIa    "node_modules|dist|.git|.cache|.next|.turbo|.parcel-cache|.undodir" --dirsfirst'
@@ -124,12 +87,14 @@ alias t1='tree -L 1 -CIa "node_modules|dist|.git|.cache|.next|.turbo|.parcel-cac
 alias t2='tree -L 2 -CIa "node_modules|dist|.git|.cache|.next|.turbo|.parcel-cache|.undodir" --dirsfirst'
 alias t3='tree -L 3 -CIa "node_modules|dist|.git|.cache|.next|.turbo|.parcel-cache|.undodir" --dirsfirst'
 
-# ls
-alias ls="gls --width 42 --group-directories-first --color=auto"
-alias lsr="gls -R" # list recursive
-alias lsrf="gls -Rohg" # list recursive full details
-alias ll="gls -lh --group-directories-first --color=auto"
-alias la="gls -lAh --group-directories-first --color=auto"
+# history fuzzy searching
+bindkey '^r' history-fzy
+zle -N history-fzy
+function history-fzy() {
+  BUFFER=$(history -n 1 | tac | awk '!a[$0]++' | fzy --query "$LBUFFER")
+  CURSOR=$#BUFFER
+  zle reset-prompt
+}
 
 # quick jump
 zle -N workdir
@@ -140,23 +105,17 @@ bindkey '^t' worktree
 
 function workdir() {
   local result=""
-
   if [ $# -gt 1 ] && echo "Too many agruments" && return
-
   if [ $# -gt 0 ]; then
     result=$(fd --type directory . $1)
   else
-    result=$(fd --type directory . ~/coding)
+    result=$(fd --type directory . ~/code)
   fi
 
-  # validate fd command before pipe to fzy
   if [ -z "$result" ] && echo "No directory match query: $1" && return
 
-  # validate fzy selection before next execution
   local selection=$(echo $result | fzy)
-  if [ -z "$selection" ] && return
-
-  cd $selection
+  if [ "$selection" ] && cd $selection && zle reset-prompt
 }
 
 function worktree() {
@@ -169,48 +128,12 @@ function worktree() {
   local selection=$(echo $result | fzy)
   if [ -z "$selection" ] && return
 
-  # cd to target directory
+  # extracting path from fzy selection
   local target=$(echo $selection | awk '{print $1}')
-  cd $target
-}
+  if [ "$target" ] && cd $target && zle reset-prompt
+  }
 
-# NPM
-export NVM_DIR="$HOME/.nvm"
-export PATH="./node_modules/.bin:$PATH"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-
-alias nr="npm run"
-alias np="npm version patch && npm publish && git push origin master --tags"
-
-# csv viewer
-csview() {
-  local file="$1"
-  cat "$file" | sed 's/,/ ,/g' | column -t -s, | less -S
-}
-
-# shopify env
-source $HOME/coding/dotfiles/shopify_alias.sh
-alias theme='shopify theme'
-
-# Deno
-export DENO_INSTALL="/Users/alex/.deno"
-export PATH="$DENO_INSTALL/bin:$PATH"
-
-# bun completions
-[ -s "/Users/alex/.bun/_bun" ] && source "/Users/alex/.bun/_bun"
-
-# Bun
-export BUN_INSTALL="/Users/alex/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
-# ruby
-export PATH="/usr/local/opt/ruby/bin:$PATH"
-
-# pnpm
-export PNPM_HOME="/Users/alex/Library/pnpm"
-export PATH="$PNPM_HOME:$PATH"
-
-# utils
+# extra funtions
 function slugify() {
   # Forcing the POSIX local so alnum is only 0-9A-Za-z
   export LANG=POSIX
@@ -221,4 +144,34 @@ function slugify() {
   # Lowercase everything
   # Remove last dash if there is nothing after
   sed -e 's/[^[:alnum:]]/-/g' | tr -s '-' | tr A-Z a-z | sed -e 's/-$//'
+
+  export LANG=en_US.UTF8
+  export LC_ALL=en_US.UTF-8
 }
+
+# Shopify
+source $HOME/code/dotfiles/shopify_alias.sh
+alias theme='shopify theme'
+
+# Ruby
+export PATH="/usr/local/opt/ruby/bin:$PATH"
+
+# Node Modules
+export PATH="./node_modules/.bin:$PATH"
+
+node() {
+  lazy_load_nvm
+  node $@
+}
+
+nvm() {
+  lazy_load_nvm
+  nvm $@
+}
+
+lazy_load_nvm() {
+  unset -f node nvm
+  export NVM_DIR=~/.nvm
+  [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
+}
+
