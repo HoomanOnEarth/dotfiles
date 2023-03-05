@@ -36,19 +36,28 @@ vim.o.timeoutlen = 420
 vim.o.completeopt = "menuone,noselect"
 
 vim.cmd([[
-	" auto cd to open buffer
-	autocmd! BufEnter * silent! lcd %:p:h
+	cab Q q!
+	cab Qa qa!
+	cab W w!
+	cab Wq wq!
+
+	inoremap jj <ESC>
 
 	augroup SmartCursorLine
 		au!
 		au InsertLeave,WinEnter * set cursorline
 		au InsertEnter,WinLeave * set nocursorline
 	augroup END
-	
+
+	augroup SmartNumbers
+		au!
+		au FocusGained,InsertLeave,BufEnter * set relativenumber
+		au FocusLost,InsertEnter,BufLeave * set norelativenumber
+	augroup END
+
 	augroup CursorHoldHints
 		au!			
 		au CursorHold * lua vim.diagnostic.open_float()
-		au CursorHoldI * lua vim.lsp.buf.signature_help()
 		au CursorMoved,CursorMovedI * lua vim.lsp.buf.clear_references()
 	augroup END
 
@@ -56,6 +65,9 @@ vim.cmd([[
 		au!
 		au BufEnter * set formatoptions-=cro
 	augroup END
+
+	au BufWinEnter ~/code/scripts/* if &ft == "" | setlocal ft=sh | endif
+	au BufWritePost * if &ft == "sh" | silent! execute "!chmod +x %" | endif
 ]])
 
 auto_cmd({ "BufNewFile", "BufRead" }, {
@@ -87,8 +99,20 @@ require("lazy").setup({
 	-- Tmux plugins
 	{
 		"christoomey/vim-tmux-navigator",
+		init = function()
+			vim.cmd([[
+				let g:tmux_navigator_disable_when_zoomed = 1
+				let g:tmux_navigator_no_mappings = 1
+			]])
+		end,
 		config = function()
-			vim.g["tmux_navigator_preserve_zoom"] = 1
+			vim.cmd([[
+				nnoremap <silent> <M-h> <Cmd>TmuxNavigateLeft<CR>
+				nnoremap <silent> <M-j> <Cmd>TmuxNavigateDown<CR>
+				nnoremap <silent> <M-k> <Cmd>TmuxNavigateUp<CR>
+				nnoremap <silent> <M-l> <Cmd>TmuxNavigateRight<CR>
+				nnoremap <silent> <M-\> <Cmd>TmuxNavigatePrevious<CR>
+			]])
 		end,
 	},
 
@@ -217,17 +241,17 @@ require("lazy").setup({
 				-- disable LSP highlight
 				client.server_capabilities.semanticTokensProvider = nil
 
-				map("n", "<leader>rr", ":LspRestart<CR>")
-				map("n", "<leader>rn", vim.lsp.buf.rename)
-				map("n", "<leader>ca", vim.lsp.buf.code_action)
+				map("n", "<leader>rr", ":LspRestart<CR>", { desc = "Restart LSP servers" })
+				map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "LSP rename" })
+				map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP code actions" })
 
 				local ts = require("telescope.builtin")
-				map("n", "gd", ts.lsp_definitions)
-				map("n", "gr", ts.lsp_references)
-				map("n", "gI", ts.lsp_implementations)
-				map("n", "gT", ts.lsp_type_definitions)
-				map("n", "gs", ts.lsp_document_symbols)
-				map("n", "gq", vim.lsp.buf.format)
+				map("n", "gd", ts.lsp_definitions, { desc = "Goto definitions" })
+				map("n", "gr", ts.lsp_references, { desc = "Goto references" })
+				map("n", "gI", ts.lsp_implementations, { desc = "Goto implementations" })
+				map("n", "gT", ts.lsp_type_definitions, { desc = "Goto type definitions" })
+				map("n", "gs", ts.lsp_document_symbols, { desc = "List document symbols" })
+				map("n", "gq", vim.lsp.buf.format, { desc = "LSP format" })
 
 				buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
 			end
@@ -363,11 +387,7 @@ require("lazy").setup({
 				mapping = cmp.mapping.preset.insert({
 					["<C-d>"] = cmp.mapping.scroll_docs(-4),
 					["<C-f>"] = cmp.mapping.scroll_docs(4),
-					["<C-Space>"] = cmp.mapping.complete({}),
-					["<CR>"] = cmp.mapping.confirm({
-						behavior = cmp.ConfirmBehavior.Replace,
-						select = true,
-					}),
+					["<CR>"] = cmp.mapping.confirm({ select = true }),
 					["<Tab>"] = cmp.mapping(function(fallback)
 						if cmp.visible() then
 							cmp.select_next_item()
@@ -393,7 +413,7 @@ require("lazy").setup({
 					{ name = "buffer" },
 				},
 				completion = {
-					max_item_count = 10,
+					max_item_count = 8,
 					keyword_length = 2,
 				},
 			})
@@ -441,17 +461,16 @@ require("lazy").setup({
 					end,
 				}, default_opts),
 			})
-
 			local ts = require("telescope.builtin")
-			map("n", "<leader>?", ts.oldfiles)
-			map("n", "<leader><space>", ts.buffers)
-			map("n", "<C-p>", ts.find_files)
-			map("n", "<leader>sh", ts.help_tags)
-			map("n", "<leader>sf", ts.live_grep)
-			map("n", "<leader>sw", ts.grep_string)
-			map("n", "<leader>sd", ts.diagnostics)
-			map("n", "<C-f>", ts.current_buffer_fuzzy_find)
-			map("n", "<leader>cd", require("api.telescope").change_directory, {})
+			map("n", "<leader>?", ts.oldfiles, { desc = "Recent files" })
+			map("n", "<leader><space>", ts.buffers, { desc = "Recent buffers" })
+			map("n", "<C-p>", ts.find_files, { desc = "Browse files" })
+			map("n", "<leader>sh", ts.help_tags, { desc = "Search helps" })
+			map("n", "<leader>sf", ts.live_grep, { desc = "Live search" })
+			map("n", "<leader>sw", ts.grep_string, { desc = "Search" })
+			map("n", "<leader>sd", ts.diagnostics, { desc = "List diagnostics" })
+			map("n", "<C-f>", ts.current_buffer_fuzzy_find, { desc = "Current file fuzzy search" })
+			map("n", "<C-g>", require("api.telescope").change_directory, { desc = "Change directory" })
 		end,
 	},
 
@@ -538,21 +557,24 @@ require("lazy").setup({
 })
 
 -- Key mappings
-map({ "n" }, "<leader>l", ":nohl<CR>")
+map({ "n" }, "<leader>cd>", ":cd %:p:h<CR>:pwd<CR>", { desc = "Change directory" })
+map({ "n" }, "<leader>l", ":nohl<CR>", { desc = "Clear highlights" })
 
--- Remap for dealing with word wrap
-map("n", "k", 'v:count == 0 ? "gk" : "k"', { expr = true, silent = true })
-map("n", "j", 'v:count == 0 ? "gj" : "j"', { expr = true, silent = true })
+map("n", "k", 'v:count == 0 ? "gk" : "k"', { expr = true, silent = true, desc = "Better moving between lines" })
+map("n", "j", 'v:count == 0 ? "gj" : "j"', { expr = true, silent = true, desc = "Better moving between lines" })
 
 -- diagnostic
-map("n", "g[", vim.diagnostic.goto_prev)
-map("n", "g]", vim.diagnostic.goto_next)
-map("n", "<leader>e", vim.diagnostic.open_float)
-map("n", "<leader>q", vim.diagnostic.setloclist)
+map("n", "g[", vim.diagnostic.goto_prev, { desc = "Prev diagnostic" })
+map("n", "g]", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+map("n", "<leader>e", vim.diagnostic.open_float, { desc = "Hover diagnostic under cursor" })
+map("n", "<leader>q", vim.diagnostic.setloclist, { desc = "List diagnostics in quickfixlist" })
 
--- quick moving lines
-map("v", "<M-j>", ":m '>+1<CR>gv=gv")
-map("v", "<M-k>", ":m '<-2<CR>gv=gv")
+map("v", "<M-j>", ":m '>+1<CR>gv=gv", { desc = "Move line up" })
+map("v", "<M-k>", ":m '<-2<CR>gv=gv", { desc = "Move line down" })
 
--- quickly edit macro
-map("n", "<leader>m", ":<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>")
+map(
+	"n",
+	"<leader>m",
+	":<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>",
+	{ desc = "Quickly create & edit macro" }
+)

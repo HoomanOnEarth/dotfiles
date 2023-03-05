@@ -2,7 +2,7 @@ export HISTFILE=$HOME/.local/zsh_history
 export XDG_CONFIG_HOME=$HOME/.config
 
 # TEMP Alias
-alias fm=/Users/alex/code/personal/find-macbook
+alias fm=~/code/scripts/find-macbook
 
 # using Vi bindings
 bindkey -v
