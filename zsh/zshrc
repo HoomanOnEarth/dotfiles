@@ -1,8 +1,6 @@
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/code/scripts"
 export HISTFILE=$HOME/.local/zsh_history
 export XDG_CONFIG_HOME=$HOME/.config
-
-# TEMP Alias
-alias fm=~/code/scripts/find-macbook
 
 # using Vi bindings
 bindkey -v
@@ -62,7 +60,7 @@ alias bc='vim ~/code/dotfiles/bash/bashrc'
 alias tc='vim ~/code/dotfiles/tmux/tmux.conf'
 alias s='source ~/.zshrc'
 alias c='clear'
-alias pm='pnpm'
+alias pn='pnpm'
 
 # Apps
 alias pg=/Applications/Postgres.app/Contents/Versions/15/bin/psql
@@ -83,10 +81,10 @@ alias la="gls -lAh --group-directories-first --color=auto"
 alias cpwd="pwd | tr -d '\n' | pbcopy && echo 'pwd copied to clipboard'"
 
 # Tree
-alias tree='tree -CIa    "node_modules|dist|.git|.cache|.next|.turbo|.parcel-cache|.undodir" --dirsfirst'
-alias t1='tree -L 1 -CIa "node_modules|dist|.git|.cache|.next|.turbo|.parcel-cache|.undodir" --dirsfirst'
-alias t2='tree -L 2 -CIa "node_modules|dist|.git|.cache|.next|.turbo|.parcel-cache|.undodir" --dirsfirst'
-alias t3='tree -L 3 -CIa "node_modules|dist|.git|.cache|.next|.turbo|.parcel-cache|.undodir" --dirsfirst'
+alias tree='tree -CIa    "node_modules|dist|.git|.cache|.next|.parcel-cache|.undodir" --dirsfirst'
+alias t1='tree -L 1 -CIa "node_modules|dist|.git|.cache|.next|.parcel-cache|.undodir" --dirsfirst'
+alias t2='tree -L 2 -CIa "node_modules|dist|.git|.cache|.next|.parcel-cache|.undodir" --dirsfirst'
+alias t3='tree -L 3 -CIa "node_modules|dist|.git|.cache|.next|.parcel-cache|.undodir" --dirsfirst'
 
 # history fuzzy searching
 bindkey '^r' history-fzy
@@ -159,20 +157,9 @@ export PATH="/usr/local/opt/ruby/bin:$PATH"
 
 # Node Modules
 export PATH="./node_modules/.bin:$PATH"
+source /usr/local/opt/asdf/libexec/asdf.sh
 
-node() {
-  lazy_load_nvm
-  node $@
-}
-
-nvm() {
-  lazy_load_nvm
-  nvm $@
-}
-
-lazy_load_nvm() {
-  unset -f node nvm
-  export NVM_DIR=~/.nvm
-  [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
-}
-
+# Python
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"

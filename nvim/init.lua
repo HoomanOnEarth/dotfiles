@@ -30,7 +30,7 @@ vim.wo.signcolumn = "yes"
 vim.wo.number = true
 vim.wo.relativenumber = true
 
-vim.o.updatetime = 250
+vim.o.updatetime = 450
 vim.o.timeout = true
 vim.o.timeoutlen = 420
 vim.o.completeopt = "menuone,noselect"
@@ -41,6 +41,7 @@ vim.cmd([[
 	cab W w!
 	cab Wq wq!
 
+	nnoremap <C-s> :w!<CR>
 	inoremap jj <ESC>
 
 	augroup SmartCursorLine
@@ -242,6 +243,8 @@ require("lazy").setup({
 				client.server_capabilities.semanticTokensProvider = nil
 
 				map("n", "<leader>rr", ":LspRestart<CR>", { desc = "Restart LSP servers" })
+				map("n", "<C-k>", vim.lsp.buf.signature_help, { desc = "LSP hover" })
+				map("n", "K", vim.lsp.buf.hover, { desc = "LSP hover" })
 				map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "LSP rename" })
 				map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP code actions" })
 
@@ -323,62 +326,7 @@ require("lazy").setup({
 			luasnip.config.setup({})
 			require("luasnip.loaders.from_vscode").lazy_load()
 
-			local function lsp_kind_comparator(conf)
-				local lsp_types = require("cmp.types").lsp
-				return function(entry1, entry2)
-					if entry1.source.name ~= "nvim_lsp" then
-						if entry2.source.name == "nvim_lsp" then
-							return false
-						else
-							return nil
-						end
-					end
-					local kind1 = lsp_types.CompletionItemKind[entry1:get_kind()]
-					local kind2 = lsp_types.CompletionItemKind[entry2:get_kind()]
-
-					local priority1 = conf.kind_priority[kind1] or 0
-					local priority2 = conf.kind_priority[kind2] or 0
-					if priority1 == priority2 then
-						return nil
-					end
-					return priority2 < priority1
-				end
-			end
-
 			cmp.setup({
-				sorting = {
-					comparators = {
-						lsp_kind_comparator({
-							kind_priority = {
-								Snippet = 12,
-								Field = 11,
-								Property = 11,
-								Constant = 10,
-								Enum = 10,
-								EnumMember = 10,
-								Event = 10,
-								Function = 10,
-								Method = 10,
-								Operator = 10,
-								Reference = 10,
-								Struct = 10,
-								Variable = 9,
-								File = 8,
-								Folder = 8,
-								Class = 5,
-								Color = 5,
-								Module = 5,
-								Keyword = 2,
-								Constructor = 1,
-								Interface = 1,
-								Text = 1,
-								TypeParameter = 1,
-								Unit = 1,
-								Value = 1,
-							},
-						}),
-					},
-				},
 				snippet = {
 					expand = function(args)
 						luasnip.lsp_expand(args.body)
@@ -559,6 +507,7 @@ require("lazy").setup({
 -- Key mappings
 map({ "n" }, "<leader>cd>", ":cd %:p:h<CR>:pwd<CR>", { desc = "Change directory" })
 map({ "n" }, "<leader>l", ":nohl<CR>", { desc = "Clear highlights" })
+map({ "x" }, "<leader>l", ":nohl<CR>", { desc = "Clear highlights" })
 
 map("n", "k", 'v:count == 0 ? "gk" : "k"', { expr = true, silent = true, desc = "Better moving between lines" })
 map("n", "j", 'v:count == 0 ? "gj" : "j"', { expr = true, silent = true, desc = "Better moving between lines" })
@@ -566,7 +515,9 @@ map("n", "j", 'v:count == 0 ? "gj" : "j"', { expr = true, silent = true, desc = 
 -- diagnostic
 map("n", "g[", vim.diagnostic.goto_prev, { desc = "Prev diagnostic" })
 map("n", "g]", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
-map("n", "<leader>e", vim.diagnostic.open_float, { desc = "Hover diagnostic under cursor" })
+map("n", "<leader>e", function()
+	vim.diagnostic.open_float(nil, { focus = false })
+end, { desc = "Hover diagnostic under cursor" })
 map("n", "<leader>q", vim.diagnostic.setloclist, { desc = "List diagnostics in quickfixlist" })
 
 map("v", "<M-j>", ":m '>+1<CR>gv=gv", { desc = "Move line up" })
