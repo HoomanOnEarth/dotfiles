@@ -52,8 +52,8 @@ vim.cmd([[
 
 	augroup SmartNumbers
 		au!
-		au FocusGained,InsertLeave,BufEnter * set relativenumber
-		au FocusLost,InsertEnter,BufLeave * set norelativenumber
+		au FocusGained,InsertLeave,BufEnter &buftype ==# "terminal"  set relativenumber
+		au FocusLost,InsertEnter,BufLeave &buftype ==# "terminal" set norelativenumber
 	augroup END
 
 	augroup CursorHoldHints
@@ -108,11 +108,11 @@ require("lazy").setup({
 		end,
 		config = function()
 			vim.cmd([[
-				nnoremap <silent> <M-h> <Cmd>TmuxNavigateLeft<CR>
-				nnoremap <silent> <M-j> <Cmd>TmuxNavigateDown<CR>
-				nnoremap <silent> <M-k> <Cmd>TmuxNavigateUp<CR>
-				nnoremap <silent> <M-l> <Cmd>TmuxNavigateRight<CR>
-				nnoremap <silent> <M-\> <Cmd>TmuxNavigatePrevious<CR>
+				nnoremap <silent> <C-h> <Cmd>TmuxNavigateLeft<CR>
+				nnoremap <silent> <C-j> <Cmd>TmuxNavigateDown<CR>
+				nnoremap <silent> <C-k> <Cmd>TmuxNavigateUp<CR>
+				nnoremap <silent> <C-l> <Cmd>TmuxNavigateRight<CR>
+				nnoremap <silent> <C-\> <Cmd>TmuxNavigatePrevious<CR>
 			]])
 		end,
 	},
@@ -135,7 +135,7 @@ require("lazy").setup({
 		config = function()
 			require("toggleterm").setup({
 				shade_terminals = false,
-				open_mapping = "<C-\\>",
+				open_mapping = "<M-`>",
 				direction = "vertical",
 				size = 80,
 			})
@@ -150,7 +150,7 @@ require("lazy").setup({
 			end
 
 			-- if you only want these mappings for toggle term use term://*toggleterm#* instead
-			vim.cmd("autocmd! TermOpen term://* lua set_terminal_keymaps()")
+			vim.cmd("autocmd TermOpen term://* lua set_terminal_keymaps()")
 		end,
 	},
 
