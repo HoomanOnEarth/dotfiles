@@ -66,6 +66,9 @@ alias pn='pnpm'
 alias pg=/Applications/Postgres.app/Contents/Versions/15/bin/psql
 alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
 
+# ~/code/my-scripts
+alias nt=nhattao
+
 # Tmux
 alias tks='tmux kill-server'
 alias tn='tmuxinator n'

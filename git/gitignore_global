@@ -14,3 +14,6 @@ dist
 
 # typescript buildinfo
 .tsbuildinfo
+
+# logs
+*.log
