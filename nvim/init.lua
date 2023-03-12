@@ -5,6 +5,8 @@ local auto_cmd = vim.api.nvim_create_autocmd
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+vim.o.splitright = true
+vim.o.splitbelow = true
 vim.o.mouse = "a"
 vim.o.termguicolors = true
 vim.o.cursorline = true
@@ -30,10 +32,11 @@ vim.wo.signcolumn = "yes"
 vim.wo.number = true
 vim.wo.relativenumber = true
 
-vim.o.updatetime = 450
+vim.o.updatetime = 1500
 vim.o.timeout = true
 vim.o.timeoutlen = 420
 vim.o.completeopt = "menuone,noselect"
+vim.o.whichwrap = "b,s,<,>,h,l,[,]"
 
 vim.cmd([[
 	cab Q q!
@@ -69,6 +72,7 @@ vim.cmd([[
 
 	au BufWinEnter ~/code/scripts/* if &ft == "" | setlocal ft=sh | endif
 	au BufWritePost * if &ft == "sh" | silent! execute "!chmod +x %" | endif
+
 ]])
 
 auto_cmd({ "BufNewFile", "BufRead" }, {
@@ -182,13 +186,14 @@ require("lazy").setup({
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
+			"folke/neodev.nvim",
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
-			"folke/neodev.nvim",
 			"jose-elias-alvarez/null-ls.nvim",
-			{ "j-hui/fidget.nvim", opts = {} },
 		},
 		config = function()
+			require("neodev").setup()
+
 			vim.lsp.handlers["textDocument/publishDiagnostics"] =
 				vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
 					virtual_text = false,
@@ -202,6 +207,9 @@ require("lazy").setup({
 				html = {},
 				lua_ls = {
 					Lua = {
+						completion = {
+							callSnippet = "Replace",
+						},
 						workspace = { checkThirdParty = false },
 						telemetry = { enable = false },
 					},
@@ -241,7 +249,6 @@ require("lazy").setup({
 				lineFoldingOnly = true,
 			}
 
-			require("neodev").setup()
 			require("mason").setup()
 			local mason_lspconfig = require("mason-lspconfig")
 			mason_lspconfig.setup({ ensure_installed = vim.tbl_keys(servers) })
@@ -414,6 +421,21 @@ require("lazy").setup({
 
 	-- Useful plugins
 	{
+		"phaazon/hop.nvim",
+		config = function()
+			local hop = require("hop")
+			local directions = require("hop.hint").HintDirection
+
+			map("", "ww", hop.hint_words)
+			map("", "f", function() hop.hint_char1({ direction = directions.AFTER_CURSOR }) end)
+			map("", "F", function() hop.hint_char1({ direction = directions.BEFORE_CURSOR }) end)
+			map("", "t", function() hop.hint_char1({ direction = directions.AFTER_CURSOR, hint_offset = -1 }) end)
+			map("", "T", function() hop.hint_char1({ direction = directions.BEFORE_CURSOR, hint_offset = 1 }) end)
+
+			hop.setup()
+		end,
+	},
+	{
 		"echasnovski/mini.comment",
 		config = function()
 			require("mini.comment").setup()
@@ -423,23 +445,6 @@ require("lazy").setup({
 		"echasnovski/mini.indentscope",
 		config = function()
 			require("mini.indentscope").setup()
-		end,
-	},
-	{
-		"echasnovski/mini.jump",
-		config = function()
-			require("mini.jump").setup()
-		end,
-	},
-	{
-		"echasnovski/mini.jump2d",
-		config = function()
-			require("mini.jump2d").setup({
-				mappings = {
-					start_jumpings = "",
-				},
-			})
-			map({ "n", "v" }, "<CR>", ':lua MiniJump2d.start(require("mini.jump2d").builtin_opts.single_character)<CR>')
 		end,
 	},
 	{
@@ -480,6 +485,10 @@ require("lazy").setup({
 })
 
 -- Key mappings
+vim.cmd([[
+  inoremap <C-j> <ESC>o
+]])
+
 map({ "n" }, "<leader>cd>", ":cd %:p:h<CR>:pwd<CR>", { desc = "Change directory" })
 map({ "n" }, "<leader>l", ":nohl<CR>", { desc = "Clear highlights" })
 map({ "x" }, "<leader>l", ":nohl<CR>", { desc = "Clear highlights" })
@@ -490,10 +499,11 @@ map("n", "j", 'v:count == 0 ? "gj" : "j"', { expr = true, silent = true, desc = 
 -- diagnostic
 map("n", "g[", vim.diagnostic.goto_prev, { desc = "Prev diagnostic" })
 map("n", "g]", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+
+map("n", "<leader>q", vim.diagnostic.setloclist, { desc = "List diagnostics in quickfixlist" })
 map("n", "<leader>e", function()
 	vim.diagnostic.open_float(nil, { focus = false })
 end, { desc = "Hover diagnostic under cursor" })
-map("n", "<leader>q", vim.diagnostic.setloclist, { desc = "List diagnostics in quickfixlist" })
 
 map("v", "<M-j>", ":m '>+1<CR>gv=gv", { desc = "Move line up" })
 map("v", "<M-k>", ":m '<-2<CR>gv=gv", { desc = "Move line down" })
@@ -504,3 +514,9 @@ map(
 	":<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>",
 	{ desc = "Quickly create & edit macro" }
 )
+
+-- Highlighting
+vim.cmd([[
+	hi LineNr guifg=lightgray
+	hi CursorLineNr guifg=darkgray
+]])

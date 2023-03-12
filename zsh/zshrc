@@ -76,11 +76,10 @@ alias to='tmuxinator o'
 alias ts='tmuxinator s'
 
 # Listing
-alias ls="gls --width 42 --group-directories-first --color=auto"
-alias lsr="gls -R" # list recursive
-alias lsrf="gls -Rohg" # list recursive full details
-alias ll="gls -lh --group-directories-first --color=auto"
 alias la="gls -lAh --group-directories-first --color=auto"
+alias ls="gls --width 80 --group-directories-first --color=auto"
+alias lsr="ls -R" # list recursive
+alias lsrf="ls -Rohg" # list recursive full details
 alias cpwd="pwd | tr -d '\n' | pbcopy && echo 'pwd copied to clipboard'"
 
 # Tree
