@@ -123,6 +123,21 @@ require("lazy").setup({
 
 	-- UI
 	{
+		"luukvbaal/statuscol.nvim",
+		config = function()
+			local builtin = require("statuscol.builtin")
+			require("statuscol").setup({
+				relculright = true,
+				segments = {
+					{ text = { builtin.foldfunc }, click = "v:lua.ScFa" },
+					{ text = { "%s" }, click = "v:lua.ScSa" },
+					{ text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa" },
+				},
+			})
+		end,
+	},
+	{
+		-- "jaredgorski/Mies.vim",
 		"rose-pine/neovim",
 		lazy = false, -- make sure we load this during startup if it is your main colorscheme
 		priority = 1000,
@@ -426,11 +441,19 @@ require("lazy").setup({
 			local hop = require("hop")
 			local directions = require("hop.hint").HintDirection
 
-			map("", "ww", hop.hint_words)
-			map("", "f", function() hop.hint_char1({ direction = directions.AFTER_CURSOR }) end)
-			map("", "F", function() hop.hint_char1({ direction = directions.BEFORE_CURSOR }) end)
-			map("", "t", function() hop.hint_char1({ direction = directions.AFTER_CURSOR, hint_offset = -1 }) end)
-			map("", "T", function() hop.hint_char1({ direction = directions.BEFORE_CURSOR, hint_offset = 1 }) end)
+			map("", "\\w", hop.hint_words)
+			map("", "\\f", function()
+				hop.hint_char1({ direction = directions.AFTER_CURSOR })
+			end)
+			map("", "\\F", function()
+				hop.hint_char1({ direction = directions.BEFORE_CURSOR })
+			end)
+			map("", "\\t", function()
+				hop.hint_char1({ direction = directions.AFTER_CURSOR, hint_offset = -1 })
+			end)
+			map("", "\\T", function()
+				hop.hint_char1({ direction = directions.BEFORE_CURSOR, hint_offset = 1 })
+			end)
 
 			hop.setup()
 		end,
