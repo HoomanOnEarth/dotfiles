@@ -72,6 +72,27 @@ vim.cmd([[
 	au BufWinEnter ~/code/scripts/* if &ft == "" | setlocal ft=sh | endif
 	au BufWritePost * if &ft == "sh" | silent! execute "!chmod +x %" | endif
 
+
+	augroup SmartQfList
+	  function RefreshQfList()
+		let win_info = getwininfo()
+		let quickfix_open = 0
+
+		for info in win_info
+		  if info.quickfix
+			let quickfix_open = 1
+			break
+		  endif
+		endfor
+
+		if quickfix_open == 1
+			lua vim.diagnostic.setqflist()
+		endif
+      endfunction
+
+	  au!
+	  au InsertLeave,BufWritePost * call RefreshQfList()
+	augroup END
 ]])
 
 auto_cmd({ "BufNewFile", "BufRead" }, {
@@ -423,6 +444,7 @@ require("lazy").setup({
 			map("n", "<leader>sf", ts.live_grep, { desc = "Live search" })
 			map("n", "<leader>sw", ts.grep_string, { desc = "Search" })
 			map("n", "<leader>sd", ts.diagnostics, { desc = "List diagnostics" })
+			map("n", "<leader>qf", vim.diagnostic.setqflist, { desc = "List diagnostics" })
 			map("n", "<C-f>", ts.current_buffer_fuzzy_find, { desc = "Current file fuzzy search" })
 			map("n", "<C-g>", require("api.telescope").change_directory, { desc = "Change directory" })
 		end,
