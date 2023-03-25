@@ -12,11 +12,11 @@ window:
   option_as_alt: OnlyLeft
 
 font:
-  size: 18
+  size: 20
   offset:
-    y: 12
+    y: 10
   glyph_offset:
-    y: 6
+    y: 5
 
   normal:
     family: JetBrainsMono Nerd Font

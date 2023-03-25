@@ -17,7 +17,6 @@ vim.o.hlsearch = true
 vim.o.incsearch = true
 vim.o.wrap = false
 vim.o.statusline = 2
-vim.o.synmaxcol = 200
 vim.o.complete = vim.o.complete:gsub("ti", "")
 
 vim.o.tabstop = 4 -- number of visual spaces per TAB
@@ -32,9 +31,9 @@ vim.wo.signcolumn = "yes"
 vim.wo.number = true
 vim.wo.relativenumber = true
 
-vim.o.updatetime = 1500
 vim.o.timeout = true
-vim.o.timeoutlen = 420
+vim.o.timeoutlen = 200
+vim.o.updatetime = 1000
 vim.o.completeopt = "menuone,noselect"
 vim.o.whichwrap = "b,s,<,>,h,l,[,]"
 
@@ -61,7 +60,7 @@ vim.cmd([[
 
 	augroup CursorHoldHints
 		au!			
-		au CursorHold * lua vim.diagnostic.open_float()
+		au CursorHold * lua vim.diagnostic.open_float({ scope = "cursor" })
 		au CursorMoved,CursorMovedI * lua vim.lsp.buf.clear_references()
 	augroup END
 
@@ -162,10 +161,10 @@ require("lazy").setup({
 			vim.o.foldenable = true
 
 			map("n", "K", require("ufo").peekFoldedLinesUnderCursor, { noremap = true })
-			map(all_modes, "zR", require("ufo").openAllFolds)
-			map(all_modes, "zM", require("ufo").closeAllFolds)
-			map(all_modes, "zr", require("ufo").openFoldsExceptKinds)
-			map(all_modes, "zm", function()
+			map(all_modes, "zr", require("ufo").openAllFolds)
+			map(all_modes, "zm", require("ufo").closeAllFolds)
+			map(all_modes, "zR", require("ufo").openFoldsExceptKinds)
+			map(all_modes, "zM", function()
 				vim.ui.input({
 					prompt = "Fold to level: ",
 					default = 0,
@@ -212,7 +211,7 @@ require("lazy").setup({
 			vim.lsp.handlers["textDocument/publishDiagnostics"] =
 				vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
 					virtual_text = false,
-					underline = true,
+					underline = false,
 					signs = true,
 				})
 
@@ -231,6 +230,19 @@ require("lazy").setup({
 				},
 			}
 
+			-- setup to use with diagnostics
+			function SignatureFixed()
+				vim.api.nvim_command("set eventignore=CursorHold")
+				vim.lsp.buf.signature_help()
+				vim.api.nvim_command('autocmd CursorMoved <buffer> ++once set eventignore=""')
+			end
+
+			function HoverFixed()
+				vim.api.nvim_command("set eventignore=CursorHold")
+				vim.lsp.buf.hover()
+				vim.api.nvim_command('autocmd CursorMoved <buffer> ++once set eventignore=""')
+			end
+
 			local function on_attach(client, bufnr)
 				-- setters
 				local buf_set_option = function(...)
@@ -241,8 +253,8 @@ require("lazy").setup({
 				client.server_capabilities.semanticTokensProvider = nil
 
 				map("n", "<leader>rr", ":LspRestart<CR>", { desc = "Restart LSP servers" })
-				map("n", "<C-k>", vim.lsp.buf.signature_help, { desc = "LSP hover" })
-				map("n", "K", vim.lsp.buf.hover, { desc = "LSP hover" })
+				map("n", "<C-k>", SignatureFixed, { desc = "LSP hover" })
+				map("n", "K", HoverFixed, { desc = "LSP hover" })
 				map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "LSP rename" })
 				map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP code actions" })
 
@@ -289,9 +301,6 @@ require("lazy").setup({
 				on_attach = on_attach,
 				sources = {
 					null_ls.builtins.formatting.stylua,
-					null_ls.builtins.formatting.prettier.with({
-						extra_args = { "--no-semi", "--single-quote" },
-					}),
 				},
 			})
 
@@ -441,7 +450,7 @@ require("lazy").setup({
 			local hop = require("hop")
 			local directions = require("hop.hint").HintDirection
 
-			map("", "\\w", hop.hint_words)
+			map("", "gw", hop.hint_words)
 			map("", "\\f", function()
 				hop.hint_char1({ direction = directions.AFTER_CURSOR })
 			end)
@@ -510,6 +519,8 @@ require("lazy").setup({
 -- Key mappings
 vim.cmd([[
   inoremap <C-j> <ESC>o
+  inoremap <C-c> <ESC>
+  cnoremap <C-c> <ESC>
 ]])
 
 map({ "n" }, "<leader>cd>", ":cd %:p:h<CR>:pwd<CR>", { desc = "Change directory" })
