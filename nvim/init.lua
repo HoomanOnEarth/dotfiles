@@ -1,100 +1,117 @@
-local all_modes = { "n", "v", "x" }
-local map = vim.keymap.set
+-- essentials
+vim.cmd [[
+colorscheme quiet
+
+let g:mapleader = " "
+let g:maplocalleader = " "
+
+cabbrev Q q!
+cabbrev Qa qa!
+cabbrev W w!
+cabbrev Wq wq!
+cabbrev Wqa wqa!
+
+noremap   <silent> <leader>l :nohl<CR>
+noremap   <silent> <C-c> <ESC>
+inoremap  <silent> <C-j> <ESC>o
+inoremap  <silent> <C-k> <ESC>O
+nnoremap  <silent> <leader>cd :cd %:p:h<CR>:pwd<CR>
+
+" moving line
+nnoremap <M-j> :m .+1<CR>==
+nnoremap <M-k> :m .-2<CR>==
+inoremap <M-j> <Esc>:m .+1<CR>==gi
+inoremap <M-k> <Esc>:m .-2<CR>==gi
+vnoremap <M-j> :m '>+1<CR>gv=gv
+vnoremap <M-k> :m '<-2<CR>gv=gv
+
+" diagnostics
+nnoremap g[ :lua vim.diagnostic.goto_prev()<CR>
+nnoremap g] :lua vim.diagnostic.goto_next()<CR>
+nnoremap <leader>q :lua vim.diagnostic.setloclist()<CR>
+nnoremap <leader>e :lua vim.diagnostic.open_float(nil, { focus = false })<CR>
+]]
+
+-- options 
+vim.cmd [[
+set mouse=a
+set number
+set relativenumber
+set termguicolors
+set clipboard=unnamedplus
+set statusline="2"
+set signcolumn=yes
+
+set nowrap
+set splitright
+set splitbelow
+
+set autoindent
+set expandtab
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+set complete-=ti
+
+set incsearch
+set ignorecase
+set smartcase
+
+set whichwrap="b,s,<,>,h,l,[,]"
+
+augroup Utilities
+  autocmd! BufEnter * set formatoptions-=cro
+augroup END
+
+augroup CursorHoldHints
+  autocmd! CursorHold * lua vim.diagnostic.open_float({ scope = "cursor" })
+  autocmd! CursorMoved,CursorMovedI * lua vim.lsp.buf.clear_references()
+augroup END
+
+" auto chmod my scripts
+autocmd! BufWinEnter ~/code/scripts/* if &ft == "" | setlocal ft=sh | endif
+autocmd! BufWritePost * if &ft == "sh" | silent! execute "!chmod +x %" | endif
+
+" auto refresh quickfix: InsertLeave, BufWritePost
+augroup SmartQfList
+  function RefreshQuickfixList()
+    let win_info = getwininfo()
+    let quickfix_open = 0
+
+    for info in win_info
+      if info.quickfix
+        let quickfix_open = 1
+        break
+      endif
+    endfor
+
+    if quickfix_open == 1
+      lua vim.diagnostic.setqflist()
+    endif
+  endfunction
+
+  autocmd! InsertLeave,BufWritePost * call RefreshQuickfixList()
+augroup END
+]]
+
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+      "git",
+      "clone",
+      "--filter=blob:none",
+      "https://github.com/folke/lazy.nvim.git",
+      "--branch=stable", -- latest stable release
+      lazypath,
+    })
+end
+vim.opt.rtp:prepend(lazypath)
+
 local auto_cmd = vim.api.nvim_create_autocmd
+local map = vim.keymap.set
+local all_modes = { "n", "v", "x" }
 
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-
-vim.o.splitright = true
-vim.o.splitbelow = true
-vim.o.mouse = "a"
-vim.o.termguicolors = true
-vim.o.cursorline = true
-vim.o.clipboard = "unnamedplus"
-vim.o.undofile = true
-vim.o.breakindent = true
-vim.o.hlsearch = true
-vim.o.incsearch = true
-vim.o.wrap = false
-vim.o.statusline = 2
-vim.o.complete = vim.o.complete:gsub("ti", "")
-
-vim.o.tabstop = 4 -- number of visual spaces per TAB
-vim.o.softtabstop = 4 -- number of spaces in tab when editing
-vim.o.shiftwidth = 4 -- number of spaces to use for autoindent
-vim.o.expandtab = true -- tabs are space
-vim.o.autoindent = true
-
-vim.o.ignorecase = true
-vim.o.smartcase = true
-vim.wo.signcolumn = "yes"
-vim.wo.number = true
-vim.wo.relativenumber = true
-
-vim.o.timeout = true
-vim.o.timeoutlen = 200
-vim.o.updatetime = 1000
-vim.o.completeopt = "menuone,noselect"
-vim.o.whichwrap = "b,s,<,>,h,l,[,]"
-
-vim.cmd([[
-	cab Q q!
-	cab Qa qa!
-	cab W w!
-	cab Wq wq!
-
-	nnoremap <C-s> :w!<CR>
-	inoremap jj <ESC>
-
-	augroup SmartCursorLine
-		au!
-		au InsertLeave,WinEnter * set cursorline
-		au InsertEnter,WinLeave * set nocursorline
-	augroup END
-
-	augroup SmartNumbers
-		au!
-		au FocusGained,InsertLeave,BufEnter &buftype ==# "terminal"  set relativenumber
-		au FocusLost,InsertEnter,BufLeave &buftype ==# "terminal" set norelativenumber
-	augroup END
-
-	augroup CursorHoldHints
-		au!			
-		au CursorHold * lua vim.diagnostic.open_float({ scope = "cursor" })
-		au CursorMoved,CursorMovedI * lua vim.lsp.buf.clear_references()
-	augroup END
-
-	augroup Utilities
-		au!
-		au BufEnter * set formatoptions-=cro
-	augroup END
-
-	au BufWinEnter ~/code/scripts/* if &ft == "" | setlocal ft=sh | endif
-	au BufWritePost * if &ft == "sh" | silent! execute "!chmod +x %" | endif
-
-
-	augroup SmartQfList
-	  function RefreshQfList()
-		let win_info = getwininfo()
-		let quickfix_open = 0
-
-		for info in win_info
-		  if info.quickfix
-			let quickfix_open = 1
-			break
-		  endif
-		endfor
-
-		if quickfix_open == 1
-			lua vim.diagnostic.setqflist()
-		endif
-      endfunction
-
-	  au!
-	  au InsertLeave,BufWritePost * call RefreshQfList()
-	augroup END
-]])
-
+-- HTML CSS JS basic setup 
 auto_cmd({ "BufNewFile", "BufRead" }, {
 	pattern = { "*.js", "*.html", "*.css" },
 	callback = function()
@@ -107,96 +124,95 @@ auto_cmd({ "BufNewFile", "BufRead" }, {
 	end,
 })
 
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-	vim.fn.system({
-		"git",
-		"clone",
-		"--filter=blob:none",
-		"https://github.com/folke/lazy.nvim.git",
-		"--branch=stable", -- latest stable release
-		lazypath,
-	})
-end
-vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-	-- Tmux plugins
-	{
-		"christoomey/vim-tmux-navigator",
-		init = function()
-			vim.cmd([[
-				let g:tmux_navigator_disable_when_zoomed = 1
-				let g:tmux_navigator_no_mappings = 1
-			]])
-		end,
-		config = function()
-			vim.cmd([[
-				nnoremap <silent> <C-h> <Cmd>TmuxNavigateLeft<CR>
-				nnoremap <silent> <C-j> <Cmd>TmuxNavigateDown<CR>
-				nnoremap <silent> <C-k> <Cmd>TmuxNavigateUp<CR>
-				nnoremap <silent> <C-l> <Cmd>TmuxNavigateRight<CR>
-				nnoremap <silent> <C-\> <Cmd>TmuxNavigatePrevious<CR>
-			]])
-		end,
-	},
+  {
+    "christoomey/vim-tmux-navigator",
+    init = function()
+      vim.cmd [[
+      let g:tmux_navigator_disable_when_zoomed = 1
+      let g:tmux_navigator_no_mappings = 1
+      ]]
+    end,
+    config = function()
+      vim.cmd [[
+      nnoremap <silent> <C-h> :TmuxNavigateLeft<CR>
+      nnoremap <silent> <C-j> :TmuxNavigateDown<CR>
+      nnoremap <silent> <C-k> :TmuxNavigateUp<CR>
+      nnoremap <silent> <C-l> :TmuxNavigateRight<CR>
+      nnoremap <silent> <C-\> :TmuxNavigatePrevious<CR>
+      ]]
+    end,
+  },
+  {
+    "rose-pine/neovim",
+    lazy = false,
+    priority = 1000,
+    dependencies = { "kyazdani42/nvim-web-devicons" },
+    config = function()
+      vim.o.background = "light"
+      vim.cmd("colorscheme rose-pine")
+    end,
+  },
 
-	-- UI
-	{
-		"luukvbaal/statuscol.nvim",
+  -- Finder
+  {
+		"nvim-telescope/telescope.nvim",
+		version = "*",
+		dependencies = { "nvim-lua/plenary.nvim" },
 		config = function()
-			local builtin = require("statuscol.builtin")
-			require("statuscol").setup({
-				relculright = true,
-				segments = {
-					{ text = { builtin.foldfunc }, click = "v:lua.ScFa" },
-					{ text = { "%s" }, click = "v:lua.ScSa" },
-					{ text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa" },
-				},
+			local action_layout = require("telescope.actions.layout")
+			local previewers = require("telescope.previewers")
+			local themes = require("telescope.themes")
+			local ivy_theme_config = { sorting_strategy = "ascending", prompt_position = "bottom" }
+			local default_opts = themes.get_ivy(ivy_theme_config)
+
+			require("telescope").setup({
+				defaults = vim.tbl_deep_extend("force", {
+					preview = {
+						hide_on_startup = true,
+					},
+					mappings = {
+						i = {
+							["<C-u>"] = false,
+							["<C-d>"] = false,
+							["<C-x>"] = false,
+							["<M-p>"] = action_layout.toggle_preview,
+						},
+					},
+					buffer_previewer_maker = function(filepath, bufnr, opts)
+						opts = opts or {}
+						filepath = vim.fn.expand(filepath)
+						vim.loop.fs_stat(filepath, function(_, stat)
+							if not stat then
+								return
+							end
+							if stat.size > 100000 then
+								return
+							else
+								previewers.buffer_previewer_maker(filepath, bufnr, opts)
+							end
+						end)
+					end,
+				}, default_opts),
 			})
+
+			local ts = require("telescope.builtin")
+			map("n", "<leader>?", ts.oldfiles, { desc = "Recent files" })
+			map("n", "<leader><space>", ts.buffers, { desc = "Recent buffers" })
+			map("n", "<C-p>", ts.find_files, { desc = "Browse files" })
+			map("n", "<leader>sh", ts.help_tags, { desc = "Search helps" })
+			map("n", "<leader>sf", ts.live_grep, { desc = "Live search" })
+			map("n", "<leader>sw", ts.grep_string, { desc = "Search" })
+			map("n", "<leader>sd", ts.diagnostics, { desc = "List diagnostics" })
+			map("n", "<leader>qf", vim.diagnostic.setqflist, { desc = "List diagnostics" })
+			map("n", "<C-f>", ts.current_buffer_fuzzy_find, { desc = "Current file fuzzy search" })
+			map("n", "<C-g>", require("api.telescope").change_directory, { desc = "Change directory" })
 		end,
 	},
-	{
-		-- "jaredgorski/Mies.vim",
-		"rose-pine/neovim",
-		lazy = false, -- make sure we load this during startup if it is your main colorscheme
-		priority = 1000,
-		dependencies = { "kyazdani42/nvim-web-devicons" },
-		config = function()
-			vim.o.background = "light"
-			vim.cmd("colorscheme rose-pine")
-		end,
-	},
 
-	-- Syntax
-	"sheerun/vim-polyglot",
-
-	-- Code folds
-	{
-		"kevinhwang91/nvim-ufo",
-		dependencies = { "kevinhwang91/promise-async" },
-		config = function()
-			vim.o.foldcolumn = "1"
-			vim.o.foldlevel = 99
-			vim.o.foldlevelstart = 99
-			vim.o.foldenable = true
-
-			map("n", "K", require("ufo").peekFoldedLinesUnderCursor, { noremap = true })
-			map(all_modes, "zr", require("ufo").openAllFolds)
-			map(all_modes, "zm", require("ufo").closeAllFolds)
-			map(all_modes, "zR", require("ufo").openFoldsExceptKinds)
-			map(all_modes, "zM", function()
-				vim.ui.input({
-					prompt = "Fold to level: ",
-					default = 0,
-				}, function(level)
-					require("ufo").closeFoldsWith(tonumber(level))
-				end)
-			end)
-
-			require("ufo").setup()
-		end,
-	},
+  -- Syntax
+  { "sheerun/vim-polyglot" },
 
 	-- Undotree
 	{
@@ -214,126 +230,6 @@ require("lazy").setup({
 			]])
 
 			map("n", "<leader>u", ":UndotreeToggle<CR>", { noremap = true })
-		end,
-	},
-
-	-- LSP Configuration & Plugins
-	{
-		"neovim/nvim-lspconfig",
-		dependencies = {
-			"folke/neodev.nvim",
-			"williamboman/mason.nvim",
-			"williamboman/mason-lspconfig.nvim",
-			"jose-elias-alvarez/null-ls.nvim",
-		},
-		config = function()
-			require("neodev").setup()
-
-			vim.lsp.handlers["textDocument/publishDiagnostics"] =
-				vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-					virtual_text = false,
-					underline = true,
-					signs = true,
-				})
-
-			local servers = {
-				rust_analyzer = {},
-				tsserver = {},
-				html = {},
-				lua_ls = {
-					Lua = {
-						completion = {
-							callSnippet = "Replace",
-						},
-						workspace = { checkThirdParty = false },
-						telemetry = { enable = false },
-					},
-				},
-			}
-
-			-- setup to use with diagnostics
-			function SignatureFixed()
-				vim.api.nvim_command("set eventignore=CursorHold")
-				vim.lsp.buf.signature_help()
-				vim.api.nvim_command('autocmd CursorMoved <buffer> ++once set eventignore=""')
-			end
-
-			function HoverFixed()
-				vim.api.nvim_command("set eventignore=CursorHold")
-				vim.lsp.buf.hover()
-				vim.api.nvim_command('autocmd CursorMoved <buffer> ++once set eventignore=""')
-			end
-
-			local function on_attach(client, bufnr)
-				-- setters
-				local buf_set_option = function(...)
-					vim.api.nvim_buf_set_option(bufnr, ...)
-				end
-
-				-- disable LSP highlight
-				client.server_capabilities.semanticTokensProvider = nil
-
-				map("n", "<leader>rr", ":LspRestart<CR>", { desc = "Restart LSP servers" })
-				map("n", "<C-k>", SignatureFixed, { desc = "LSP hover" })
-				map("n", "K", HoverFixed, { desc = "LSP hover" })
-				map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "LSP rename" })
-				map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP code actions" })
-
-				local ts = require("telescope.builtin")
-				map("n", "gd", ts.lsp_definitions, { desc = "Goto definitions" })
-				map("n", "gr", ts.lsp_references, { desc = "Goto references" })
-				map("n", "gI", ts.lsp_implementations, { desc = "Goto implementations" })
-				map("n", "gT", ts.lsp_type_definitions, { desc = "Goto type definitions" })
-				map("n", "gs", ts.lsp_document_symbols, { desc = "List document symbols" })
-				map("n", "gq", vim.lsp.buf.format, { desc = "LSP format" })
-
-				buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
-			end
-
-			local capabilities = vim.lsp.protocol.make_client_capabilities()
-			capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
-			capabilities.textDocument.foldingRange = {
-				dynamicRegistration = false,
-				lineFoldingOnly = true,
-			}
-
-			require("mason").setup()
-			local mason_lspconfig = require("mason-lspconfig")
-			mason_lspconfig.setup({ ensure_installed = vim.tbl_keys(servers) })
-			mason_lspconfig.setup_handlers({
-				function(server_name)
-					local opts = {
-						on_attach = on_attach,
-						capabilities = capabilities,
-						settings = servers[server_name],
-						init_options = {
-							onlyAnalyzeProjectsWithOpenFiles = true,
-							suggestFromUnimportedLibraries = false,
-							closingLabels = true,
-						},
-					}
-
-					require("lspconfig")[server_name].setup(opts)
-				end,
-			})
-
-			local null_ls = require("null-ls")
-			null_ls.setup({
-				on_attach = on_attach,
-				sources = {
-					null_ls.builtins.formatting.stylua,
-				},
-			})
-
-			null_ls.register({
-				name = "svg",
-				filetypes = { "svg" },
-				sources = {
-					null_ls.builtins.formatting.prettier.with({
-						extra_args = { "--no-semi", "--single-quote", "--parser", "html" },
-					}),
-				},
-			})
 		end,
 	},
 
@@ -395,62 +291,111 @@ require("lazy").setup({
 		end,
 	},
 
-	-- Fuzzy Finder (files, lsp, etc)
-	{
-		"nvim-telescope/telescope.nvim",
-		version = "*",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		config = function()
-			local action_layout = require("telescope.actions.layout")
-			local previewers = require("telescope.previewers")
-			local themes = require("telescope.themes")
-			local ivy_theme_config = { sorting_strategy = "ascending", prompt_position = "bottom" }
-			local default_opts = themes.get_ivy(ivy_theme_config)
+  -- LSP
+  {
+    "neovim/nvim-lspconfig",
+    dependencies = {
+      "folke/neodev.nvim",
+			"williamboman/mason.nvim",
+			"williamboman/mason-lspconfig.nvim",
+    },
+    config = function()
+      require("neodev").setup()
+      require("mason").setup()
 
-			require("telescope").setup({
-				defaults = vim.tbl_deep_extend("force", {
-					preview = {
-						hide_on_startup = true,
-					},
-					mappings = {
-						i = {
-							["<C-u>"] = false,
-							["<C-d>"] = false,
-							["<C-x>"] = false,
-							["<M-p>"] = action_layout.toggle_preview,
+			vim.lsp.handlers["textDocument/publishDiagnostics"] =
+				vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+					virtual_text = false,
+					underline = true,
+					signs = true,
+				})
+
+			local servers = {
+        tsserver = {},
+				lua_ls = {
+					Lua = {
+						completion = {
+							callSnippet = "Replace",
 						},
+						workspace = { checkThirdParty = false },
+						telemetry = { enable = false },
 					},
-					buffer_previewer_maker = function(filepath, bufnr, opts)
-						opts = opts or {}
-						filepath = vim.fn.expand(filepath)
-						vim.loop.fs_stat(filepath, function(_, stat)
-							if not stat then
-								return
-							end
-							if stat.size > 100000 then
-								return
-							else
-								previewers.buffer_previewer_maker(filepath, bufnr, opts)
-							end
-						end)
-					end,
-				}, default_opts),
+				},
+			}
+
+			-- setup to use with diagnostics
+			function SignatureFixed()
+				vim.api.nvim_command("set eventignore=CursorHold")
+				vim.lsp.buf.signature_help()
+				vim.api.nvim_command('autocmd CursorMoved <buffer> ++once set eventignore=""')
+			end
+
+			function HoverFixed()
+				vim.api.nvim_command("set eventignore=CursorHold")
+				vim.lsp.buf.hover()
+				vim.api.nvim_command('autocmd CursorMoved <buffer> ++once set eventignore=""')
+			end
+
+			local function on_attach(client, bufnr)
+        -- helpers
+				local buf_set_option = function(...)
+					vim.api.nvim_buf_set_option(bufnr, ...)
+				end
+
+				buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
+
+				-- disable LSP highlight
+				client.server_capabilities.semanticTokensProvider = nil
+
+				map("n", "<leader>rr", ":LspRestart<CR>", { desc = "Restart LSP servers" })
+				map("n", "<C-k>", SignatureFixed, { desc = "LSP hover" })
+				map("n", "K", HoverFixed, { desc = "LSP hover" })
+				map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "LSP rename" })
+				map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP code actions" })
+
+				local telescope_builtin = require("telescope.builtin")
+				map("n", "gd", telescope_builtin.lsp_definitions, { desc = "Goto definitions" })
+				map("n", "gr", telescope_builtin.lsp_references, { desc = "Goto references" })
+				map("n", "gI", telescope_builtin.lsp_implementations, { desc = "Goto implementations" })
+				map("n", "gT", telescope_builtin.lsp_type_definitions, { desc = "Goto type definitions" })
+				map("n", "gs", telescope_builtin.lsp_document_symbols, { desc = "List document symbols" })
+				map("n", "gq", vim.lsp.buf.format, { desc = "LSP format" })
+      end
+
+			local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+			local mason_lspconfig = require("mason-lspconfig")
+			mason_lspconfig.setup({ ensure_installed = vim.tbl_keys(servers) })
+			mason_lspconfig.setup_handlers({
+				function(server_name)
+					local opts = {
+						on_attach = on_attach,
+						capabilities = capabilities,
+						settings = servers[server_name],
+						init_options = {
+							onlyAnalyzeProjectsWithOpenFiles = true,
+							suggestFromUnimportedLibraries = false,
+							closingLabels = true,
+						},
+					}
+
+					require("lspconfig")[server_name].setup(opts)
+				end,
 			})
-			local ts = require("telescope.builtin")
-			map("n", "<leader>?", ts.oldfiles, { desc = "Recent files" })
-			map("n", "<leader><space>", ts.buffers, { desc = "Recent buffers" })
-			map("n", "<C-p>", ts.find_files, { desc = "Browse files" })
-			map("n", "<leader>sh", ts.help_tags, { desc = "Search helps" })
-			map("n", "<leader>sf", ts.live_grep, { desc = "Live search" })
-			map("n", "<leader>sw", ts.grep_string, { desc = "Search" })
-			map("n", "<leader>sd", ts.diagnostics, { desc = "List diagnostics" })
-			map("n", "<leader>qf", vim.diagnostic.setqflist, { desc = "List diagnostics" })
-			map("n", "<C-f>", ts.current_buffer_fuzzy_find, { desc = "Current file fuzzy search" })
-			map("n", "<C-g>", require("api.telescope").change_directory, { desc = "Change directory" })
+    end
+  },
+
+  -- Miscs
+	{
+		"phaazon/hop.nvim",
+		config = function()
+			local hop = require("hop")
+      hop.setup()
+
+			map("", "gw", hop.hint_words)
 		end,
 	},
 
-	-- Adds git releated signs to the gutter, as well as utilities for managing changes
 	{
 		"lewis6991/gitsigns.nvim",
 		opts = {
@@ -465,50 +410,21 @@ require("lazy").setup({
 		},
 	},
 
-	-- Useful plugins
-	{
-		"phaazon/hop.nvim",
-		config = function()
-			local hop = require("hop")
-			local directions = require("hop.hint").HintDirection
-
-			map("", "gw", hop.hint_words)
-			map("", "\\f", function()
-				hop.hint_char1({ direction = directions.AFTER_CURSOR })
-			end)
-			map("", "\\F", function()
-				hop.hint_char1({ direction = directions.BEFORE_CURSOR })
-			end)
-			map("", "\\t", function()
-				hop.hint_char1({ direction = directions.AFTER_CURSOR, hint_offset = -1 })
-			end)
-			map("", "\\T", function()
-				hop.hint_char1({ direction = directions.BEFORE_CURSOR, hint_offset = 1 })
-			end)
-
-			hop.setup()
-		end,
-	},
 	{
 		"echasnovski/mini.comment",
 		config = function()
 			require("mini.comment").setup()
 		end,
 	},
+
 	{
 		"echasnovski/mini.indentscope",
 		config = function()
 			require("mini.indentscope").setup()
 		end,
 	},
-	{
-		"echasnovski/mini.misc",
-		config = function()
-			require("mini.misc").setup()
-			require("mini.misc").setup_restore_cursor()
-		end,
-	},
-	{
+
+  {
 		"lalitmee/browse.nvim",
 		config = function()
 			local browse = require("browse")
@@ -532,47 +448,5 @@ require("lazy").setup({
 			end, {})
 		end,
 	},
-}, {
-	install = {
-		colorscheme = { "rose-pine" },
-	},
-})
 
--- Key mappings
-vim.cmd([[
-  inoremap <C-j> <ESC>o
-  inoremap <C-c> <ESC>
-  cnoremap <C-c> <ESC>
-]])
-
-map({ "n" }, "<leader>cd>", ":cd %:p:h<CR>:pwd<CR>", { desc = "Change directory" })
-map({ "n" }, "<leader>l", ":nohl<CR>", { desc = "Clear highlights" })
-map({ "x" }, "<leader>l", ":nohl<CR>", { desc = "Clear highlights" })
-
-map("n", "k", 'v:count == 0 ? "gk" : "k"', { expr = true, silent = true, desc = "Better moving between lines" })
-map("n", "j", 'v:count == 0 ? "gj" : "j"', { expr = true, silent = true, desc = "Better moving between lines" })
-
--- diagnostic
-map("n", "g[", vim.diagnostic.goto_prev, { desc = "Prev diagnostic" })
-map("n", "g]", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
-
-map("n", "<leader>q", vim.diagnostic.setloclist, { desc = "List diagnostics in quickfixlist" })
-map("n", "<leader>e", function()
-	vim.diagnostic.open_float(nil, { focus = false })
-end, { desc = "Hover diagnostic under cursor" })
-
-map("v", "<M-j>", ":m '>+1<CR>gv=gv", { desc = "Move line up" })
-map("v", "<M-k>", ":m '<-2<CR>gv=gv", { desc = "Move line down" })
-
-map(
-	"n",
-	"<leader>m",
-	":<c-u><c-r><c-r>='let @'. v:register .' = '. string(getreg(v:register))<cr><c-f><left>",
-	{ desc = "Quickly create & edit macro" }
-)
-
--- Highlighting
-vim.cmd([[
-	hi LineNr guifg=lightgray
-	hi CursorLineNr guifg=darkgray
-]])
+}, { install = { colorscheme = { "rose-pine" } } })

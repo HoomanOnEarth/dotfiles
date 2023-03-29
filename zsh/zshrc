@@ -90,3 +90,9 @@ function worktree() {
   local target=$(echo $selection | awk '{print $1}')
   if [ "$target" ] && cd $target && zle reset-prompt
 }
+
+# asdf - tools version manager
+source /opt/homebrew/opt/asdf/libexec/asdf.sh
+
+# disable less history
+export LESSHISTFILE=-

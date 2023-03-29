@@ -6,6 +6,7 @@ alias edit=vim
 
 # Config alias
 alias zc='vim ~/.zshrc'
+alias zac='vim ~/code/dotfiles/zsh/alias.zsh'
 alias vc='vim ~/.config/nvim/init.lua'
 alias tc='vim ~/.config/tmux/tmux.conf'
 alias s='source ~/.zshrc'
@@ -14,6 +15,20 @@ alias pn='pnpm'
 
 # Net
 alias header='curl -I'
+
+# Git
+alias gst="git status --verbose"
+alias gc="git commit --verbose"
+alias gca="git commit --all --verbose"
+alias gcam="git commit --amend --verbose"
+alias gcam!="git commit --amend --no-edit"
+
+alias ga="git add --verbose"
+alias gaa="git add --all --verbose"
+alias gau="git add --update --verbose"
+
+alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+alias glp="gl -p"
 
 # Tmux
 alias tks='tmux kill-server'
