@@ -1,12 +1,21 @@
 #!/bin/zsh
 
-ROOT=~/code/dotfiles
-
 HOME=~
-ln -sf $ROOT/zsh/zshrc $HOME/.zshrc
-ln -sf $ROOT/git/config $HOME/.gitconfig
+ROOT=$HOME/code/dotfiles
+CONFIG=$HOME/.config
 
-CONFIG=~/.config
-ln -sf $ROOT/tmux $CONFIG/tmux
-ln -sf $ROOT/alacritty $CONFIG/alacritty
-ln -sf $ROOT/starship/starship.toml $CONFIG/starship.toml
+# cleanup
+unlink $HOME/.zshrc
+unlink $HOME/.gitconfig
+
+unlink $CONFIG/tmux
+unlink $CONFIG/alacritty
+unlink $CONFIG/starship.toml
+
+# setup
+ln -s $ROOT/zsh/zshrc $HOME/.zshrc
+ln -s $ROOT/git/config $HOME/.gitconfig
+
+ln -s $ROOT/tmux $CONFIG/tmux
+ln -s $ROOT/alacritty $CONFIG/alacritty
+ln -s $ROOT/starship/starship.toml $CONFIG/starship.toml
