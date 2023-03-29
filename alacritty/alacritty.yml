@@ -1,5 +1,5 @@
 shell:
-  program: /usr/local/bin/zsh
+  program: /bin/zsh
   args:
     - --login
 
@@ -10,28 +10,31 @@ window:
   decorations: none
   dynamic_padding: true
   option_as_alt: OnlyLeft
+  dimensions:
+    columns: 80
+    lines: 20
 
 font:
-  size: 20
+  size: 19
   offset:
-    y: 10
+    y: 8
   glyph_offset:
-    y: 5
+    y: 4
 
   normal:
-    family: JetBrainsMono Nerd Font
+    family: JetBrainsMono Nerd Font Mono
     style: Regular
 
   bold:
-    family: JetBrainsMono Nerd Font
+    family: JetBrainsMono Nerd Font Mono
     style: Bold
 
   italic:
-    family: JetBrainsMono Nerd Font
+    family: JetBrainsMono Nerd Font Mono
     style: Italic
 
   bold_italic:
-    family: JetBrainsMono Nerd Font
+    family: JetBrainsMono Nerd Font Mono
     style: Bold Italic
 
 key_bindings:
