@@ -1,15 +1,12 @@
-#!/usr/bin/env bash
+#!/bin/zsh
 
-set -e
+ROOT=~/code/dotfiles
 
-CONFIG="install.conf.yaml"
-DOTBOT_DIR="dotbot"
+HOME=~
+ln -sf $ROOT/zsh/zshrc $HOME/.zshrc
+ln -sf $ROOT/git/config $HOME/.gitconfig
 
-DOTBOT_BIN="bin/dotbot"
-BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-cd "${BASEDIR}"
-#git -C "${DOTBOT_DIR}" submodule sync --quiet --recursive
-#git submodule update --init --recursive "${DOTBOT_DIR}"
-
-"${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
+CONFIG=~/.config
+ln -sf $ROOT/tmux $CONFIG/tmux
+ln -sf $ROOT/alacritty $CONFIG/alacritty
+ln -sf $ROOT/starship/starship.toml $CONFIG/starship.toml

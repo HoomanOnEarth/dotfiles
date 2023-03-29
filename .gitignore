@@ -1,7 +1,1 @@
-dotbot
-shopify_alias.sh
-.pnpm-debug.log
-nvim/plugin/packer_compiled.lua
-nvim/.undodir
-nvim/plugged
-
+tmux/plugins
