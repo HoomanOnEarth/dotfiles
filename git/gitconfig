@@ -1,30 +1,42 @@
 [core]
-    editor = vim
-    excludesfile = ~/code/dotfiles/git/ignore
+editor = vim
+excludesfile = ~/code/dotfiles/git/ignore
 
 [user]
-    name = 0xlkda
-    email = lekhacduyanh@gmail.com
+name = 0xlkda
+email = lekhacduyanh@gmail.com
 
 [init]
-    defaultBranch = main
+defaultBranch = main
 
 [credential]
-    helper = cache
+helper = cache
 
 [credential "https://github.com"]
-    helper = !/usr/local/bin/gh auth git-credential
+helper = !$(which gh) auth git-credential
 
 [credential "https://gist.github.com"]
-    helper = !/usr/local/bin/gh auth git-credential
+helper = !$(which gh) auth git-credential
 
 [alias]
-    view = !/usr/local/bin/gh browse
-    wt = worktree
-    cwt = !sh $HOME/projects/dotfiles/clone-for-worktree.sh
+view = !$(which gh) browse
+wt = worktree
+cwt = !sh $HOME/projects/dotfiles/clone-for-worktree.sh
 
 [push]
-    autoSetupRemote = true
+autoSetupRemote = true
 
 [pull]
-    rebase = true
+rebase = true
+
+[user]
+signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINhBe+jwLXQ/L2cIgk7iNP+74ecrQdxHKOzWjU+lL0Sm
+
+[gpg]
+format = ssh
+
+[gpg "ssh"]
+program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+
+[commit]
+gpgsign = true
