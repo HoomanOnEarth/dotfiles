@@ -1,16 +1,4 @@
-export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/code/scripts"
-export HISTFILE=$HOME/.local/zsh_history
-export XDG_CONFIG_HOME=$HOME/.config
-
-# using Vi bindings
-bindkey -v
-bindkey -M viins "^A" beginning-of-line
-bindkey -M viins "^E" end-of-line
-bindkey -M viins "^D" delete-char-or-list
-bindkey -M viins "^N" down-line-or-history
-bindkey -M viins "^P" up-line-or-history
-
-# Changing Directories
+# Changing directories
 setopt auto_cd                 # if a command isn't valid, but is a directory, cd to that dir
 setopt auto_pushd              # make cd push the old directory onto the directory stack
 setopt pushd_ignore_dups       # don’t push multiple copies of the same directory onto the directory stack
@@ -43,61 +31,27 @@ unsetopt share_history         # don't share history between all sessions
 # Input/Output
 unsetopt rm_star_silent        # ask for confirmation for `rm *' or `rm path/*'
 
+# using Vi bindings
+bindkey -v
+bindkey -M viins "^A" beginning-of-line
+bindkey -M viins "^E" end-of-line
+bindkey -M viins "^D" delete-char-or-list
+bindkey -M viins "^N" down-line-or-history
+bindkey -M viins "^P" up-line-or-history
+
 # Prompt
 eval "$(starship init zsh)"
 
-# Plugins
-source $XDG_CONFIG_HOME/antigen/antigen.zsh
-antigen bundle 'git'
-antigen bundle 'zsh-users/zsh-autosuggestions'
-antigen apply
-
-# Aliases
-alias vim='nvim'
-alias zc='vim ~/code/dotfiles/zsh/zshrc'
-alias vc='vim ~/code/dotfiles/nvim/init.lua'
-alias bc='vim ~/code/dotfiles/bash/bashrc'
-alias tc='vim ~/code/dotfiles/tmux/tmux.conf'
-alias s='source ~/.zshrc'
-alias c='clear'
-alias pn='pnpm'
-
-# Apps
-alias pg=/Applications/Postgres.app/Contents/Versions/15/bin/psql
-alias alacritty='/Applications/Alacritty.app/Contents/MacOS/alacritty'
-
-# ~/code/my-scripts
-alias nt=nhattao
-
-# Tmux
-alias tks='tmux kill-server'
-alias tn='tmuxinator n'
-alias to='tmuxinator o'
-alias ts='tmuxinator s'
-
-# Listing
-alias la="gls -lAh --group-directories-first --color=auto"
-alias ls="gls --width 80 --group-directories-first --color=auto"
-alias lsr="ls -R" # list recursive
-alias lsrf="ls -Rohg" # list recursive full details
-alias cpwd="pwd | tr -d '\n' | pbcopy && echo 'pwd copied to clipboard'"
-
-# Tree
-alias tree='tree -CIa    "node_modules|dist|.git|.cache|.next|.parcel-cache|.undodir" --dirsfirst'
-alias t1='tree -L 1 -CIa "node_modules|dist|.git|.cache|.next|.parcel-cache|.undodir" --dirsfirst'
-alias t2='tree -L 2 -CIa "node_modules|dist|.git|.cache|.next|.parcel-cache|.undodir" --dirsfirst'
-alias t3='tree -L 3 -CIa "node_modules|dist|.git|.cache|.next|.parcel-cache|.undodir" --dirsfirst'
-
-# history fuzzy searching
+# History fuzzy searching
 bindkey '^r' history-fzy
 zle -N history-fzy
 function history-fzy() {
-  BUFFER=$(history -n 1 | tac | awk '!a[$0]++' | fzy --query "$LBUFFER")
+  BUFFER=$(history -n 1 | tail -r | awk '!a[$0]++' | fzy --query "$LBUFFER")
   CURSOR=$#BUFFER
   zle reset-prompt
 }
 
-# quick jump
+# Quick jump
 zle -N workdir
 zle -N worktree
 
@@ -132,36 +86,37 @@ function worktree() {
   # extracting path from fzy selection
   local target=$(echo $selection | awk '{print $1}')
   if [ "$target" ] && cd $target && zle reset-prompt
-  }
-
-# extra funtions
-function slugify() {
-  # Forcing the POSIX local so alnum is only 0-9A-Za-z
-  export LANG=POSIX
-  export LC_ALL=POSIX
-
-  # Keep only alphanumeric value
-  # Keep only one dash if there is multiple one consecutively
-  # Lowercase everything
-  # Remove last dash if there is nothing after
-  sed -e 's/[^[:alnum:]]/-/g' | tr -s '-' | tr A-Z a-z | sed -e 's/-$//'
-
-  export LANG=en_US.UTF8
-  export LC_ALL=en_US.UTF-8
 }
 
+# Editor alias
+alias vim='$HOME/.local/bin/nvim'
+alias svim='sudo vim'
+alias vi=vim
+alias edit=vim
+
+# Config alias
+alias zc='vim ~/.zshrc'
+alias vc='vim ~/.config/nvim/init.lua'
+alias tc='vim ~/.config/tmux/tmux.conf'
+alias s='source ~/.zshrc'
+alias c='clear'
+alias pn='pnpm'
+
+# Net
+alias header='curl -I'
+
+# Tmux
+alias tks='tmux kill-server'
+alias tn='tmuxinator n'
+alias to='tmuxinator o'
+alias ts='tmuxinator s'
+
+# Miscs
+alias ls='ls --color=auto'
+alias la='ls --color=auto -Ah'
+alias ll='ls --color=auto -lAh'
+alias cpwd='pwd | tr -d "\n" | pbcopy && echo "pwd copied to clipboard"'
+alias mkdir='mkdir -pv'
+
 # Shopify
-source $HOME/code/dotfiles/shopify_alias.sh
 alias theme='shopify theme'
-
-# Ruby
-export PATH="/usr/local/opt/ruby/bin:$PATH"
-
-# Node Modules
-export PATH="./node_modules/.bin:$PATH"
-source /usr/local/opt/asdf/libexec/asdf.sh
-
-# Python
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
