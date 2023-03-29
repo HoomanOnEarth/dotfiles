@@ -1,23 +1,30 @@
 [core]
-    editor = nvim
-    excludesfile = ~/.gitignore_global
+    editor = vim
+    excludesfile = ~/code/dotfiles/git/ignore
+
 [user]
-    email = lekhacduyanh@gmail.com
     name = 0xlkda
+    email = lekhacduyanh@gmail.com
+
 [init]
-    templateDir = ~/.git-template
     defaultBranch = main
+
 [credential]
     helper = cache
+
 [credential "https://github.com"]
     helper = !/usr/local/bin/gh auth git-credential
+
 [credential "https://gist.github.com"]
     helper = !/usr/local/bin/gh auth git-credential
+
 [alias]
     view = !/usr/local/bin/gh browse
     wt = worktree
     cwt = !sh $HOME/projects/dotfiles/clone-for-worktree.sh
+
 [push]
-	autoSetupRemote = true
+    autoSetupRemote = true
+
 [pull]
     rebase = true
