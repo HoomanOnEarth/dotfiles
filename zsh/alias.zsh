@@ -19,6 +19,7 @@ alias header='curl -I'
 # Git
 alias ghc="gh repo clone"
 alias gst="git status --verbose"
+alias gd="git diff"
 alias gg="git pull"
 alias gp="git push"
 alias gpf="git push --force"
