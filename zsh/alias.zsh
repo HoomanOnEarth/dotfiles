@@ -1,31 +1,47 @@
-# Editor alias
+# Basic
+alias c='clear'
 alias vim='$HOME/.local/bin/nvim'
 alias svim='sudo vim'
 alias vi=vim
 alias edit=vim
 
-# Config alias
+# Config Dotfiles
+alias reload='source ~/.zshrc'
+alias rl='reload'
 alias zc='vim ~/.zshrc'
 alias zac='vim ~/code/dotfiles/zsh/alias.zsh'
 alias vc='vim ~/.config/nvim/init.lua'
 alias tc='vim ~/.config/tmux/tmux.conf'
-alias ssc='starship config'
-alias s='source ~/.zshrc'
-alias c='clear'
+
+# JavaScript & NodeJS
 alias pn='pnpm'
+
+# starship prompt
+alias ss='starship'
+alias ssc='starship config'
+
+# Search using rg
+# rg Foo       # Case sensitive search
+# rg -i foo    # Case insensitive search
+# rg -v foo    # Invert search, show all lines that don't match pattern
+# rg -l foo    # List only the files that match, not content
+# rg -t md foo # Match by `md` file extension
+alias search='rg'
+alias s='search'
 
 # Net
 alias header='curl -I'
 
 # Git
 alias ghc="gh repo clone"
-alias gst="git status --verbose"
+alias gst="git status"
 alias gd="git diff"
 alias gg="git pull"
 alias gp="git push"
 alias gpf="git push --force"
 
 alias gc="git commit --verbose"
+alias gcm="git commit --verbose --message"
 alias gca="git commit --all --verbose"
 alias gcam="git commit --amend --verbose"
 alias gcam!="git commit --amend --no-edit"

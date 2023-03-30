@@ -8,6 +8,7 @@ CONFIG=$HOME/.config
 unlink $HOME/.zshrc
 unlink $HOME/.zprofile
 unlink $HOME/.gitconfig
+unlink $HOME/.rgignore
 
 unlink $CONFIG/nvim
 unlink $CONFIG/tmux
@@ -17,7 +18,8 @@ unlink $CONFIG/starship.toml
 # setup
 ln -s $ROOT/zsh/zshrc $HOME/.zshrc
 ln -s $ROOT/zsh/zprofile $HOME/.zprofile
-ln -s $ROOT/git/config $HOME/.gitconfig
+ln -s $ROOT/git/gitconfig $HOME/.gitconfig
+ln -s $ROOT/rg/rgignore $HOME/.rgignore
 
 ln -s $ROOT/nvim $CONFIG/nvim
 ln -s $ROOT/tmux $CONFIG/tmux

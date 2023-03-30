@@ -5,6 +5,10 @@ colorscheme quiet
 let g:mapleader = " "
 let g:maplocalleader = " "
 
+" use ripgrep
+set grepprg="rg --vimgrep --smart-case"
+set grepformat=%f:%l:%c:%m,%f:%l:%m
+
 cabbrev Q q!
 cabbrev Qa qa!
 cabbrev W w!

@@ -71,7 +71,7 @@ function workdir() {
   if [ $# -gt 0 ]; then
     result=$(fd --type directory . $1)
   else
-    result=$(fd --type directory . ~/code)
+    result=$(fd --type directory . $HOME/code)
   fi
 
   if [ -z "$result" ] && echo "No directory match query: $1" && return
