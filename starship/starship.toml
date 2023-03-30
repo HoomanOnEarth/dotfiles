@@ -1,21 +1,15 @@
-add_newline = true
+add_newline=true
 
-# Which is equivalent to
 format = """
-$username\
-$hostname\
 $directory\
-$vcsh\
-$git_branch\
-$git_commit\
 $git_state\
-$git_metrics\
+$git_branch\
 $git_status\
-$sudo\
 $cmd_duration\
 $line_break\
-$jobs\
-$time\
-$status\
-$shell\
 $character"""
+
+[character]
+success_symbol = "[❯](purple)"
+error_symbol = "[❯](red)"
+vimcmd_symbol = "[❮](green)"

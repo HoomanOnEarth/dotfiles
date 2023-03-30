@@ -2,6 +2,8 @@ shell:
   program: /bin/zsh
   args:
     - --login
+    - -c
+    - "tmux attach || tmux"
 
 import:
   - ~/code/dotfiles/alacritty/light.yml
@@ -25,6 +27,10 @@ font:
     family: JetBrainsMono Nerd Font Mono
     style: Regular
 
+  medium:
+    family: JetBrainsMono Nerd Font Mono
+    style: Medium
+
   bold:
     family: JetBrainsMono Nerd Font Mono
     style: Bold
@@ -32,10 +38,6 @@ font:
   italic:
     family: JetBrainsMono Nerd Font Mono
     style: Italic
-
-  bold_italic:
-    family: JetBrainsMono Nerd Font Mono
-    style: Bold Italic
 
 key_bindings:
   - { key: LBracket, mods: Command, command: { program: 'sh', args: ['-c', '~/code/dotfiles/alacritty/use_light_theme'] } }
