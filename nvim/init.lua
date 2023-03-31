@@ -32,6 +32,10 @@ nnoremap g[ :lua vim.diagnostic.goto_prev()<CR>
 nnoremap g] :lua vim.diagnostic.goto_next()<CR>
 nnoremap <leader>q :lua vim.diagnostic.setloclist()<CR>
 nnoremap <leader>e :lua vim.diagnostic.open_float(nil, { focus = false })<CR>
+
+" Git
+nnoremap gf <cmd>diffget //2<CR> " get the left side
+nnoremap gh <cmd>diffget //3<CR> " get the right side
 ]]
 
 -- options
@@ -46,7 +50,6 @@ set signcolumn=yes
 
 set nowrap
 set splitright
-set splitbelow
 
 set autoindent
 set expandtab
@@ -128,6 +131,11 @@ auto_cmd({ "BufNewFile", "BufRead" }, {
 
 
 require("lazy").setup({
+  {
+    "tpope/vim-fugitive",
+    config = function()
+    end
+  },
   {
     "christoomey/vim-tmux-navigator",
     init = function()
@@ -347,7 +355,7 @@ require("lazy").setup({
         buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
 
         -- disable LSP highlight
-        client.server_capabilities.semanticTokensProvider = nil
+        client.server_capabilities.semanticTokensProvider = false
 
         map("i", "<C-h>", SignatureFixed, { desc = "LSP hover" })
         map("n", "K", HoverFixed, { desc = "LSP hover" })
