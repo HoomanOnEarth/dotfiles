@@ -74,8 +74,10 @@ augroup CursorHoldHints
 augroup END
 
 " auto chmod my scripts
-autocmd! BufWinEnter ~/code/scripts/* if &ft == "" | setlocal ft=sh | endif
-autocmd! BufWritePost * if &ft == "sh" | silent! execute "!chmod +x %" | endif
+augroup ChmodScript
+  autocmd! BufWinEnter ~/code/scripts/* if &ft == "" | setlocal ft=sh | endif
+  autocmd! BufWritePost * if &ft == "sh" | silent! execute "!chmod +x %" | endif
+augroup END
 
 " auto refresh quickfix: InsertLeave, BufWritePost
 augroup SmartQfList
@@ -96,7 +98,7 @@ augroup SmartQfList
   endfunction
 
   autocmd! InsertLeave,BufWritePost * call RefreshQuickfixList()
-augroup END
+augroup END 
 ]]
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -146,10 +148,6 @@ require("lazy").setup({
     end,
     config = function()
       vim.cmd [[
-      nnoremap <silent> <C-h> :TmuxNavigateLeft<CR>
-      nnoremap <silent> <C-j> :TmuxNavigateDown<CR>
-      nnoremap <silent> <C-k> :TmuxNavigateUp<CR>
-      nnoremap <silent> <C-l> :TmuxNavigateRight<CR>
       nnoremap <silent> <C-\> :TmuxNavigatePrevious<CR>
       ]]
     end,

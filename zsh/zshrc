@@ -38,6 +38,8 @@ bindkey -M viins "^E" end-of-line
 bindkey -M viins "^F" forward-char
 bindkey -M viins "^B" backward-char
 bindkey -M viins "^D" delete-char-or-list
+bindkey -M viins "^U" backward-kill-line
+bindkey -M viins "^K" vi-kill-eol
 bindkey -M viins "^N" down-line-or-history
 bindkey -M viins "^P" up-line-or-history
 

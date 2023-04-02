@@ -15,6 +15,10 @@ alias tc='vim ~/.config/tmux/tmux.conf'
 
 # JavaScript & NodeJS
 alias pn='pnpm'
+alias pni='pnpm install'
+alias pnu='pnpm uninstall'
+alias pns='pnpm start'
+alias pnd='pnpm dev'
 
 # starship prompt
 alias ss='starship'
@@ -34,6 +38,7 @@ alias header='curl -I'
 
 # Git
 alias ghc="gh repo clone"
+alias gbc="git checkout -b"
 alias gst="git status"
 alias gd="git diff"
 alias gg="git pull"
