@@ -102,3 +102,6 @@ source /opt/homebrew/opt/asdf/libexec/asdf.sh
 
 # disable less history
 export LESSHISTFILE=-
+
+# nodejs
+export PATH="node_modules/.bin:$PATH"

@@ -14,11 +14,11 @@ alias vc='vim ~/.config/nvim/init.lua'
 alias tc='vim ~/.config/tmux/tmux.conf'
 
 # JavaScript & NodeJS
-alias pn='pnpm'
-alias pni='pnpm install'
-alias pnu='pnpm uninstall'
-alias pns='pnpm start'
-alias pnd='pnpm dev'
+alias vp='vim package.json'
+alias npm='pnpm'
+alias ni='npm install'
+alias ns='npm start'
+alias nr='npm run'
 
 # starship prompt
 alias ss='starship'
@@ -64,10 +64,10 @@ alias tn='tmuxinator n'
 alias to='tmuxinator o'
 alias ts='tmuxinator s'
 
-# Miscs
+# Listing
 alias ls='ls --color=auto'
-alias la='ls --color=auto -Ah'
-alias ll='ls --color=auto -lAh'
+alias la='ls --color=auto -a'
+alias ll='ls --color=auto -lah'
 alias cpwd='pwd | tr -d "\n" | pbcopy && echo "pwd copied to clipboard"'
 alias mkdir='mkdir -pv'
 
