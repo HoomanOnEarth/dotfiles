@@ -32,10 +32,6 @@ nnoremap g[ :lua vim.diagnostic.goto_prev()<CR>
 nnoremap g] :lua vim.diagnostic.goto_next()<CR>
 nnoremap <leader>q :lua vim.diagnostic.setloclist()<CR>
 nnoremap <leader>e :lua vim.diagnostic.open_float(nil, { focus = false })<CR>
-
-" Git
-nnoremap gf <cmd>diffget //2<CR> " get the left side
-nnoremap gh <cmd>diffget //3<CR> " get the right side
 ]]
 
 -- options
@@ -68,6 +64,19 @@ augroup Utilities
   autocmd! BufEnter * set formatoptions-=cro
 augroup END
 
+function DiffModeMap()
+  if &diff
+    nnoremap gf <buffer> <cmd>diffget //2<CR> " get the left side
+    nnoremap gh <buffer> <cmd>diffget //3<CR> " get the right side
+  endif
+endfunction
+
+augroup FugitiveMapping
+  autocmd!
+  autocmd BufEnter * call DiffModeMap()
+augroup END
+
+
 augroup CursorHoldHints
   autocmd! CursorHold * lua vim.diagnostic.open_float({ scope = "cursor" })
   autocmd! CursorMoved,CursorMovedI * lua vim.lsp.buf.clear_references()
@@ -98,7 +107,7 @@ augroup SmartQfList
   endfunction
 
   autocmd! InsertLeave,BufWritePost * call RefreshQuickfixList()
-augroup END 
+augroup END
 ]]
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -306,30 +315,32 @@ require("lazy").setup({
       "folke/neodev.nvim",
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
+      "jose-elias-alvarez/null-ls.nvim"
     },
     config = function()
       require("neodev").setup()
-      require("mason").setup()
 
+      local null_ls = require("null-ls")
+      local formatting = null_ls.builtins.formatting
+
+      null_ls.setup({
+        debug = false,
+        sources = {
+          formatting.eslint_d.with({
+            condition = function(utils)
+              return utils.root_has_file(".eslintrc.js")
+            end
+          })
+        }
+      })
+
+      -- lsp diagnostics
       vim.lsp.handlers["textDocument/publishDiagnostics"] =
           vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
             virtual_text = false,
             underline = true,
             signs = true,
           })
-
-      local servers = {
-        tsserver = {},
-        lua_ls = {
-          Lua = {
-            completion = {
-              callSnippet = "Replace",
-            },
-            workspace = { checkThirdParty = false },
-            telemetry = { enable = false },
-          },
-        },
-      }
 
       -- setup to use with diagnostics
       function SignatureFixed()
@@ -370,6 +381,23 @@ require("lazy").setup({
       end
 
       local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+      require("mason").setup()
+
+      local servers = {
+        tsserver = {
+          diagnostics = { ignoredCodes = { 7016 } }
+        },
+        lua_ls = {
+          Lua = {
+            completion = {
+              callSnippet = "Replace",
+            },
+            workspace = { checkThirdParty = false },
+            telemetry = { enable = false },
+          },
+        },
+      }
 
       local mason_lspconfig = require("mason-lspconfig")
       mason_lspconfig.setup({ ensure_installed = vim.tbl_keys(servers) })
