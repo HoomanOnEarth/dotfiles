@@ -157,7 +157,7 @@ require("lazy").setup({
     end,
     config = function()
       vim.cmd [[
-      nnoremap <silent> <C-\> :TmuxNavigatePrevious<CR>
+      nnoremap <silent> <C-b> :TmuxNavigatePrevious<CR>
       ]]
     end,
   },

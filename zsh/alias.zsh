@@ -16,6 +16,7 @@ alias tc='vim ~/.config/tmux/tmux.conf'
 # JavaScript & NodeJS
 alias vp='vim package.json'
 alias npm='pnpm'
+alias npx='pnpx'
 alias ni='npm install'
 alias ns='npm start'
 alias nr='npm run'
