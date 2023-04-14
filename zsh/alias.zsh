@@ -4,6 +4,7 @@ alias vim='$HOME/.local/bin/nvim'
 alias svim='sudo vim'
 alias vi=vim
 alias edit=vim
+alias pc='pbcopy <'
 
 # Config Dotfiles
 alias reload='source ~/.zshrc'
