@@ -314,25 +314,10 @@ require("lazy").setup({
     dependencies = {
       "folke/neodev.nvim",
       "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
-      "jose-elias-alvarez/null-ls.nvim"
+      "williamboman/mason-lspconfig.nvim"
     },
     config = function()
       require("neodev").setup()
-
-      local null_ls = require("null-ls")
-      local formatting = null_ls.builtins.formatting
-
-      null_ls.setup({
-        debug = false,
-        sources = {
-          formatting.eslint_d.with({
-            condition = function(utils)
-              return utils.root_has_file(".eslintrc.js")
-            end
-          })
-        }
-      })
 
       -- lsp diagnostics
       vim.lsp.handlers["textDocument/publishDiagnostics"] =
@@ -384,9 +369,18 @@ require("lazy").setup({
 
       require("mason").setup()
 
-      local servers = {
+      local servers_settings = {
         tsserver = {
-          diagnostics = { ignoredCodes = { 7016 } }
+          diagnostics = { ignoredCodes = { 7016 } },
+          javascript = {
+            format = {
+              indentSize = 2,
+              semicolons = "remove",
+              convertTabsToSpaces = true,
+              indentStyle = "Smart",
+              trimTrailingWhitespace = true,
+            }
+          }
         },
         lua_ls = {
           Lua = {
@@ -400,18 +394,19 @@ require("lazy").setup({
       }
 
       local mason_lspconfig = require("mason-lspconfig")
-      mason_lspconfig.setup({ ensure_installed = vim.tbl_keys(servers) })
+      mason_lspconfig.setup({ ensure_installed = vim.tbl_keys(servers_settings) })
       mason_lspconfig.setup_handlers({
         function(server_name)
           local opts = {
             on_attach = on_attach,
             capabilities = capabilities,
-            settings = servers[server_name],
+            settings = servers_settings[server_name],
             init_options = {
-              onlyAnalyzeProjectsWithOpenFiles = true,
-              suggestFromUnimportedLibraries = false,
-              closingLabels = true,
-            },
+              preferences = {
+                quotePreference = "single",
+                includeCompletionsForImportStatements = true,
+              },
+            }
           }
 
           require("lspconfig")[server_name].setup(opts)
