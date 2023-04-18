@@ -14,6 +14,10 @@ alias zac='vim ~/code/dotfiles/zsh/alias.zsh'
 alias vc='vim ~/.config/nvim/init.lua'
 alias tc='vim ~/.config/tmux/tmux.conf'
 
+# Python3
+alias py=python3
+alias pip=pip3
+
 # JavaScript & NodeJS
 alias vp='vim package.json'
 alias npm='pnpm'
