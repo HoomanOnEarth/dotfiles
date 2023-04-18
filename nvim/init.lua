@@ -314,10 +314,25 @@ require("lazy").setup({
     dependencies = {
       "folke/neodev.nvim",
       "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim"
+      "williamboman/mason-lspconfig.nvim",
+      "jose-elias-alvarez/null-ls.nvim"
     },
     config = function()
       require("neodev").setup()
+
+      local null_ls = require("null-ls")
+      local formatting = null_ls.builtins.formatting
+
+      null_ls.setup({
+        debug = false,
+        sources = {
+          formatting.eslint_d.with({
+            condition = function(utils)
+              return utils.root_has_file(".eslintrc.js")
+            end
+          })
+        }
+      })
 
       -- lsp diagnostics
       vim.lsp.handlers["textDocument/publishDiagnostics"] =
@@ -404,9 +419,9 @@ require("lazy").setup({
             init_options = {
               preferences = {
                 quotePreference = "single",
-                includeCompletionsForImportStatements = true,
-              },
-            }
+                importModuleSpecifierEnding = "auto",
+              }
+            },
           }
 
           require("lspconfig")[server_name].setup(opts)
