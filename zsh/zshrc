@@ -1,3 +1,12 @@
+# Prevent duplicate when sourcing
+typeset -U path
+typeset -U fpath
+
+fpath=("$HOME/code/dotfiles/zsh/functions/" $fpath)
+
+# Alias
+source $HOME/code/dotfiles/zsh/aliases
+
 # Changing directories
 setopt auto_cd                 # if a command isn't valid, but is a directory, cd to that dir
 setopt auto_pushd              # make cd push the old directory onto the directory stack
@@ -42,9 +51,6 @@ bindkey -M viins "^U" backward-kill-line
 bindkey -M viins "^K" vi-kill-eol
 bindkey -M viins "^N" down-line-or-history
 bindkey -M viins "^P" up-line-or-history
-
-# Alias
-source ~/code/dotfiles/zsh/alias.zsh
 
 # Prompt
 if [[ ! -n "$STARSHIP_SHELL" ]];then
@@ -104,4 +110,14 @@ source /opt/homebrew/opt/asdf/libexec/asdf.sh
 export LESSHISTFILE=-
 
 # nodejs
-export PATH="node_modules/.bin:$PATH"
+path=("node_modules/.bin" $path)
+# The following lines were added by compinstall
+
+# Completions | autogen from compinstall
+zstyle ':completion:*' completer _expand _complete _ignored _approximate
+zstyle ':completion:*' list-suffixes true
+zstyle :compinstall filename "$HOME/code/dotfiles/zsh/zshrc"
+
+autoload -Uz compinit
+compinit
+# End of lines added by compinstall

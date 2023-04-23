@@ -71,9 +71,9 @@ alias to='tmuxinator o'
 alias ts='tmuxinator s'
 
 # Listing
-alias ls='ls --color=auto'
-alias la='ls --color=auto -a'
-alias ll='ls --color=auto -lah'
+alias ls='ls --color=auto -p'
+alias la='ls --color=auto -aop'
+alias ll='ls --color=auto -lahop'
 alias cpwd='pwd | tr -d "\n" | pbcopy && echo "pwd copied to clipboard"'
 alias mkdir='mkdir -pv'
 
