@@ -10,7 +10,7 @@ alias pc='pbcopy <'
 alias reload='source ~/.zshrc'
 alias rl='reload'
 alias zc='vim ~/.zshrc'
-alias zac='vim ~/code/dotfiles/zsh/alias.zsh'
+alias zac='vim ~/code/dotfiles/zsh/aliases'
 alias vc='vim ~/.config/nvim/init.lua'
 alias tc='vim ~/.config/tmux/tmux.conf'
 
@@ -71,9 +71,9 @@ alias to='tmuxinator o'
 alias ts='tmuxinator s'
 
 # Listing
-alias ls='ls --color=auto -p'
-alias la='ls --color=auto -aop'
-alias ll='ls --color=auto -lahop'
+alias ls='gls --group-directories-first --human-readable --width=80 --color=auto'
+alias la='ls --almost-all'
+alias ll='la -lgp'
 alias cpwd='pwd | tr -d "\n" | pbcopy && echo "pwd copied to clipboard"'
 alias mkdir='mkdir -pv'
 
