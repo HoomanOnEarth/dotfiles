@@ -1,5 +1,6 @@
 # Basic
 alias c='clear'
+alias vim='$HOME/.neovim/bin/nvim'
 alias svim='sudo vim'
 alias vi=vim
 alias edit=vim
