@@ -5,6 +5,7 @@ excludesfile = ~/code/dotfiles/git/ignore
 [user]
 name = 0xlkda
 email = lekhacduyanh@gmail.com
+signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP/ZGdMKjDd+pI4Y+yYYCquLm2CGIDCjnHNel+ZWPs9J
 
 [init]
 defaultBranch = main
@@ -28,3 +29,12 @@ autoSetupRemote = true
 
 [pull]
 rebase = true
+
+[gpg]
+format = ssh
+
+[gpg "ssh"]
+program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+
+[commit]
+gpgsign = true
