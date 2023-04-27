@@ -53,9 +53,7 @@ bindkey -M viins "^N" down-line-or-history
 bindkey -M viins "^P" up-line-or-history
 
 # Prompt
-if [[ ! -n "$STARSHIP_SHELL" ]];then
-  eval "$(starship init zsh)"
-fi
+eval "$(starship init zsh)"
 
 # History fuzzy searching
 bindkey '^r' history-fzy

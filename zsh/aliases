@@ -44,7 +44,8 @@ alias header='curl -I'
 
 # Git
 alias ghc="gh repo clone"
-alias gbc="git checkout -b"
+alias gcb="git checkout -b"
+alias gco="git checkout"
 alias gst="git status"
 alias gd="git diff"
 alias gg="git pull"

@@ -194,7 +194,7 @@ require("lazy").setup({
               ["<C-u>"] = false,
               ["<C-d>"] = false,
               ["<C-x>"] = false,
-              ["<M-p>"] = action_layout.toggle_preview,
+              ["<C-k>"] = action_layout.toggle_preview,
             },
           },
           buffer_previewer_maker = function(filepath, bufnr, opts)
