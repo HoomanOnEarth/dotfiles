@@ -1,5 +1,5 @@
 [core]
-editor = /usr/bin/vim
+editor = ~/.neovim/bin/nvim
 excludesfile = ~/code/dotfiles/git/ignore
 
 [user]
