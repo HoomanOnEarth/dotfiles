@@ -101,15 +101,14 @@ function worktree() {
   if [ "$target" ] && cd $target && zle reset-prompt
 }
 
-# asdf - tools version manager
-source /opt/homebrew/opt/asdf/libexec/asdf.sh
-
 # disable less history
 export LESSHISTFILE=-
 
+# asdf
+source /opt/local/share/asdf/asdf.sh
+
 # nodejs
 path=("node_modules/.bin" $path)
-# The following lines were added by compinstall
 
 # Completions | autogen from compinstall
 zstyle ':completion:*' completer _expand _complete _ignored _approximate
@@ -118,4 +117,3 @@ zstyle :compinstall filename "$HOME/code/dotfiles/zsh/zshrc"
 
 autoload -Uz compinit
 compinit
-# End of lines added by compinstall
