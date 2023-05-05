@@ -78,7 +78,7 @@ augroup END
 
 
 augroup CursorHoldHints
-  autocmd! CursorHold * lua vim.diagnostic.open_float({ scope = "cursor" })
+  autocmd! CursorHold * lua vim.diagnostic.open_float({ scope = "cursor", focus = false })
   autocmd! CursorMoved,CursorMovedI * lua vim.lsp.buf.clear_references()
 augroup END
 
