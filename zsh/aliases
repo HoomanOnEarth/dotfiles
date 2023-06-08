@@ -1,4 +1,7 @@
+source "$HOME/code/dotfiles/zsh/private_aliases"
+
 # Basic
+alias code="cd $HOME/code"
 alias c='clear'
 alias vim='$HOME/.neovim/bin/nvim'
 alias svim='sudo vim'
@@ -14,17 +17,23 @@ alias zac='vim ~/code/dotfiles/zsh/aliases'
 alias vc='vim ~/.config/nvim/init.lua'
 alias tc='vim ~/.config/tmux/tmux.conf'
 
+# Tunneling Tailscale
+alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+
 # Python3
 alias py=python3
 alias pip=pip3
 
 # JavaScript & NodeJS
 alias vp='vim package.json'
-alias npm='pnpm'
+alias np='pnpm'
 alias npx='pnpx'
-alias ni='npm install'
-alias ns='npm start'
-alias nr='npm run'
+alias na='pnpm add'
+alias ni='pnpm install'
+alias ns='pnpm start'
+alias nr='pnpm run'
+alias nrs='pnpm run start'
+alias nrd='pnpm run dev'
 
 # starship prompt
 alias ss='starship'

@@ -1,9 +1,7 @@
 shell:
   program: /bin/zsh
   args:
-    - --login
-    - -c
-    - "tmux attach || tmux"
+    - -l
 
 import:
   - ~/code/dotfiles/alacritty/light.yml
@@ -17,7 +15,7 @@ window:
     lines: 20
 
 font:
-  size: 19
+  size: 16
   offset:
     y: 8
   glyph_offset:

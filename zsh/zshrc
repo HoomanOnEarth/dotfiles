@@ -3,6 +3,7 @@ typeset -U path
 typeset -U fpath
 
 fpath=("$HOME/code/dotfiles/zsh/functions/" $fpath)
+path=("$HOME/code/dotfiles/bin" $path)
 
 # Alias
 source $HOME/code/dotfiles/zsh/aliases
@@ -110,6 +111,9 @@ source /opt/local/share/asdf/asdf.sh
 # nodejs
 path=("node_modules/.bin" $path)
 
+# python
+path=("/Users/alex/Library/Python/3.9/bin" $path)
+
 # Completions | autogen from compinstall
 zstyle ':completion:*' completer _expand _complete _ignored _approximate
 zstyle ':completion:*' list-suffixes true
@@ -117,3 +121,12 @@ zstyle :compinstall filename "$HOME/code/dotfiles/zsh/zshrc"
 
 autoload -Uz compinit
 compinit
+
+# tabtab source for packages
+# uninstall by removing these lines
+[[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . ~/.config/tabtab/zsh/__tabtab.zsh || true
+
+# Ask for select tmux sessions
+if [[ ! -v TMUX && $TERM_PROGRAM != "vscode" ]]; then
+	tmux-selector.sh
+fi

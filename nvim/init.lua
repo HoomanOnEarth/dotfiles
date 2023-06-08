@@ -16,7 +16,7 @@ cabbrev Wq wq!
 cabbrev Wqa wqa!
 
 noremap   <silent> <leader>l :nohl<CR>
-noremap   <silent> <C-c> <ESC>
+inoremap  <silent> <C-c> <ESC><ESC>
 nnoremap  <silent> <leader>cd :cd %:p:h<CR>:pwd<CR>
 
 " moving line
@@ -194,7 +194,7 @@ require("lazy").setup({
               ["<C-u>"] = false,
               ["<C-d>"] = false,
               ["<C-x>"] = false,
-              ["<C-k>"] = action_layout.toggle_preview,
+              ["<C-h>"] = action_layout.toggle_preview,
             },
           },
           buffer_previewer_maker = function(filepath, bufnr, opts)
@@ -276,24 +276,6 @@ require("lazy").setup({
           ["<C-d>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
           ["<CR>"] = cmp.mapping.confirm({ select = true }),
-          ["<Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
-            elseif luasnip.expand_or_jumpable() then
-              luasnip.expand_or_jump()
-            else
-              fallback()
-            end
-          end, { "i", "s" }),
-          ["<S-Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
-              luasnip.jump(-1)
-            else
-              fallback()
-            end
-          end, { "i", "s" }),
         }),
         sources = {
           { name = "nvim_lsp" },
@@ -328,7 +310,7 @@ require("lazy").setup({
         sources = {
           formatting.eslint_d.with({
             condition = function(utils)
-              return utils.root_has_file(".eslintrc.js")
+              return utils.root_has_file({ ".eslintrc.js", ".eslintrc.cjs", ".eslintrc", ".eslintrc.json" })
             end
           })
         }
@@ -366,7 +348,7 @@ require("lazy").setup({
         -- disable LSP highlight
         client.server_capabilities.semanticTokensProvider = false
 
-        map("i", "<C-h>", SignatureFixed, { desc = "LSP hover" })
+        map("i", "<C-k>", SignatureFixed, { desc = "LSP hover" })
         map("n", "K", HoverFixed, { desc = "LSP hover" })
         map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "LSP rename" })
         map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP code actions" })
