@@ -236,15 +236,15 @@ require("lazy").setup({
     "mbbill/undotree",
     config = function()
       vim.cmd([[
-			if has("persistent_undo")
-				let target_path = expand('~/.config/nvim/.undodir')
-				if !isdirectory(target_path)
-					call mkdir(target_path, "p", 0700)
-				endif
-				let &undodir=target_path
-				set undofile
-			endif
-			]])
+      if has("persistent_undo")
+        let target_path = expand('~/.config/nvim/.undodir')
+        if !isdirectory(target_path)
+          call mkdir(target_path, "p", 0700)
+        endif
+        let &undodir=target_path
+        set undofile
+      endif
+      ]])
 
       map("n", "<leader>u", ":UndotreeToggle<CR>", { noremap = true })
     end,
@@ -261,10 +261,20 @@ require("lazy").setup({
       "rafamadriz/friendly-snippets",
     },
     config = function()
-      local cmp = require("cmp")
       local luasnip = require("luasnip")
-      luasnip.config.setup({})
+      luasnip.config.setup({
+        history = true,
+        updateevents = "TextChanged,TextChangedI"
+      })
       require("luasnip.loaders.from_vscode").lazy_load()
+
+      local cmp = require("cmp")
+      local has_words_before = function()
+        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+        return col ~= 0 and
+            vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(
+              col, col):match("%s") == nil
+      end
 
       cmp.setup({
         snippet = {
@@ -276,6 +286,26 @@ require("lazy").setup({
           ["<C-d>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
           ["<CR>"] = cmp.mapping.confirm({ select = true }),
+          ["<Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item()
+            elseif luasnip.expand_or_jumpable() then
+              luasnip.expand_or_jump()
+            elseif has_words_before() then
+              cmp.complete()
+            else
+              fallback()
+            end
+          end, { "i", "s" }),
+          ["<S-Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
+            elseif luasnip.jumpable(-1) then
+              luasnip.jump(-1)
+            else
+              fallback()
+            end
+          end, { "i", "s" })
         }),
         sources = {
           { name = "nvim_lsp" },
@@ -303,11 +333,17 @@ require("lazy").setup({
       require("neodev").setup()
 
       local null_ls = require("null-ls")
+      local linting = null_ls.builtins.diagnostics
       local formatting = null_ls.builtins.formatting
 
       null_ls.setup({
         debug = false,
         sources = {
+          linting.eslint_d.with({
+            condition = function(utils)
+              return utils.root_has_file({ ".eslintrc.js", ".eslintrc.cjs", ".eslintrc", ".eslintrc.json" })
+            end
+          }),
           formatting.eslint_d.with({
             condition = function(utils)
               return utils.root_has_file({ ".eslintrc.js", ".eslintrc.cjs", ".eslintrc", ".eslintrc.json" })
