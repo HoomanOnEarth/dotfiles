@@ -2,13 +2,13 @@
 IFS=$'\n' # internal field separator
 
 if [[ -n $(pgrep tmux) ]]; then
-	no_of_terminals=$(tmux list-sessions | wc -l)
-	output=$(tmux list-sessions)
-	output_names=$(tmux list-sessions -F\#S)
+	no_of_terminals=($(tmux list-sessions | wc -l))
+	output=($(tmux list-sessions))
+	output_names=($(tmux list-sessions -F\#S))
 	index=1
 	echo "Choose the terminal to attach: "
-	for i in "${output[@]}"; do
-		echo "$index - $i"
+	for session in "${output[@]}"; do
+		echo "[$index]: $session"
 		((index++))
 	done
 	echo
