@@ -60,6 +60,12 @@ set smartcase
 
 set whichwrap="b,s,<,>,h,l,[,]"
 
+
+
+augroup CProgram
+  autocmd! BufEnter *.c set makeprg=gcc\ %\ -o\ %:r
+augroup END
+
 augroup Utilities
   autocmd! BufEnter * set formatoptions-=cro
 augroup END
@@ -404,7 +410,7 @@ require("lazy").setup({
 
       local servers_settings = {
         tsserver = {
-          diagnostics = { ignoredCodes = { 7016 } },
+          diagnostics = { ignoredCodes = { 7016, 80001 } },
           javascript = {
             format = {
               indentSize = 2,

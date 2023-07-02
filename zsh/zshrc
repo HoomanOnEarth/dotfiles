@@ -111,9 +111,6 @@ source /opt/local/share/asdf/asdf.sh
 # nodejs
 path=("node_modules/.bin" $path)
 
-# python
-path=("/Users/alex/Library/Python/3.9/bin" $path)
-
 # Completions | autogen from compinstall
 zstyle ':completion:*' completer _expand _complete _ignored _approximate
 zstyle ':completion:*' list-suffixes true
