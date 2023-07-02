@@ -127,3 +127,7 @@ compinit
 if [[ ! -v TMUX && $TERM_PROGRAM != "vscode" ]]; then
 	tmux-selector.sh
 fi
+
+# C Program
+export C_INCLUDE_PATH=/opt/local/include
+export LIBRARY_PATH=/opt/local/lib
