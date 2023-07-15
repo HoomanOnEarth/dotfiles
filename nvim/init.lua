@@ -60,13 +60,11 @@ set smartcase
 
 set whichwrap="b,s,<,>,h,l,[,]"
 
-
-
-augroup CProgram
-  autocmd! BufEnter *.c set makeprg=gcc\ %\ -o\ %:r
+augroup c_language_autocmd
+  autocmd! BufEnter *.c set makeprg=clang\ -Wall\ %\ -o\ %:r"
 augroup END
 
-augroup Utilities
+augroup utilities
   autocmd! BufEnter * set formatoptions-=cro
 augroup END
 
@@ -77,25 +75,25 @@ function DiffModeMap()
   endif
 endfunction
 
-augroup FugitiveMapping
+augroup fugitive_mapping_autocmd
   autocmd!
   autocmd BufEnter * call DiffModeMap()
 augroup END
 
 
-augroup CursorHoldHints
+augroup cursor_hold_hints_autocmd
   autocmd! CursorHold * lua vim.diagnostic.open_float({ scope = "cursor", focus = false })
   autocmd! CursorMoved,CursorMovedI * lua vim.lsp.buf.clear_references()
 augroup END
 
 " auto chmod my scripts
-augroup ChmodScript
+augroup chmod_my_script_autocmd
   autocmd! BufWinEnter ~/code/scripts/* if &ft == "" | setlocal ft=sh | endif
   autocmd! BufWritePost * if &ft == "sh" | silent! execute "!chmod +x %" | endif
 augroup END
 
 " auto refresh quickfix: InsertLeave, BufWritePost
-augroup SmartQfList
+augroup smart_qflist_autocmd
   function RefreshQuickfixList()
     let win_info = getwininfo()
     let quickfix_open = 0
@@ -343,7 +341,7 @@ require("lazy").setup({
       local formatting = null_ls.builtins.formatting
 
       null_ls.setup({
-        debug = false,
+        debug = true,
         sources = {
           linting.eslint_d.with({
             condition = function(utils)
