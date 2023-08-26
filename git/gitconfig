@@ -26,7 +26,7 @@ cwt = !sh $HOME/code/dotfiles/clone-for-worktree.sh
 
 [push]
 autoSetupRemote = true
-	default = current
+default = current
 
 [pull]
 rebase = true
