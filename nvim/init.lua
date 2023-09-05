@@ -18,6 +18,26 @@ noremap   <silent> <leader>l :nohl<CR>
 inoremap  <silent> <C-c> <ESC><ESC>
 nnoremap  <silent> <leader>cd :cd %:p:h<CR>:pwd<CR>
 
+vnoremap < <gv
+vnoremap > >gv
+
+" dont move
+nnoremap J mzJ`z
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
+" chmod +x
+nnoremap <leader>x :silent !chmod +x %<CR>
+
+" jumps
+nnoremap gi gi<ESC>zz
+nnoremap <C-j> :cprev<CR>zz
+nnoremap <C-k> :cnext<CR>zz
+nnoremap <leader>j :lprev<CR>zz
+nnoremap <leader>k :cnext<CR>zz
+
 " moving line
 nnoremap <M-j> :m .+1<CR>==
 nnoremap <M-k> :m .-2<CR>==
@@ -354,7 +374,6 @@ require("lazy").setup({
 			"folke/neodev.nvim",
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
-			-- "jose-elias-alvarez/null-ls.nvim"
 		},
 		config = function()
 			require("neodev").setup()
@@ -407,7 +426,13 @@ require("lazy").setup({
 
 			local servers_settings = {
 				tsserver = {
-					diagnostics = { ignoredCodes = { 7016, 80001 } },
+					diagnostics = {
+						ignoredCodes = {
+							7016,
+							80001,
+							80002, -- This constructor function may be converted to a class declaration.
+						},
+					},
 					javascript = {
 						format = {
 							indentSize = 2,
