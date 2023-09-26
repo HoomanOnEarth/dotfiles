@@ -129,5 +129,13 @@ if [[ ! -v TMUX && $TERM_PROGRAM != "vscode" ]]; then
 fi
 
 # C Program
-export C_INCLUDE_PATH=/opt/local/include
-export LIBRARY_PATH=/opt/local/lib
+MACPORTS_INCLUDE="/opt/local/include"
+LOCAL_INCLUDE="$HOME/.local/include:$MACPORTS_INCLUDE"
+LOCAL_LIB="$HOME/.local/lib"
+
+export CPATH="$LOCAL_INCLUDE:$CPATH"
+export C_INCLUDE_PATH="$LOCAL_INCLUDE:$C_INCLUDE_PATH"
+export CPLUS_INCLUDE_PATH="$LOCAL_INCLUDE:$CPLUS_INCLUDE_PATH"
+
+export LIBRARY_PATH="$LOCAL_LIB:$LIBRARY_PATH"
+export LD_LIBRARY_PATH="$LOCAL_LIB:$LD_LIBRARY_PATH"

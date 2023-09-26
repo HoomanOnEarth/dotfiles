@@ -110,27 +110,6 @@ augroup chmod_my_script_autocmd
   autocmd! BufWinEnter ~/code/scripts/* if &ft == "" | setlocal ft=sh | endif
   autocmd! BufWritePost * if &ft == "sh" | silent! execute "!chmod +x %" | endif
 augroup END
-
-" auto refresh quickfix: InsertLeave, BufWritePost
-augroup smart_qflist_autocmd
-  function RefreshQuickfixList()
-    let win_info = getwininfo()
-    let quickfix_open = 0
-
-    for info in win_info
-      if info.quickfix
-        let quickfix_open = 1
-        break
-      endif
-    endfor
-
-    if quickfix_open == 1
-      lua vim.diagnostic.setqflist()
-    endif
-  endfunction
-
-  autocmd! InsertLeave,BufWritePost * call RefreshQuickfixList()
-augroup END
 ]])
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -148,11 +127,12 @@ vim.opt.rtp:prepend(lazypath)
 
 local auto_cmd = vim.api.nvim_create_autocmd
 local map = vim.keymap.set
+---@diagnostic disable-next-line: unused-local
 local all_modes = { "n", "v", "x" }
 
 -- HTML CSS JS basic setup
 auto_cmd({ "BufNewFile", "BufRead" }, {
-	pattern = { "*.js", "*.html", "*.css" },
+	pattern = { "*.js", "*.html", "*.css", "*.liquid" },
 	callback = function()
 		vim.o.tabstop = 2
 		vim.o.softtabstop = 2
@@ -164,10 +144,8 @@ auto_cmd({ "BufNewFile", "BufRead" }, {
 })
 
 require("lazy").setup({
-	{
-		"tpope/vim-fugitive",
-		config = function() end,
-	},
+	{ "tpope/vim-fugitive", config = function() end },
+	{ "tpope/vim-liquid", config = function() end },
 	{
 		"christoomey/vim-tmux-navigator",
 		init = function()
@@ -248,9 +226,6 @@ require("lazy").setup({
 			map("n", "<C-g>", require("api.telescope").change_directory, { desc = "Change directory" })
 		end,
 	},
-
-	-- Syntax
-	{ "sheerun/vim-polyglot" },
 
 	-- Undotree
 	{
@@ -356,6 +331,9 @@ require("lazy").setup({
 					html = {
 						require("formatter.filetypes.html").prettierd,
 					},
+					javascriptreact = {
+						require("formatter.filetypes.javascriptreact").eslint_d,
+					},
 					javascript = {
 						require("formatter.filetypes.javascript").eslint_d,
 					},
@@ -402,6 +380,7 @@ require("lazy").setup({
 			local function on_attach(client, bufnr)
 				-- helpers
 				local buf_set_option = function(...)
+					---@diagnostic disable-next-line: redundant-parameter
 					vim.api.nvim_buf_set_option(bufnr, ...)
 				end
 
