@@ -17,6 +17,7 @@ unlink $CONFIG/starship.toml
 unlink $CONFIG/youtube-dl
 
 # setup
+ln -s $ROOT/zsh/zshenv $HOME/.zshenv
 ln -s $ROOT/zsh/zshrc $HOME/.zshrc
 ln -s $ROOT/zsh/zprofile $HOME/.zprofile
 ln -s $ROOT/git/gitconfig $HOME/.gitconfig

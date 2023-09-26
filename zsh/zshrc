@@ -5,9 +5,6 @@ typeset -U fpath
 fpath=("$HOME/code/dotfiles/zsh/functions/" $fpath)
 path=("$HOME/code/dotfiles/bin" $path)
 
-# Alias
-source $HOME/code/dotfiles/zsh/aliases
-
 # Changing directories
 setopt auto_cd                 # if a command isn't valid, but is a directory, cd to that dir
 setopt auto_pushd              # make cd push the old directory onto the directory stack
