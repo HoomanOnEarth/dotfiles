@@ -22,19 +22,19 @@ font:
     y: 4
 
   normal:
-    family: JetBrainsMono Nerd Font Mono
+    family: JetBrains Mono
     style: Regular
 
   medium:
-    family: JetBrainsMono Nerd Font Mono
+    family: JetBrains Mono
     style: Medium
 
   bold:
-    family: JetBrainsMono Nerd Font Mono
+    family: JetBrains Mono
     style: Bold
 
   italic:
-    family: JetBrainsMono Nerd Font Mono
+    family: JetBrains Mono
     style: Italic
 
 key_bindings:

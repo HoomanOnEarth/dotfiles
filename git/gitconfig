@@ -1,6 +1,6 @@
 [core]
-editor = ~/.neovim/bin/nvim
-excludesfile = ~/code/dotfiles/git/ignore
+editor = nvim
+excludesfile = ~/.gitignore
 
 [user]
 name = 0xlkda

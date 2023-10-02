@@ -3,7 +3,7 @@ typeset -U path
 typeset -U fpath
 
 fpath=("$HOME/code/dotfiles/zsh/functions/" $fpath)
-path=("$HOME/code/dotfiles/bin" $path)
+path=("$HOME/code/dotfiles/bin" "$HOME/.local/bin" $path)
 
 # Changing directories
 setopt auto_cd                 # if a command isn't valid, but is a directory, cd to that dir
@@ -103,10 +103,7 @@ function worktree() {
 export LESSHISTFILE=-
 
 # asdf
-source /opt/local/share/asdf/asdf.sh
-
-# nodejs
-path=("node_modules/.bin" $path)
+#source /opt/local/share/asdf/asdf.sh
 
 # Completions | autogen from compinstall
 zstyle ':completion:*' completer _expand _complete _ignored _approximate
@@ -124,15 +121,3 @@ compinit
 if [[ ! -v TMUX && $TERM_PROGRAM != "vscode" ]]; then
 	tmux-selector.sh
 fi
-
-# C Program
-MACPORTS_INCLUDE="/opt/local/include"
-LOCAL_INCLUDE="$HOME/.local/include:$MACPORTS_INCLUDE"
-LOCAL_LIB="$HOME/.local/lib"
-
-export CPATH="$LOCAL_INCLUDE:$CPATH"
-export C_INCLUDE_PATH="$LOCAL_INCLUDE:$C_INCLUDE_PATH"
-export CPLUS_INCLUDE_PATH="$LOCAL_INCLUDE:$CPLUS_INCLUDE_PATH"
-
-export LIBRARY_PATH="$LOCAL_LIB:$LIBRARY_PATH"
-export LD_LIBRARY_PATH="$LOCAL_LIB:$LD_LIBRARY_PATH"

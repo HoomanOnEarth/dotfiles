@@ -4,7 +4,7 @@ source "$HOME/code/dotfiles/zsh/private_aliases"
 alias code="cd $HOME/code"
 alias note="cd $HOME/Documents/notes"
 alias c='clear'
-alias vim='$HOME/.neovim/bin/nvim'
+alias vim='$HOME/.nix-profile/bin/nvim'
 alias svim='sudo vim'
 alias vi=vim
 alias edit=vim
@@ -83,10 +83,9 @@ alias to='tmuxinator o'
 alias ts='tmuxinator s'
 
 # Listing
-alias ls='gls --group-directories-first --human-readable --width=80 --color=auto'
-alias lsl='ls | sort'
-alias la='ls --almost-all'
-alias ll='la -lgp'
+alias ls='ls --color'
+alias la='ls -a --color'
+alias ll='ls -lh --color'
 alias cpwd='pwd | tr -d "\n" | pbcopy && echo "pwd copied to clipboard"'
 alias mkdir='mkdir -pv'
 

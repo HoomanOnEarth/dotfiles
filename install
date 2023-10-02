@@ -1,10 +1,16 @@
 #!/bin/zsh
 
+# shortcut
 HOME=~
 ROOT=$HOME/code/dotfiles
 CONFIG=$HOME/.config
 
+# make KeyBindings directory
+mkdir -p $HOME/Library/KeyBindings
+
 # cleanup
+unlink $HOME/Library/KeyBindings/DefaultKeyBinding.dict
+unlink $HOME/.zshenv
 unlink $HOME/.zshrc
 unlink $HOME/.zprofile
 unlink $HOME/.gitconfig
@@ -16,7 +22,8 @@ unlink $CONFIG/alacritty
 unlink $CONFIG/starship.toml
 unlink $CONFIG/youtube-dl
 
-# setup
+# symlink
+ln -s $ROOT/DefaultKeyBinding.dict $HOME/Library/KeyBindings/DefaultKeyBinding.dict
 ln -s $ROOT/zsh/zshenv $HOME/.zshenv
 ln -s $ROOT/zsh/zshrc $HOME/.zshrc
 ln -s $ROOT/zsh/zprofile $HOME/.zprofile

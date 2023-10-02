@@ -1,0 +1,7 @@
+{
+  "^w" = "deleteWordBackward:";
+
+  "~-" = "lowercaseWord:";
+  "~=" = "uppercaseWord:";
+  "~+" = "capitalizeWord:";
+}
