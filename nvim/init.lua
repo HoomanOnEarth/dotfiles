@@ -15,7 +15,6 @@ cabbrev Wq wq!
 cabbrev Wqa wqa!
 
 noremap   <silent> <leader>l :nohl<CR>
-inoremap  <silent> <C-c> <ESC><ESC>
 nnoremap  <silent> <leader>cd :cd %:p:h<CR>:pwd<CR>
 
 vnoremap < <gv
@@ -47,8 +46,8 @@ vnoremap <M-j> :m '>+1<CR>gv=gv
 vnoremap <M-k> :m '<-2<CR>gv=gv
 
 " diagnostics
-nnoremap g[ :lua vim.diagnostic.goto_prev()<CR>
-nnoremap g] :lua vim.diagnostic.goto_next()<CR>
+nnoremap <C-j> :lua vim.diagnostic.goto_prev()<CR>
+nnoremap <C-k> :lua vim.diagnostic.goto_next()<CR>
 nnoremap <leader>q :lua vim.diagnostic.setloclist()<CR>
 nnoremap <leader>e :lua vim.diagnostic.open_float(nil, { focus = false })<CR>
 ]])
@@ -81,10 +80,6 @@ set whichwrap="b,s,<,>,h,l,[,]"
 
 augroup c_language_autocmd
   autocmd! BufEnter *.c set makeprg=clang\ -Wall\ %\ -o\ %:r"
-augroup END
-
-augroup utilities
-  autocmd! BufEnter * set formatoptions-=cro
 augroup END
 
 function DiffModeMap()
@@ -130,9 +125,9 @@ local map = vim.keymap.set
 ---@diagnostic disable-next-line: unused-local
 local all_modes = { "n", "v", "x" }
 
--- HTML CSS JS basic setup
+-- Enable Formatter
 auto_cmd({ "BufNewFile", "BufRead" }, {
-	pattern = { "*.js", "*.html", "*.css", "*.liquid" },
+	pattern = { "*.json", "*.js", "*.jsx", "*.ts", "*.tsx", "*.html", "*.css", "*.liquid", "*.rs" },
 	callback = function()
 		vim.o.tabstop = 2
 		vim.o.softtabstop = 2
@@ -140,12 +135,15 @@ auto_cmd({ "BufNewFile", "BufRead" }, {
 
 		vim.g.html_indent_style1 = "inc"
 		vim.g.html_indent_script1 = "inc"
+
+    map("n", "gq", ":Format<CR>", { desc = "Formatter format" })
 	end,
 })
 
 require("lazy").setup({
 	{ "tpope/vim-fugitive", config = function() end },
 	{ "tpope/vim-liquid", config = function() end },
+	{ "tpope/vim-markdown", config = function() end },
 	{
 		"christoomey/vim-tmux-navigator",
 		init = function()
@@ -184,7 +182,7 @@ require("lazy").setup({
 			local default_opts = themes.get_ivy(ivy_theme_config)
 
 			require("telescope").setup({
-				defaults = vim.tbl_deep_extend("force", {
+				defaults = vim.tbl_deep_extend("force", default_opts, {
 					preview = {
 						hide_on_startup = true,
 					},
@@ -192,7 +190,6 @@ require("lazy").setup({
 						i = {
 							["<C-u>"] = false,
 							["<C-d>"] = false,
-							["<C-x>"] = false,
 							["<C-h>"] = action_layout.toggle_preview,
 						},
 					},
@@ -210,7 +207,7 @@ require("lazy").setup({
 							end
 						end)
 					end,
-				}, default_opts),
+				}),
 			})
 
 			local ts = require("telescope.builtin")
@@ -246,6 +243,11 @@ require("lazy").setup({
 		end,
 	},
 
+	-- Syntax
+	{
+		"MaxMEllon/vim-jsx-pretty",
+	},
+
 	-- Autocomplete
 	{
 		"hrsh7th/nvim-cmp",
@@ -258,11 +260,11 @@ require("lazy").setup({
 		},
 		config = function()
 			local luasnip = require("luasnip")
-			luasnip.config.setup({
-				history = true,
-				updateevents = "TextChanged,TextChangedI",
+			require("luasnip.loaders.from_vscode").load({
+				include = { "all", "javascript", "javascriptreact", "typescript", "typescriptreact", "liquid", "markdown" },
 			})
-			require("luasnip.loaders.from_vscode").lazy_load()
+			luasnip.filetype_set("javascript", { "javascriptreact" })
+			luasnip.filetype_set("typescript", { "typescriptreact" })
 
 			local cmp = require("cmp")
 			local has_words_before = function()
@@ -283,22 +285,16 @@ require("lazy").setup({
 					["<C-f>"] = cmp.mapping.scroll_docs(4),
 					["<CR>"] = cmp.mapping.confirm({ select = true }),
 					["<Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_next_item()
-						elseif luasnip.expand_or_jumpable() then
-							luasnip.expand_or_jump()
-						elseif has_words_before() then
-							cmp.complete()
-						else
+						if luasnip.jumpable(1) then
+							luasnip.jump(1)
+						elseif fallback then
 							fallback()
 						end
 					end, { "i", "s" }),
 					["<S-Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.select_prev_item()
-						elseif luasnip.jumpable(-1) then
+						if luasnip.jumpable(-1) then
 							luasnip.jump(-1)
-						else
+						elseif fallback then
 							fallback()
 						end
 					end, { "i", "s" }),
@@ -325,20 +321,35 @@ require("lazy").setup({
 				logging = true,
 				log_level = vim.log.levels.INFO,
 				filetype = {
+					json = {
+						require("formatter.filetypes.json").prettierd,
+					},
+					jsonc = {
+						require("formatter.filetypes.json").prettierd,
+					},
 					css = {
 						require("formatter.filetypes.css").prettierd,
 					},
 					html = {
 						require("formatter.filetypes.html").prettierd,
 					},
-					javascriptreact = {
-						require("formatter.filetypes.javascriptreact").eslint_d,
-					},
 					javascript = {
 						require("formatter.filetypes.javascript").eslint_d,
 					},
+					javascriptreact = {
+						require("formatter.filetypes.javascriptreact").eslint_d,
+					},
+					typescript = {
+						require("formatter.filetypes.typescript").eslint_d,
+					},
+					typescriptreact = {
+						require("formatter.filetypes.typescriptreact").eslint_d,
+					},
 					lua = {
 						require("formatter.filetypes.lua").stylua,
+					},
+					rust = {
+						require("formatter.filetypes.rust").rustfmt,
 					},
 				},
 			})
@@ -400,7 +411,6 @@ require("lazy").setup({
 				map("n", "gI", telescope_builtin.lsp_implementations, { desc = "Goto implementations" })
 				map("n", "gT", telescope_builtin.lsp_type_definitions, { desc = "Goto type definitions" })
 				map("n", "gs", telescope_builtin.lsp_document_symbols, { desc = "List document symbols" })
-				map("n", "gq", ":Format<CR>", { desc = "Formatter format" })
 			end
 
 			local servers_settings = {
@@ -410,6 +420,15 @@ require("lazy").setup({
 							7016,
 							80001,
 							80002, -- This constructor function may be converted to a class declaration.
+						},
+					},
+					typescript = {
+						format = {
+							indentSize = 2,
+							semicolons = "ignore",
+							convertTabsToSpaces = true,
+							indentStyle = "Smart",
+							trimTrailingWhitespace = true,
 						},
 					},
 					javascript = {
@@ -435,7 +454,15 @@ require("lazy").setup({
 					},
 				},
 				emmet_language_server = {
-					filetypes = { "css", "html", "javascript", "javascriptreact", "liquid", "typescriptreact" },
+					filetypes = {
+						"css",
+						"html",
+						"liquid",
+						"javascript",
+						"javascriptreact",
+						"typescript",
+						"typescriptreact",
+					},
 					init_options = {
 						preferences = {},
 						showexpandedabbreviation = "always",
