@@ -33,7 +33,7 @@ setl foldlevel=1
 setl foldcolumn=0
 
 " text of closed fold
-" shows the first line as is, plus fold level and the number of hidden lines
+" shows the first line as is, plus number of hidden lines
 setl foldtext=getline(v:foldstart).':\ '.(v:foldend-v:foldstart).'\ lines'
 
 "-------- other buffer- and window-local settings to override defaults
