@@ -16,11 +16,12 @@ unlink $HOME/.zprofile
 unlink $HOME/.gitconfig
 unlink $HOME/.rgignore
 
+unlink $CONFIG/nix
 unlink $CONFIG/nvim
 unlink $CONFIG/tmux
 unlink $CONFIG/alacritty
 unlink $CONFIG/starship.toml
-unlink $CONFIG/youtube-dl
+unlink $CONFIG/yt-dlp
 
 # symlink
 ln -s $ROOT/DefaultKeyBinding.dict $HOME/Library/KeyBindings/DefaultKeyBinding.dict
@@ -30,8 +31,9 @@ ln -s $ROOT/zsh/zprofile $HOME/.zprofile
 ln -s $ROOT/git/gitconfig $HOME/.gitconfig
 ln -s $ROOT/rg/rgignore $HOME/.rgignore
 
+ln -s $ROOT/nix $CONFIG/nix
 ln -s $ROOT/nvim $CONFIG/nvim
 ln -s $ROOT/tmux $CONFIG/tmux
 ln -s $ROOT/alacritty $CONFIG/alacritty
 ln -s $ROOT/starship/starship.toml $CONFIG/starship.toml
-ln -s $ROOT/youtube-dl $CONFIG/youtube-dl
+ln -s $ROOT/yt-dlp $CONFIG/yt-dlp

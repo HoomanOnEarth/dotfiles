@@ -33,7 +33,7 @@ setopt hist_reduce_blanks      # remove superfluous blanks from each command lin
 setopt hist_save_no_dups       # don't write a duplicate event to the history file
 setopt hist_verify             # don't execute immediately upon history expansion
 setopt inc_append_history      # write to the history file immediately, not when the shell exits
-unsetopt share_history         # don't share history between all sessions
+setopt share_history           # share history between all sessions
 
 # Input/Output
 unsetopt rm_star_silent        # ask for confirmation for `rm *' or `rm path/*'
@@ -57,7 +57,7 @@ eval "$(starship init zsh)"
 bindkey '^r' history-fzy
 zle -N history-fzy
 function history-fzy() {
-  BUFFER=$(history -n 1 | tail -r | awk '!a[$0]++' | fzy --query "$LBUFFER")
+  BUFFER=$(history -n 1 | awk '!a[$0]++' | fzy --query "$LBUFFER")
   CURSOR=$#BUFFER
   zle reset-prompt
 }
@@ -121,3 +121,9 @@ compinit
 if [[ ! -v TMUX && $TERM_PROGRAM != "vscode" ]]; then
 	tmux-selector.sh
 fi
+
+# direnv
+eval "$(direnv hook zsh)"
+
+# main editor
+export EDITOR=nvim

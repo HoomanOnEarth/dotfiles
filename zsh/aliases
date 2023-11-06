@@ -1,6 +1,7 @@
 source "$HOME/code/dotfiles/zsh/private_aliases"
 
 # Basic
+alias free="top -l 1 -s 0 | grep PhysMem | sed 's/, /\n         /g'"
 alias code="cd $HOME/code"
 alias note="cd $HOME/Documents/notes"
 alias c='clear'
@@ -83,7 +84,7 @@ alias to='tmuxinator o'
 alias ts='tmuxinator s'
 
 # Listing
-alias ls='ls --color'
+alias ls='ls --color --group-directories-first'
 alias la='ls -a --color'
 alias ll='ls -lh --color'
 alias cpwd='pwd | tr -d "\n" | pbcopy && echo "pwd copied to clipboard"'
@@ -93,4 +94,4 @@ alias mkdir='mkdir -pv'
 alias theme='shopify theme'
 
 # Video downloader
-alias vd=youtube-dl
+alias vd=yt-dlp
