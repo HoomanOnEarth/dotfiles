@@ -62,7 +62,8 @@ set clipboard=unnamedplus
 set statusline="2"
 set signcolumn=yes
 
-set nowrap
+set wrap
+set linebreak
 set splitright
 
 set autoindent
@@ -125,18 +126,24 @@ local map = vim.keymap.set
 ---@diagnostic disable-next-line: unused-local
 local all_modes = { "n", "v", "x" }
 
--- Enable Formatter
+-- editor config for common file types
 auto_cmd({ "BufNewFile", "BufRead" }, {
-	pattern = { "*.json", "*.js", "*.jsx", "*.ts", "*.tsx", "*.html", "*.css", "*.liquid", "*.rs" },
-	callback = function()
+	pattern = { "*.json", "*.js", "*.jsx", "*.ts", "*.tsx", "*.html", "*.css", "*.liquid" },
+	callback = function(ev)
 		vim.o.tabstop = 2
 		vim.o.softtabstop = 2
 		vim.o.shiftwidth = 2
 
 		vim.g.html_indent_style1 = "inc"
 		vim.g.html_indent_script1 = "inc"
+	end,
+})
 
-    map("n", "gq", ":Format<CR>", { desc = "Formatter format" })
+-- Enable Formatter
+auto_cmd({ "BufNewFile", "BufRead" }, {
+	pattern = { "*.json", "*.js", "*.jsx", "*.ts", "*.tsx", "*.html", "*.css", "*.liquid", "*.c", "*.rs" },
+	callback = function()
+		map("n", "gq", ":Format<CR>", { desc = "Formatter format" })
 	end,
 })
 
@@ -261,7 +268,17 @@ require("lazy").setup({
 		config = function()
 			local luasnip = require("luasnip")
 			require("luasnip.loaders.from_vscode").load({
-				include = { "all", "javascript", "javascriptreact", "typescript", "typescriptreact", "liquid", "markdown" },
+				include = {
+					"all",
+					"javascript",
+					"javascriptreact",
+					"typescript",
+					"typescriptreact",
+					"liquid",
+					"markdown",
+					"c",
+					"rust",
+				},
 			})
 			luasnip.filetype_set("javascript", { "javascriptreact" })
 			luasnip.filetype_set("typescript", { "typescriptreact" })
@@ -321,6 +338,9 @@ require("lazy").setup({
 				logging = true,
 				log_level = vim.log.levels.INFO,
 				filetype = {
+					c = {
+						require("formatter.filetypes.c").clangformat,
+					},
 					json = {
 						require("formatter.filetypes.json").prettierd,
 					},
@@ -488,6 +508,12 @@ require("lazy").setup({
 						settings = servers_settings[server_name],
 					})
 				end,
+			})
+
+			require("lspconfig").clangd.setup({
+				cmd = { "clangd" },
+				on_attach = on_attach,
+				capabilities = capabilities,
 			})
 
 			-- Swift

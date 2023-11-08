@@ -1,5 +1,6 @@
 {
     "diagnostics.globals": [
         "type"
-    ]
+    ],
+    "workspace.checkThirdParty": "Disable"
 }
