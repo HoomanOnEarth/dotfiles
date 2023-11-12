@@ -425,11 +425,12 @@ require("lazy").setup({
 				map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "LSP rename" })
 				map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP code actions" })
 
+				map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>zz", { desc = "Goto definitions" })
+				map("n", "gT", "<cmd>lua vim.lsp.buf.type_definition()<CR>zz", { desc = "Goto type definitions" })
+				map("n", "gI", "<cmd>lua vim.lsp.buf.implementation()<CR>zz", { desc = "Goto implementations" })
+
 				local telescope_builtin = require("telescope.builtin")
-				map("n", "gd", telescope_builtin.lsp_definitions, { desc = "Goto definitions" })
 				map("n", "gr", telescope_builtin.lsp_references, { desc = "Goto references" })
-				map("n", "gI", telescope_builtin.lsp_implementations, { desc = "Goto implementations" })
-				map("n", "gT", telescope_builtin.lsp_type_definitions, { desc = "Goto type definitions" })
 				map("n", "gs", telescope_builtin.lsp_document_symbols, { desc = "List document symbols" })
 			end
 
