@@ -1,3 +1,6 @@
+" enable syntax highlighting for jsdoc
+let g:javascript_plugin_jsdoc = 1
+
 "-- FOLDING --  
 set foldmethod=syntax "syntax highlighting items specify folds  
 set foldcolumn=1 "defines 1 col at window left, to indicate folding  

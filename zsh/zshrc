@@ -118,12 +118,16 @@ compinit
 [[ -f ~/.config/tabtab/zsh/__tabtab.zsh ]] && . ~/.config/tabtab/zsh/__tabtab.zsh || true
 
 # Ask for select tmux sessions
-if [[ ! -v TMUX && $TERM_PROGRAM != "vscode" ]]; then
-	tmux-selector.sh
-fi
+# if [[ ! -v TMUX && $TERM_PROGRAM != "vscode" ]]; then
+# 	tmux-selector.sh
+# fi
 
 # direnv
 eval "$(direnv hook zsh)"
 
 # main editor
 export EDITOR=nvim
+
+# start nix-daemon.sh
+source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+

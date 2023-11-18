@@ -251,9 +251,8 @@ require("lazy").setup({
 	},
 
 	-- Syntax
-	{
-		"MaxMEllon/vim-jsx-pretty",
-	},
+  { "pangloss/vim-javascript" },
+	{ "MaxMEllon/vim-jsx-pretty" },
 
 	-- Autocomplete
 	{
