@@ -1,2 +1,2 @@
 -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4'
--o ~/Documents/youtube-videos/%(title)s.%(ext)s
+-o ~/youtube-videos/%(title)s.%(ext)s

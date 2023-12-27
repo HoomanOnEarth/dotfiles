@@ -20,10 +20,16 @@ nnoremap  <silent> <leader>cd :cd %:p:h<CR>:pwd<CR>
 vnoremap < <gv
 vnoremap > >gv
 
+" folding
+nnoremap z1f :set foldlevel=1<CR>
+nnoremap z2f :set foldlevel=2<CR>
+nnoremap z3f :set foldlevel=3<CR>
+nnoremap z4f :set foldlevel=4<CR>
+
 " dont move
 nnoremap J mzJ`z
-nnoremap <C-d> <C-d>zz
-nnoremap <C-u> <C-u>zz
+nnoremap <C-d> <C-d>
+nnoremap <C-u> <C-u>
 nnoremap n nzzzv
 nnoremap N Nzzzv
 
@@ -62,11 +68,11 @@ set clipboard=unnamedplus
 set statusline="2"
 set signcolumn=yes
 
-set wrap
+set nowrap
 set linebreak
 set splitright
 
-set autoindent
+set noautoindent
 set expandtab
 set tabstop=2
 set softtabstop=2
@@ -77,10 +83,10 @@ set incsearch
 set ignorecase
 set smartcase
 
-set whichwrap="b,s,<,>,h,l,[,]"
+set whichwrap="b,s,<,>,h,l,[,],`"
 
 augroup c_language_autocmd
-  autocmd! BufEnter *.c set makeprg=clang\ -Wall\ %\ -o\ %:r"
+  autocmd! BufEnter *.c set makeprg=make
 augroup END
 
 function DiffModeMap()
@@ -127,7 +133,7 @@ local map = vim.keymap.set
 local all_modes = { "n", "v", "x" }
 
 -- editor config for common file types
-auto_cmd({ "BufNewFile", "BufRead" }, {
+auto_cmd({ "BufEnter" }, {
 	pattern = { "*.json", "*.js", "*.jsx", "*.ts", "*.tsx", "*.html", "*.css", "*.liquid" },
 	callback = function(ev)
 		vim.o.tabstop = 2
@@ -140,7 +146,7 @@ auto_cmd({ "BufNewFile", "BufRead" }, {
 })
 
 -- Enable Formatter
-auto_cmd({ "BufNewFile", "BufRead" }, {
+auto_cmd({ "BufEnter" }, {
 	pattern = { "*.json", "*.js", "*.jsx", "*.ts", "*.tsx", "*.html", "*.css", "*.liquid", "*.c", "*.rs" },
 	callback = function()
 		map("n", "gq", ":Format<CR>", { desc = "Formatter format" })
@@ -182,19 +188,42 @@ require("lazy").setup({
 		version = "*",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		config = function()
+			local telescope = require("telescope")
+			local builtin = require("telescope.builtin")
+			local actions = require("telescope.actions")
 			local action_layout = require("telescope.actions.layout")
 			local previewers = require("telescope.previewers")
 			local themes = require("telescope.themes")
 			local ivy_theme_config = { sorting_strategy = "ascending", prompt_position = "bottom" }
 			local default_opts = themes.get_ivy(ivy_theme_config)
 
-			require("telescope").setup({
+			-- respect folding: https://github.com/nvim-telescope/telescope.nvim/issues/559#issuecomment-864530935
+			local find_files_opts = {
+				attach_mappings = function(_)
+					actions.center:replace(function(_)
+						vim.wo.foldmethod = vim.wo.foldmethod or "expr"
+						vim.wo.foldexpr = vim.wo.foldexpr or "nvim_treesitter#foldexpr()"
+						vim.cmd(":normal! zx")
+						vim.cmd(":normal! zz")
+						pcall(vim.cmd, ":loadview") -- silent load view
+					end)
+					return true
+				end,
+			}
+
+			builtin.my_find_files = function(opts)
+				opts = opts or {}
+				return builtin.find_files(vim.tbl_extend("error", find_files_opts, opts))
+			end
+
+			telescope.setup({
 				defaults = vim.tbl_deep_extend("force", default_opts, {
 					preview = {
 						hide_on_startup = true,
 					},
 					mappings = {
 						i = {
+							["<cr>"] = actions.select_default + actions.center,
 							["<C-u>"] = false,
 							["<C-d>"] = false,
 							["<C-h>"] = action_layout.toggle_preview,
@@ -217,16 +246,15 @@ require("lazy").setup({
 				}),
 			})
 
-			local ts = require("telescope.builtin")
-			map("n", "<leader>?", ts.oldfiles, { desc = "Recent files" })
-			map("n", "<leader><space>", ts.buffers, { desc = "Recent buffers" })
-			map("n", "<C-p>", ts.find_files, { desc = "Browse files" })
-			map("n", "<leader>sh", ts.help_tags, { desc = "Search helps" })
-			map("n", "<leader>sf", ts.live_grep, { desc = "Live search" })
-			map("n", "<leader>sw", ts.grep_string, { desc = "Search" })
-			map("n", "<leader>sd", ts.diagnostics, { desc = "List diagnostics" })
+			map("n", "<leader>?", builtin.oldfiles, { desc = "Recent files" })
+			map("n", "<leader><space>", builtin.buffers, { desc = "Recent buffers" })
+			map("n", "<C-p>", builtin.my_find_files, { desc = "Browse files" })
+			map("n", "<leader>sh", builtin.help_tags, { desc = "Search helps" })
+			map("n", "<leader>sf", builtin.live_grep, { desc = "Live search" })
+			map("n", "<leader>sw", builtin.grep_string, { desc = "Search" })
+			map("n", "<leader>sd", builtin.diagnostics, { desc = "List diagnostics" })
 			map("n", "<leader>qf", vim.diagnostic.setqflist, { desc = "List diagnostics" })
-			map("n", "<C-f>", ts.current_buffer_fuzzy_find, { desc = "Current file fuzzy search" })
+			map("n", "<C-f>", builtin.current_buffer_fuzzy_find, { desc = "Current file fuzzy search" })
 			map("n", "<C-g>", require("api.telescope").change_directory, { desc = "Change directory" })
 		end,
 	},
@@ -251,83 +279,90 @@ require("lazy").setup({
 	},
 
 	-- Syntax
-  { "pangloss/vim-javascript" },
+	{ "pangloss/vim-javascript" },
 	{ "MaxMEllon/vim-jsx-pretty" },
 
 	-- Autocomplete
-	{
-		"hrsh7th/nvim-cmp",
-		dependencies = {
-			"hrsh7th/cmp-nvim-lsp",
-			"hrsh7th/cmp-buffer",
-			"L3MON4D3/LuaSnip",
-			"saadparwaiz1/cmp_luasnip",
-			"rafamadriz/friendly-snippets",
-		},
-		config = function()
-			local luasnip = require("luasnip")
-			require("luasnip.loaders.from_vscode").load({
-				include = {
-					"all",
-					"javascript",
-					"javascriptreact",
-					"typescript",
-					"typescriptreact",
-					"liquid",
-					"markdown",
-					"c",
-					"rust",
-				},
-			})
-			luasnip.filetype_set("javascript", { "javascriptreact" })
-			luasnip.filetype_set("typescript", { "typescriptreact" })
-
-			local cmp = require("cmp")
-			local has_words_before = function()
-				local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-				return col ~= 0
-					and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
-			end
-
-			---@diagnostic disable-next-line: missing-fields
-			cmp.setup({
-				snippet = {
-					expand = function(args)
-						luasnip.lsp_expand(args.body)
-					end,
-				},
-				mapping = cmp.mapping.preset.insert({
-					["<C-d>"] = cmp.mapping.scroll_docs(-4),
-					["<C-f>"] = cmp.mapping.scroll_docs(4),
-					["<CR>"] = cmp.mapping.confirm({ select = true }),
-					["<Tab>"] = cmp.mapping(function(fallback)
-						if luasnip.jumpable(1) then
-							luasnip.jump(1)
-						elseif fallback then
-							fallback()
-						end
-					end, { "i", "s" }),
-					["<S-Tab>"] = cmp.mapping(function(fallback)
-						if luasnip.jumpable(-1) then
-							luasnip.jump(-1)
-						elseif fallback then
-							fallback()
-						end
-					end, { "i", "s" }),
-				}),
-				sources = {
-					{ name = "nvim_lsp" },
-					{ name = "luasnip" },
-					{ name = "buffer" },
-				},
-				---@diagnostic disable-next-line: missing-fields
-				completion = {
-					max_item_count = 8,
-					keyword_length = 2,
-				},
-			})
-		end,
-	},
+	-- {
+	-- 	"hrsh7th/nvim-cmp",
+	-- 	dependencies = {
+	-- 		-- "hrsh7th/cmp-nvim-lsp",
+	-- 		-- "hrsh7th/cmp-buffer",
+	-- 		-- "L3MON4D3/LuaSnip",
+	-- 		-- "saadparwaiz1/cmp_luasnip",
+	-- 		-- "rafamadriz/friendly-snippets",
+	-- 	},
+	-- 	config = function()
+	-- 		local luasnip = require("luasnip")
+	-- 		require("luasnip.loaders.from_vscode").load({
+	-- 			include = {
+	-- 				"all",
+	-- 				"javascript",
+	-- 				"javascriptreact",
+	-- 				"typescript",
+	-- 				"typescriptreact",
+	-- 				"liquid",
+	-- 				"markdown",
+	-- 				"c",
+	-- 				"rust",
+	-- 			},
+	-- 		})
+	-- 		luasnip.filetype_set("javascript", { "javascriptreact" })
+	-- 		luasnip.filetype_set("typescript", { "typescriptreact" })
+	--
+	-- 		local cmp = require("cmp")
+	-- 		local has_words_before = function()
+	-- 			unpack = unpack or table.unpack
+	-- 			local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+	-- 			return col ~= 0
+	-- 				and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+	-- 		end
+	--
+	-- 		---@diagnostic disable-next-line: missing-fields
+	-- 		cmp.setup({
+	-- 			snippet = {
+	-- 				expand = function(args)
+	-- 					luasnip.lsp_expand(args.body)
+	-- 				end,
+	-- 			},
+	-- 			mapping = cmp.mapping.preset.insert({
+	-- 				["<C-d>"] = cmp.mapping.scroll_docs(-4),
+	-- 				["<C-f>"] = cmp.mapping.scroll_docs(4),
+	-- 				["<CR>"] = cmp.mapping.confirm({ select = true }),
+	-- 				["<Tab>"] = cmp.mapping(function(fallback)
+	-- 					if cmp.visible() then
+	-- 						cmp.select_next_item()
+	-- 					elseif luasnip.expand_or_jumpable() then
+	-- 						luasnip.expand_or_jump()
+	-- 					elseif has_words_before() then
+	-- 						cmp.complete()
+	-- 					else
+	-- 						fallback()
+	-- 					end
+	-- 				end, { "i", "s" }),
+	-- 				["<S-Tab>"] = cmp.mapping(function(fallback)
+	-- 					if cmp.visible() then
+	-- 						cmp.select_prev_item()
+	-- 					elseif luasnip.jumpable(-1) then
+	-- 						luasnip.jump(-1)
+	-- 					else
+	-- 						fallback()
+	-- 					end
+	-- 				end, { "i", "s" }),
+	-- 			}),
+	-- 			sources = {
+	-- 				{ name = "nvim_lsp" },
+	-- 				{ name = "luasnip" },
+	-- 				{ name = "buffer" },
+	-- 			},
+	-- 			---@diagnostic disable-next-line: missing-fields
+	-- 			completion = {
+	-- 				max_item_count = 8,
+	-- 				keyword_length = 2,
+	-- 			},
+	-- 		})
+	-- 	end,
+	-- },
 
 	-- Formatter
 	{
@@ -424,9 +459,9 @@ require("lazy").setup({
 				map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "LSP rename" })
 				map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP code actions" })
 
-				map("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>zz", { desc = "Goto definitions" })
-				map("n", "gT", "<cmd>lua vim.lsp.buf.type_definition()<CR>zz", { desc = "Goto type definitions" })
-				map("n", "gI", "<cmd>lua vim.lsp.buf.implementation()<CR>zz", { desc = "Goto implementations" })
+				map("n", "gd", vim.lsp.buf.definition, { desc = "Goto definitions" })
+				map("n", "gT", vim.lsp.buf.type_definition, { desc = "Goto type definitions" })
+				map("n", "gI", vim.lsp.buf.implementation, { desc = "Goto implementations" })
 
 				local telescope_builtin = require("telescope.builtin")
 				map("n", "gr", telescope_builtin.lsp_references, { desc = "Goto references" })

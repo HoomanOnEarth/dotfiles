@@ -1,7 +1,37 @@
 {
-  "^w" = "deleteWordBackward:";
+  "^w" = (deleteWordBackward:);
+  "^\U007f" = (deleteWordBackward:);
 
-  "~-" = "lowercaseWord:";
-  "~=" = "uppercaseWord:";
-  "~+" = "capitalizeWord:";
+   // select to beginning of paragraph and copy
+  "^A" = (moveToBeginningOfParagraphAndModifySelection:, copy:);
+
+  // select to end of paragraph and copy
+  "^E" = (moveToEndOfParagraphAndModifySelection:, copy:);
+
+  // cut to beginning of paragraph
+  "^K" = (moveToBeginningOfParagraphAndModifySelection:, cut:);
+
+  // cut to end of paragraph
+  "^k" = (moveToEndOfParagraphAndModifySelection:, cut:);
+
+  // blank line after current
+  "~o" = (moveToEndOfParagraph:, insertNewline:);
+
+  // blank line before current
+  "~O" = (moveToBeginningOfParagraph:, moveLeft:, insertNewline:);
+
+  // Commenting commands
+  "^@c" = {
+      // comment with "//"
+      "/" = (moveToBeginningOfParagraph:, insertText:, "// ", moveToEndOfParagraph:, moveForward:);
+
+      // comment with "#"
+      "\\" = (moveToBeginningOfParagraph:, insertText:, "# ", moveToEndOfParagraph:, moveForward:);
+
+      // HTML commenting
+      "!" = (setMark:, swapWithMark:, delete:, insertText:, "<!-- ", yank:, insertText:, " -->", swapWithMark:, moveRight:, moveRight:, moveRight:, moveRight:, moveRight:);
+
+      // Css Commenting
+      "*" = (setMark:, swapWithMark:, delete:, insertText:, "/* ", yank:, insertText:, " */", swapWithMark:, moveRight:, moveRight:, moveRight:);
+  };
 }
