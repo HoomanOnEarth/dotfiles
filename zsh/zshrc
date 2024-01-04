@@ -50,8 +50,8 @@ bindkey -M viins "^K" vi-kill-eol
 bindkey -M viins "^N" down-line-or-history
 bindkey -M viins "^P" up-line-or-history
 
-# Prompt
-eval "$(starship init zsh)"
+# main editor
+export EDITOR=nvim
 
 # History fuzzy searching
 bindkey '^r' history-fzy
@@ -122,12 +122,11 @@ compinit
 # 	tmux-selector.sh
 # fi
 
-# direnv
-eval "$(direnv hook zsh)"
-
-# main editor
-export EDITOR=nvim
-
 # start nix-daemon.sh
 source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
 
+# Prompt
+eval "$(starship init zsh)"
+
+# direnv
+eval "$(direnv hook zsh)"

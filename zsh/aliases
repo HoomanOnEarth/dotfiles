@@ -1,23 +1,23 @@
-source "$HOME/code/dotfiles/zsh/private_aliases"
+source $HOME/code/dotfiles/zsh/private_aliases
 
 # Basic
-alias free="top -l 1 -s 0 | grep PhysMem | sed 's/, /\n         /g'"
+alias free="top -l 1 -s 0 | grep PhysMem | sed \"s/, /\n         /g\""
 alias code="cd $HOME/code"
 alias note="cd $HOME/Documents/notes"
-alias c='clear'
-alias vim='$HOME/.nix-profile/bin/nvim'
-alias svim='sudo vim'
+alias vim="$HOME/.nix-profile/bin/nvim"
+alias svim="sudo vim"
 alias vi=vim
 alias edit=vim
-alias pc='pbcopy <'
+alias vl="vim -c \"normal '0\" -c \"bn\" -c \"bd\""
+alias pc="pbcopy <"
 
 # Config Dotfiles
-alias reload='source ~/.zshrc'
-alias rl='reload'
-alias zc='vim ~/.zshrc'
-alias zac='vim ~/code/dotfiles/zsh/aliases'
-alias vc='vim ~/.config/nvim/init.lua'
-alias tc='vim ~/.config/tmux/tmux.conf'
+alias reload="source ~/.zshrc && source ~/.zshenv"
+alias rl=reload
+alias zc="vim ~/.zshrc"
+alias zac="vim ~/code/dotfiles/zsh/aliases"
+alias vc="vim ~/.config/nvim/init.lua"
+alias tc="vim ~/.config/tmux/tmux.conf"
 
 # C
 alias mk=make
@@ -33,32 +33,32 @@ alias py=python3
 alias pip=pip3
 
 # JavaScript & NodeJS
-alias vp='vim package.json'
-alias np='pnpm'
-alias npx='pnpx'
-alias na='pnpm add'
-alias ni='pnpm install'
-alias nid='pnpm install -D'
-alias ns='pnpm start'
-alias nr='pnpm run'
-alias nrs='pnpm run start'
-alias nrd='pnpm run dev'
+alias vp="vim package.json"
+alias np="pnpm"
+alias npx="pnpx"
+alias na="pnpm add"
+alias ni="pnpm install"
+alias nid="pnpm install -D"
+alias ns="pnpm start"
+alias nr="pnpm run"
+alias nrs="pnpm run start"
+alias nrd="pnpm run dev"
 
 # starship prompt
-alias ss='starship'
-alias ssc='starship config'
+alias ss="starship"
+alias ssc="starship config"
 
 # Search using rg
 # rg Foo       # Case sensitive search
 # rg -i foo    # Case insensitive search
-# rg -v foo    # Invert search, show all lines that don't match pattern
+# rg -v foo    # Invert search, show all lines that don"t match pattern
 # rg -l foo    # List only the files that match, not content
 # rg -t md foo # Match by `md` file extension
-alias search='rg'
-alias s='search'
+alias search="rg"
+alias s="search"
 
 # Net
-alias header='curl -I'
+alias header="curl -I"
 
 # Git
 alias ghc="gh repo clone"
@@ -81,24 +81,24 @@ alias ga="git add --verbose"
 alias gaa="git add --all --verbose"
 alias gac="git add --update --verbose"
 
-alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+alias gl="git log --graph --pretty=format:\"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset\" --abbrev-commit"
 alias glp="gl -p"
 
 # Tmux
-alias tks='tmux kill-server'
-alias tn='tmuxinator n'
-alias to='tmuxinator o'
-alias ts='tmuxinator s'
+alias tks="tmux kill-server"
+alias tn="tmuxinator n"
+alias to="tmuxinator o"
+alias ts="tmuxinator s"
 
 # Listing
-alias ls='ls --color --group-directories-first'
-alias la='ls -a --color'
-alias ll='ls -lh --color'
-alias cpwd='pwd | tr -d "\n" | pbcopy && echo "pwd copied to clipboard"'
-alias mkdir='mkdir -pv'
+alias ls="ls --color --group-directories-first"
+alias la="ls -a --color"
+alias ll="ls -lh --color"
+alias cpwd="pwd | tr -d \"\n\" | pbcopy && echo \"pwd copied to clipboard\""
+alias mkdir="mkdir -pv"
 
 # Shopify
-alias theme='shopify theme'
+alias theme="shopify theme"
 
 # Video downloader
 alias vd=yt-dlp

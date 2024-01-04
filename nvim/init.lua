@@ -1,22 +1,35 @@
 -- essentials
 vim.cmd([[
-colorscheme quiet
-let g:mapleader = " "
-let g:maplocalleader = " "
+colorscheme quiet 
+set mouse=a
+set termguicolors
+set clipboard=unnamedplus
+set timeoutlen=300
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
 
-" use ripgrep
+set number
+set relativenumber
+set statusline="2"
+set signcolumn=yes
+
+set complete-=ti
+set incsearch
+set smartcase
+set whichwrap="b,s,<,>,h,l,[,],`"
 set grepprg="rg --vimgrep --smart-case"
 set grepformat=%f:%l:%c:%m,%f:%l:%m
 
-cabbrev Q q!
-cabbrev Qa qa!
-cabbrev W w!
-cabbrev Wq wq!
-cabbrev Wqa wqa!
+set nowrap
+set linebreak
+set splitright
 
-noremap   <silent> <leader>l :nohl<CR>
-nnoremap  <silent> <leader>cd :cd %:p:h<CR>:pwd<CR>
+let g:mapleader = " "
+let g:maplocalleader = " "
 
+nnoremap <space> :
+nnoremap <silent> <leader>cd :cd %:p:h<CR>:pwd<CR>
 vnoremap < <gv
 vnoremap > >gv
 
@@ -26,22 +39,10 @@ nnoremap z2f :set foldlevel=2<CR>
 nnoremap z3f :set foldlevel=3<CR>
 nnoremap z4f :set foldlevel=4<CR>
 
-" dont move
+" keep cursor in place
 nnoremap J mzJ`z
-nnoremap <C-d> <C-d>
-nnoremap <C-u> <C-u>
-nnoremap n nzzzv
-nnoremap N Nzzzv
 
-" chmod +x
 nnoremap <leader>x :silent !chmod +x %<CR>
-
-" jumps
-nnoremap gi gi<ESC>zz
-nnoremap <C-j> :cprev<CR>zz
-nnoremap <C-k> :cnext<CR>zz
-nnoremap <leader>j :lprev<CR>zz
-nnoremap <leader>k :cnext<CR>zz
 
 " moving line
 nnoremap <M-j> :m .+1<CR>==
@@ -56,58 +57,33 @@ nnoremap <C-j> :lua vim.diagnostic.goto_prev()<CR>
 nnoremap <C-k> :lua vim.diagnostic.goto_next()<CR>
 nnoremap <leader>q :lua vim.diagnostic.setloclist()<CR>
 nnoremap <leader>e :lua vim.diagnostic.open_float(nil, { focus = false })<CR>
-]])
 
--- options
-vim.cmd([[
-set mouse=a
-set number
-set relativenumber
-set termguicolors
-set clipboard=unnamedplus
-set statusline="2"
-set signcolumn=yes
+" jumps
+nnoremap <leader>j :lprev<CR>zz
+nnoremap <leader>k :lnext<CR>zz
 
-set nowrap
-set linebreak
-set splitright
-
-set noautoindent
-set expandtab
-set tabstop=2
-set softtabstop=2
-set shiftwidth=2
-set complete-=ti
-
-set incsearch
-set ignorecase
-set smartcase
-
-set whichwrap="b,s,<,>,h,l,[,],`"
-
+" AUGROUP
 augroup c_language_autocmd
   autocmd! BufEnter *.c set makeprg=make
 augroup END
 
-function DiffModeMap()
-  if &diff
-    nnoremap gf <buffer> <cmd>diffget //2<CR> " get the left side
-    nnoremap gh <buffer> <cmd>diffget //3<CR> " get the right side
-  endif
-endfunction
-
 augroup fugitive_mapping_autocmd
+  function DiffModeMap()
+    if &diff
+      nnoremap gf <buffer> <cmd>diffget //2<CR> " get the left side
+      nnoremap gh <buffer> <cmd>diffget //3<CR> " get the right side
+    endif
+  endfunction
+
   autocmd!
   autocmd BufEnter * call DiffModeMap()
 augroup END
-
 
 augroup cursor_hold_hints_autocmd
   autocmd! CursorHold * lua vim.diagnostic.open_float({ scope = "cursor", focus = false })
   autocmd! CursorMoved,CursorMovedI * lua vim.lsp.buf.clear_references()
 augroup END
 
-" auto chmod my scripts
 augroup chmod_my_script_autocmd
   autocmd! BufWinEnter ~/code/scripts/* if &ft == "" | setlocal ft=sh | endif
   autocmd! BufWritePost * if &ft == "sh" | silent! execute "!chmod +x %" | endif
@@ -129,23 +105,17 @@ vim.opt.rtp:prepend(lazypath)
 
 local auto_cmd = vim.api.nvim_create_autocmd
 local map = vim.keymap.set
----@diagnostic disable-next-line: unused-local
-local all_modes = { "n", "v", "x" }
 
--- editor config for common file types
+-- Config HTML indent style
 auto_cmd({ "BufEnter" }, {
 	pattern = { "*.json", "*.js", "*.jsx", "*.ts", "*.tsx", "*.html", "*.css", "*.liquid" },
-	callback = function(ev)
-		vim.o.tabstop = 2
-		vim.o.softtabstop = 2
-		vim.o.shiftwidth = 2
-
+	callback = function()
 		vim.g.html_indent_style1 = "inc"
 		vim.g.html_indent_script1 = "inc"
 	end,
 })
 
--- Enable Formatter
+-- Enable formatter
 auto_cmd({ "BufEnter" }, {
 	pattern = { "*.json", "*.js", "*.jsx", "*.ts", "*.tsx", "*.html", "*.css", "*.liquid", "*.c", "*.rs" },
 	callback = function()
@@ -154,9 +124,11 @@ auto_cmd({ "BufEnter" }, {
 })
 
 require("lazy").setup({
-	{ "tpope/vim-fugitive", config = function() end },
-	{ "tpope/vim-liquid", config = function() end },
-	{ "tpope/vim-markdown", config = function() end },
+	"tpope/vim-fugitive",
+	"tpope/vim-liquid",
+	"tpope/vim-markdown",
+	"pangloss/vim-javascript",
+	-- "MaxMEllon/vim-jsx-pretty",
 	{
 		"christoomey/vim-tmux-navigator",
 		init = function()
@@ -166,9 +138,7 @@ require("lazy").setup({
       ]])
 		end,
 		config = function()
-			vim.cmd([[
-      nnoremap <silent> <C-b> :TmuxNavigatePrevious<CR>
-      ]])
+			map("n", "<C-b>", ":TmuxNavigatePrevious<CR>", { silent = true })
 		end,
 	},
 	{
@@ -181,8 +151,6 @@ require("lazy").setup({
 			vim.cmd("colorscheme rose-pine")
 		end,
 	},
-
-	-- Finder
 	{
 		"nvim-telescope/telescope.nvim",
 		version = "*",
@@ -200,11 +168,12 @@ require("lazy").setup({
 			-- respect folding: https://github.com/nvim-telescope/telescope.nvim/issues/559#issuecomment-864530935
 			local find_files_opts = {
 				attach_mappings = function(_)
+					---@diagnostic disable-next-line: undefined-field
 					actions.center:replace(function(_)
-						vim.wo.foldmethod = vim.wo.foldmethod or "expr"
-						vim.wo.foldexpr = vim.wo.foldexpr or "nvim_treesitter#foldexpr()"
+						vim.wo.foldmethod = vim.wo.foldmethod or "indent"
 						vim.cmd(":normal! zx")
 						vim.cmd(":normal! zz")
+						---@diagnostic disable-next-line: param-type-mismatch
 						pcall(vim.cmd, ":loadview") -- silent load view
 					end)
 					return true
@@ -219,7 +188,7 @@ require("lazy").setup({
 			telescope.setup({
 				defaults = vim.tbl_deep_extend("force", default_opts, {
 					preview = {
-						hide_on_startup = true,
+						hide_on_startup = false,
 					},
 					mappings = {
 						i = {
@@ -246,9 +215,10 @@ require("lazy").setup({
 				}),
 			})
 
-			map("n", "<leader>?", builtin.oldfiles, { desc = "Recent files" })
-			map("n", "<leader><space>", builtin.buffers, { desc = "Recent buffers" })
 			map("n", "<C-p>", builtin.my_find_files, { desc = "Browse files" })
+			map("n", "<leader><leader>", builtin.buffers, { desc = "Recent buffers" })
+			map("n", "<leader>?", builtin.oldfiles, { desc = "Recent files" })
+			map("n", "<leader>p", builtin.oldfiles, { desc = "Recent files" })
 			map("n", "<leader>sh", builtin.help_tags, { desc = "Search helps" })
 			map("n", "<leader>sf", builtin.live_grep, { desc = "Live search" })
 			map("n", "<leader>sw", builtin.grep_string, { desc = "Search" })
@@ -258,113 +228,6 @@ require("lazy").setup({
 			map("n", "<C-g>", require("api.telescope").change_directory, { desc = "Change directory" })
 		end,
 	},
-
-	-- Undotree
-	{
-		"mbbill/undotree",
-		config = function()
-			vim.cmd([[
-      if has("persistent_undo")
-        let target_path = expand('~/.config/nvim/.undodir')
-        if !isdirectory(target_path)
-          call mkdir(target_path, "p", 0700)
-        endif
-        let &undodir=target_path
-        set undofile
-      endif
-      ]])
-
-			map("n", "<leader>u", ":UndotreeToggle<CR>", { noremap = true })
-		end,
-	},
-
-	-- Syntax
-	{ "pangloss/vim-javascript" },
-	{ "MaxMEllon/vim-jsx-pretty" },
-
-	-- Autocomplete
-	-- {
-	-- 	"hrsh7th/nvim-cmp",
-	-- 	dependencies = {
-	-- 		-- "hrsh7th/cmp-nvim-lsp",
-	-- 		-- "hrsh7th/cmp-buffer",
-	-- 		-- "L3MON4D3/LuaSnip",
-	-- 		-- "saadparwaiz1/cmp_luasnip",
-	-- 		-- "rafamadriz/friendly-snippets",
-	-- 	},
-	-- 	config = function()
-	-- 		local luasnip = require("luasnip")
-	-- 		require("luasnip.loaders.from_vscode").load({
-	-- 			include = {
-	-- 				"all",
-	-- 				"javascript",
-	-- 				"javascriptreact",
-	-- 				"typescript",
-	-- 				"typescriptreact",
-	-- 				"liquid",
-	-- 				"markdown",
-	-- 				"c",
-	-- 				"rust",
-	-- 			},
-	-- 		})
-	-- 		luasnip.filetype_set("javascript", { "javascriptreact" })
-	-- 		luasnip.filetype_set("typescript", { "typescriptreact" })
-	--
-	-- 		local cmp = require("cmp")
-	-- 		local has_words_before = function()
-	-- 			unpack = unpack or table.unpack
-	-- 			local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-	-- 			return col ~= 0
-	-- 				and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
-	-- 		end
-	--
-	-- 		---@diagnostic disable-next-line: missing-fields
-	-- 		cmp.setup({
-	-- 			snippet = {
-	-- 				expand = function(args)
-	-- 					luasnip.lsp_expand(args.body)
-	-- 				end,
-	-- 			},
-	-- 			mapping = cmp.mapping.preset.insert({
-	-- 				["<C-d>"] = cmp.mapping.scroll_docs(-4),
-	-- 				["<C-f>"] = cmp.mapping.scroll_docs(4),
-	-- 				["<CR>"] = cmp.mapping.confirm({ select = true }),
-	-- 				["<Tab>"] = cmp.mapping(function(fallback)
-	-- 					if cmp.visible() then
-	-- 						cmp.select_next_item()
-	-- 					elseif luasnip.expand_or_jumpable() then
-	-- 						luasnip.expand_or_jump()
-	-- 					elseif has_words_before() then
-	-- 						cmp.complete()
-	-- 					else
-	-- 						fallback()
-	-- 					end
-	-- 				end, { "i", "s" }),
-	-- 				["<S-Tab>"] = cmp.mapping(function(fallback)
-	-- 					if cmp.visible() then
-	-- 						cmp.select_prev_item()
-	-- 					elseif luasnip.jumpable(-1) then
-	-- 						luasnip.jump(-1)
-	-- 					else
-	-- 						fallback()
-	-- 					end
-	-- 				end, { "i", "s" }),
-	-- 			}),
-	-- 			sources = {
-	-- 				{ name = "nvim_lsp" },
-	-- 				{ name = "luasnip" },
-	-- 				{ name = "buffer" },
-	-- 			},
-	-- 			---@diagnostic disable-next-line: missing-fields
-	-- 			completion = {
-	-- 				max_item_count = 8,
-	-- 				keyword_length = 2,
-	-- 			},
-	-- 		})
-	-- 	end,
-	-- },
-
-	-- Formatter
 	{
 		"mhartington/formatter.nvim",
 		config = function()
@@ -372,45 +235,21 @@ require("lazy").setup({
 				logging = true,
 				log_level = vim.log.levels.INFO,
 				filetype = {
-					c = {
-						require("formatter.filetypes.c").clangformat,
-					},
-					json = {
-						require("formatter.filetypes.json").prettierd,
-					},
-					jsonc = {
-						require("formatter.filetypes.json").prettierd,
-					},
-					css = {
-						require("formatter.filetypes.css").prettierd,
-					},
-					html = {
-						require("formatter.filetypes.html").prettierd,
-					},
-					javascript = {
-						require("formatter.filetypes.javascript").eslint_d,
-					},
-					javascriptreact = {
-						require("formatter.filetypes.javascriptreact").eslint_d,
-					},
-					typescript = {
-						require("formatter.filetypes.typescript").eslint_d,
-					},
-					typescriptreact = {
-						require("formatter.filetypes.typescriptreact").eslint_d,
-					},
-					lua = {
-						require("formatter.filetypes.lua").stylua,
-					},
-					rust = {
-						require("formatter.filetypes.rust").rustfmt,
-					},
+					c = require("formatter.filetypes.c").clangformat,
+					json = require("formatter.filetypes.json").prettierd,
+					jsonc = require("formatter.filetypes.json").prettierd,
+					css = require("formatter.filetypes.css").prettierd,
+					html = require("formatter.filetypes.html").prettierd,
+					javascript = require("formatter.filetypes.javascript").eslint_d,
+					javascriptreact = require("formatter.filetypes.javascriptreact").eslint_d,
+					typescript = require("formatter.filetypes.typescript").eslint_d,
+					typescriptreact = require("formatter.filetypes.typescriptreact").eslint_d,
+					lua = require("formatter.filetypes.lua").stylua,
+					rust = require("formatter.filetypes.rust").rustfmt,
 				},
 			})
 		end,
 	},
-
-	-- LSP
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
@@ -558,18 +397,6 @@ require("lazy").setup({
 			-- })
 		end,
 	},
-
-	-- Miscs
-	{
-		"phaazon/hop.nvim",
-		config = function()
-			local hop = require("hop")
-			hop.setup()
-
-			map("", "gw", hop.hint_words)
-		end,
-	},
-
 	{
 		"lewis6991/gitsigns.nvim",
 		opts = {
@@ -577,67 +404,112 @@ require("lazy").setup({
 			signs = {
 				add = { text = "+" },
 				change = { text = "~" },
-				delete = { text = "_" },
-				topdelete = { text = "‾" },
-				changedelete = { text = "~" },
+				delete = { text = "-" },
 			},
 		},
 	},
-
 	{
 		"echasnovski/mini.comment",
 		config = function()
 			require("mini.comment").setup()
 		end,
 	},
-
-	{
-		"echasnovski/mini.indentscope",
-		config = function()
-			require("mini.indentscope").setup()
-		end,
-	},
-
-	{
-		"lalitmee/browse.nvim",
-		config = function()
-			local browse = require("browse")
-			browse.setup({
-				provider = "google", -- duckduckgo, bing
-			})
-
-			vim.api.nvim_create_user_command("Google", function()
-				browse.input_search()
-			end, {})
-
-			vim.api.nvim_create_user_command("GitHubSearch", function()
-				local github = {
-					["Code"] = "https://github.com/search?q=%s&type=code",
-					["Repo"] = "https://github.com/search?q=%s&type=repositories",
-					["Issues"] = "https://github.com/search?q=%s&type=issues",
-					["Pulls"] = "https://github.com/search?q=%s&type=pullrequests",
-				}
-
-				require("browse").open_bookmarks({ bookmarks = github, prompt_title = "Search Github" })
-			end, {})
-		end,
-	},
-
-	-- Apple
 	-- {
-	--   'xbase-lab/xbase',
-	--   run = 'make install', -- or "make install && make free_space" (not recommended, longer build time)
-	--   dependencies = {
-	--     "neovim/nvim-lspconfig",
-	--   },
-	--   config = function()
-	--     require 'xbase'.setup({
-	--       log_level = vim.log.levels.INFO,
-	--       log_buffer = {
-	--         focus             = false,
-	--         default_direction = "vertical",
-	--       },
-	--     }) -- see default configuration bellow
-	--   end
-	-- }
+	-- 	"hrsh7th/nvim-cmp",
+	-- 	dependencies = {
+	-- 		-- "hrsh7th/cmp-nvim-lsp",
+	-- 		-- "hrsh7th/cmp-buffer",
+	-- 		-- "L3MON4D3/LuaSnip",
+	-- 		-- "saadparwaiz1/cmp_luasnip",
+	-- 		-- "rafamadriz/friendly-snippets",
+	-- 	},
+	-- 	config = function()
+	-- 		local luasnip = require("luasnip")
+	-- 		require("luasnip.loaders.from_vscode").load({
+	-- 			include = {
+	-- 				"all",
+	-- 				"javascript",
+	-- 				"javascriptreact",
+	-- 				"typescript",
+	-- 				"typescriptreact",
+	-- 				"liquid",
+	-- 				"markdown",
+	-- 				"c",
+	-- 				"rust",
+	-- 			},
+	-- 		})
+	-- 		luasnip.filetype_set("javascript", { "javascriptreact" })
+	-- 		luasnip.filetype_set("typescript", { "typescriptreact" })
+	--
+	-- 		local cmp = require("cmp")
+	-- 		local has_words_before = function()
+	-- 			unpack = unpack or table.unpack
+	-- 			local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+	-- 			return col ~= 0
+	-- 				and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+	-- 		end
+	--
+	-- 		---@diagnostic disable-next-line: missing-fields
+	-- 		cmp.setup({
+	-- 			snippet = {
+	-- 				expand = function(args)
+	-- 					luasnip.lsp_expand(args.body)
+	-- 				end,
+	-- 			},
+	-- 			mapping = cmp.mapping.preset.insert({
+	-- 				["<C-d>"] = cmp.mapping.scroll_docs(-4),
+	-- 				["<C-f>"] = cmp.mapping.scroll_docs(4),
+	-- 				["<CR>"] = cmp.mapping.confirm({ select = true }),
+	-- 				["<Tab>"] = cmp.mapping(function(fallback)
+	-- 					if cmp.visible() then
+	-- 						cmp.select_next_item()
+	-- 					elseif luasnip.expand_or_jumpable() then
+	-- 						luasnip.expand_or_jump()
+	-- 					elseif has_words_before() then
+	-- 						cmp.complete()
+	-- 					else
+	-- 						fallback()
+	-- 					end
+	-- 				end, { "i", "s" }),
+	-- 				["<S-Tab>"] = cmp.mapping(function(fallback)
+	-- 					if cmp.visible() then
+	-- 						cmp.select_prev_item()
+	-- 					elseif luasnip.jumpable(-1) then
+	-- 						luasnip.jump(-1)
+	-- 					else
+	-- 						fallback()
+	-- 					end
+	-- 				end, { "i", "s" }),
+	-- 			}),
+	-- 			sources = {
+	-- 				{ name = "nvim_lsp" },
+	-- 				{ name = "luasnip" },
+	-- 				{ name = "buffer" },
+	-- 			},
+	-- 			---@diagnostic disable-next-line: missing-fields
+	-- 			completion = {
+	-- 				max_item_count = 8,
+	-- 				keyword_length = 2,
+	-- 			},
+	-- 		})
+	-- 	end,
+	-- },
+	-- Undotree
+	-- {
+	-- 	"mbbill/undotree",
+	-- 	config = function()
+	-- 		vim.cmd([[
+	--      if has("persistent_undo")
+	--        let target_path = expand('~/.config/nvim/.undodir')
+	--        if !isdirectory(target_path)
+	--          call mkdir(target_path, "p", 0700)
+	--        endif
+	--        let &undodir=target_path
+	--        set undofile
+	--      endif
+	--      ]])
+	--
+	-- 		map("n", "<leader>u", ":UndotreeToggle<CR>", { noremap = true })
+	-- 	end,
+	-- },
 }, { install = { colorscheme = { "rose-pine" } } })

@@ -1,41 +1,42 @@
 [core]
-editor = nvim
-excludesfile = ~/.gitignore
+  pager = less -eFiJM~ -j3 --tabs=3
+  editor = nvim
+  excludesfile = ~/.gitignore
 
 [user]
-name = 0xlkda
-email = lekhacduyanh@gmail.com
-signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP/ZGdMKjDd+pI4Y+yYYCquLm2CGIDCjnHNel+ZWPs9J
+  name = 0xlkda
+  email = lekhacduyanh@gmail.com
+  signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP/ZGdMKjDd+pI4Y+yYYCquLm2CGIDCjnHNel+ZWPs9J
 
 [init]
-defaultBranch = main
+  defaultBranch = main
 
 [credential]
-helper = cache
+  helper = cache
 
 [credential "https://github.com"]
-helper = !$(which gh) auth git-credential
+  helper = !$(which gh) auth git-credential
 
 [credential "https://gist.github.com"]
-helper = !$(which gh) auth git-credential
+  helper = !$(which gh) auth git-credential
 
 [alias]
-view = !$(which gh) browse
-wt = worktree
-cwt = !sh $HOME/code/dotfiles/clone-for-worktree.sh
+  view = !$(which gh) browse
+  wt = worktree
+  cwt = !sh $HOME/code/dotfiles/clone-for-worktree.sh
 
 [push]
-autoSetupRemote = true
-default = current
+  autoSetupRemote = true
+  default = current
 
 [pull]
-rebase = true
+  rebase = true
 
 [gpg]
-format = ssh
+  format = ssh
 
 [gpg "ssh"]
-program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+  program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
 
 [commit]
-gpgsign = true
+  gpgsign = true
