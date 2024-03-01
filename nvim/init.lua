@@ -1,6 +1,7 @@
 -- essentials
 vim.cmd([[
 colorscheme quiet 
+set lazyredraw
 set mouse=a
 set termguicolors
 set clipboard=unnamedplus
@@ -25,15 +26,19 @@ set nowrap
 set linebreak
 set splitright
 
-let g:mapleader = " "
-let g:maplocalleader = " "
+let g:mapleader = ","
+let g:maplocalleader = ","
 
-nnoremap <space> :
+nnoremap <space> za
 nnoremap <silent> <leader>cd :cd %:p:h<CR>:pwd<CR>
 vnoremap < <gv
 vnoremap > >gv
 
 " folding
+set fillchars=fold:\ 
+set foldcolumn=0
+set foldlevelstart=1
+
 nnoremap z1f :set foldlevel=1<CR>
 nnoremap z2f :set foldlevel=2<CR>
 nnoremap z3f :set foldlevel=3<CR>
@@ -53,8 +58,6 @@ vnoremap <M-j> :m '>+1<CR>gv=gv
 vnoremap <M-k> :m '<-2<CR>gv=gv
 
 " diagnostics
-nnoremap <C-j> :lua vim.diagnostic.goto_prev()<CR>
-nnoremap <C-k> :lua vim.diagnostic.goto_next()<CR>
 nnoremap <leader>q :lua vim.diagnostic.setloclist()<CR>
 nnoremap <leader>e :lua vim.diagnostic.open_float(nil, { focus = false })<CR>
 
@@ -216,9 +219,8 @@ require("lazy").setup({
 			})
 
 			map("n", "<C-p>", builtin.my_find_files, { desc = "Browse files" })
-			map("n", "<leader><leader>", builtin.buffers, { desc = "Recent buffers" })
+			map("n", "<leader>b", builtin.buffers, { desc = "Recent buffers" })
 			map("n", "<leader>?", builtin.oldfiles, { desc = "Recent files" })
-			map("n", "<leader>p", builtin.oldfiles, { desc = "Recent files" })
 			map("n", "<leader>sh", builtin.help_tags, { desc = "Search helps" })
 			map("n", "<leader>sf", builtin.live_grep, { desc = "Live search" })
 			map("n", "<leader>sw", builtin.grep_string, { desc = "Search" })
