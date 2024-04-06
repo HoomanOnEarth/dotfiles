@@ -5,7 +5,6 @@ set lazyredraw
 set mouse=a
 set termguicolors
 set clipboard=unnamedplus
-set timeoutlen=300
 set expandtab
 set shiftwidth=2
 set softtabstop=2
@@ -37,7 +36,7 @@ vnoremap > >gv
 
 " folding
 set fillchars=fold:\ 
-set foldcolumn=0
+set foldcolumn=1
 set foldlevelstart=1
 
 nnoremap z1f :set foldlevel=1<CR>
@@ -172,6 +171,7 @@ require("lazy").setup({
 
       -- respect folding: https://github.com/nvim-telescope/telescope.nvim/issues/559#issuecomment-864530935
       local find_files_opts = {
+        hidden = true,
         attach_mappings = function(_)
           ---@diagnostic disable-next-line: undefined-field
           actions.center:replace(function(_)
@@ -192,6 +192,10 @@ require("lazy").setup({
 
       telescope.setup({
         defaults = vim.tbl_deep_extend("force", default_opts, {
+          file_ignore_patterns = {
+            ".git",
+            "node_modules",
+          },
           preview = {
             hide_on_startup = false,
           },
@@ -259,6 +263,7 @@ require("lazy").setup({
       "folke/neodev.nvim",
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
+      "Issafalcon/lsp-overloads.nvim",
     },
     config = function()
       require("neodev").setup()
@@ -274,7 +279,8 @@ require("lazy").setup({
       -- setup to use with diagnostics
       function SignatureFixed()
         vim.api.nvim_command("set eventignore=CursorHold")
-        vim.lsp.buf.signature_help()
+        -- vim.lsp.buf.signature_help()
+        vim.cmd(":LspOverloadsSignature")
         vim.api.nvim_command('autocmd CursorMoved <buffer> ++once set eventignore=""')
       end
 
@@ -296,7 +302,38 @@ require("lazy").setup({
         -- disable LSP highlight
         client.server_capabilities.semanticTokensProvider = false
 
-        map("i", "<C-k>", SignatureFixed, { desc = "LSP hover" })
+        --- Guard against servers without the signatureHelper capability
+        if client.server_capabilities.signatureHelpProvider then
+          require('lsp-overloads').setup(client, {
+            silent = false,
+            display_automatically = false,
+            ui = {
+              border = "single",
+              height = nil,
+              width = nil,
+              wrap = true,
+              wrap_at = nil,
+              max_width = nil,
+              max_height = nil,
+              close_events = { "CursorMoved", "BufHidden", "InsertLeave" },
+              focusable = true,
+              focus = false,
+              offset_x = 0,
+              offset_y = 0,
+              floating_window_above_cur_line = false,
+              silent = true
+            },
+            keymaps = {
+              next_signature = "<C-k>",
+              previous_signature = "<C-j>",
+              next_parameter = "<C-l>",
+              previous_parameter = "<C-h>",
+              close_signature = "<C-c>"
+            },
+          })
+        end
+
+        map({ "n", "i" }, "<C-k>", SignatureFixed, { desc = "LSP hover" })
         map("n", "K", HoverFixed, { desc = "LSP hover" })
         map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "LSP rename" })
         map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP code actions" })
@@ -414,84 +451,84 @@ require("lazy").setup({
       require("mini.comment").setup()
     end,
   },
-  -- {
-  --   "hrsh7th/nvim-cmp",
-  --   dependencies = {
-  --     -- "hrsh7th/cmp-nvim-lsp",
-  --     -- "hrsh7th/cmp-buffer",
-  --     -- "L3MON4D3/LuaSnip",
-  --     -- "saadparwaiz1/cmp_luasnip",
-  --     -- "rafamadriz/friendly-snippets",
-  --   },
-  --   config = function()
-  --     local luasnip = require("luasnip")
-  --     require("luasnip.loaders.from_vscode").load({
-  --       include = {
-  --         "all",
-  --         "javascript",
-  --         "javascriptreact",
-  --         "typescript",
-  --         "typescriptreact",
-  --         "liquid",
-  --         "markdown",
-  --         "c",
-  --         "rust",
-  --       },
-  --     })
-  --     luasnip.filetype_set("javascript", { "javascriptreact" })
-  --     luasnip.filetype_set("typescript", { "typescriptreact" })
-  --
-  --     local cmp = require("cmp")
-  --     local has_words_before = function()
-  --       unpack = unpack or table.unpack
-  --       local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  --       return col ~= 0
-  --       and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
-  --     end
-  --
-  --     ---@diagnostic disable-next-line: missing-fields
-  --     cmp.setup({
-  --       snippet = {
-  --         expand = function(args)
-  --           luasnip.lsp_expand(args.body)
-  --         end,
-  --       },
-  --       mapping = cmp.mapping.preset.insert({
-  --         ["<C-d>"] = cmp.mapping.scroll_docs(-4),
-  --         ["<C-f>"] = cmp.mapping.scroll_docs(4),
-  --         ["<CR>"] = cmp.mapping.confirm({ select = true }),
-  --         ["<Tab>"] = cmp.mapping(function(fallback)
-  --           if cmp.visible() then
-  --             cmp.select_next_item()
-  --           elseif luasnip.expand_or_jumpable() then
-  --             luasnip.expand_or_jump()
-  --           elseif has_words_before() then
-  --             cmp.complete()
-  --           else
-  --             fallback()
-  --           end
-  --         end, { "i", "s" }),
-  --         ["<S-Tab>"] = cmp.mapping(function(fallback)
-  --           if cmp.visible() then
-  --             cmp.select_prev_item()
-  --           elseif luasnip.jumpable(-1) then
-  --             luasnip.jump(-1)
-  --           else
-  --             fallback()
-  --           end
-  --         end, { "i", "s" }),
-  --       }),
-  --       sources = {
-  --         { name = "nvim_lsp" },
-  --         { name = "luasnip" },
-  --         { name = "buffer" },
-  --       },
-  --       ---@diagnostic disable-next-line: missing-fields
-  --       completion = {
-  --         max_item_count = 8,
-  --         keyword_length = 2,
-  --       },
-  --     })
-  --   end,
-  -- },
+  {
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "L3MON4D3/LuaSnip",
+      "saadparwaiz1/cmp_luasnip",
+      "rafamadriz/friendly-snippets",
+    },
+    config = function()
+      local luasnip = require("luasnip")
+      require("luasnip.loaders.from_vscode").load({
+        include = {
+          "all",
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact",
+          "liquid",
+          "markdown",
+          "c",
+          "rust",
+        },
+      })
+      luasnip.filetype_set("javascript", { "javascriptreact" })
+      luasnip.filetype_set("typescript", { "typescriptreact" })
+
+      local cmp = require("cmp")
+      local has_words_before = function()
+        unpack = unpack or table.unpack
+        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+        return col ~= 0
+        and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+      end
+
+      ---@diagnostic disable-next-line: missing-fields
+      cmp.setup({
+        snippet = {
+          expand = function(args)
+            luasnip.lsp_expand(args.body)
+          end,
+        },
+        mapping = cmp.mapping.preset.insert({
+          ["<C-d>"] = cmp.mapping.scroll_docs(-4),
+          ["<C-f>"] = cmp.mapping.scroll_docs(4),
+          ["<CR>"] = cmp.mapping.confirm({ select = true }),
+          ["<Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item()
+            elseif luasnip.expand_or_jumpable() then
+              luasnip.expand_or_jump()
+            elseif has_words_before() then
+              cmp.complete()
+            else
+              fallback()
+            end
+          end, { "i", "s" }),
+          ["<S-Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
+            elseif luasnip.jumpable(-1) then
+              luasnip.jump(-1)
+            else
+              fallback()
+            end
+          end, { "i", "s" }),
+        }),
+        sources = {
+          { name = "nvim_lsp" },
+          { name = "luasnip" },
+          { name = "buffer" },
+        },
+        ---@diagnostic disable-next-line: missing-fields
+        completion = {
+          max_item_count = 8,
+          keyword_length = 2,
+        },
+      })
+    end,
+  },
 }, { install = { colorscheme = { "rose-pine" } } })
