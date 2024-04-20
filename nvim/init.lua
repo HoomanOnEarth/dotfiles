@@ -26,8 +26,8 @@ set nowrap
 set linebreak
 set splitright
 
-let g:mapleader = ";"
-let g:maplocalleader = ";"
+let g:mapleader = ","
+let g:maplocalleader = ","
 
 nnoremap <space> za
 nnoremap <silent> <leader>cd :cd %:p:h<CR>:pwd<CR>
