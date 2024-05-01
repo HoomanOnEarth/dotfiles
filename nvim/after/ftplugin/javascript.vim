@@ -17,6 +17,6 @@ hi Folded guifg=none guibg=none
 au BufWinLeave *.js mkview
 
 " javascript development mappings
-map <leader>. :!clear && node %<CR>
-map <leader>, :!clear && jest %:r.spec.js<CR>
+map <leader>. :silent! clear<CR>:!node %<CR>
+map <leader>, :silent! clear<CR>:!jest %:r.spec.js<CR>
 map <leader>; :e %:r.spec.js<CR>

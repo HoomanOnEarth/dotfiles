@@ -69,7 +69,7 @@ alias gst="git status -s"
 alias gd="git diff"
 alias gp="git pull"
 alias gP="git push"
-alias gpf="git push --force"
+alias gPf="git push --force"
 alias glf="git log --name-only --oneline"
 
 alias gc="git commit --verbose"

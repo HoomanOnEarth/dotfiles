@@ -67,30 +67,36 @@ nnoremap <leader>k :lnext<CR>zz
 
 " autocommands 
 augroup c_language_autocmd
-autocmd! BufEnter *.c set makeprg=make
+  autocmd! BufEnter *.c set makeprg=make
 augroup END
 
 augroup fugitive_mapping_autocmd
 function DiffModeMap()
   if &diff
-    nnoremap gf <buffer> <cmd>diffget //2<CR> " get the left side
-    nnoremap gh <buffer> <cmd>diffget //3<CR> " get the right side
-    endif
-    endfunction
+  nnoremap gf <buffer> <cmd>diffget //2<CR> " get the left side
+  nnoremap gh <buffer> <cmd>diffget //3<CR> " get the right side
+  endif
+endfunction
 
-    autocmd!
-    autocmd BufEnter * call DiffModeMap()
-    augroup END
+autocmd!
+  autocmd BufEnter * call DiffModeMap()
+augroup END
 
-    augroup cursor_hold_hints_autocmd
-    autocmd! CursorHold * lua vim.diagnostic.open_float({ scope = "cursor", focus = false })
-    autocmd! CursorMoved,CursorMovedI * lua vim.lsp.buf.clear_references()
-    augroup END
+augroup cursor_hold_hints_autocmd
+  autocmd! CursorHold * lua vim.diagnostic.open_float({ scope = "cursor", focus = false })
+  autocmd! CursorMoved,CursorMovedI * lua vim.lsp.buf.clear_references()
+augroup END
 
-    augroup chmod_my_script_autocmd
-    autocmd! BufWinEnter ~/code/scripts/* if &ft == "" | setlocal ft=sh | endif
-    autocmd! BufWritePost * if &ft == "sh" | silent! execute "!chmod +x %" | endif
-    augroup END
+augroup chmod_my_script_autocmd
+  autocmd! BufWinEnter ~/code/scripts/* if &ft == "" | setlocal ft=sh | endif
+  autocmd! BufWritePost * if &ft == "sh" | silent! execute "!chmod +x %" | endif
+augroup END
+
+augroup FormatAutogroup
+  autocmd!
+  autocmd User FormatterPre mkview
+  autocmd User FormatterPost loadview
+augroup END
 ]])
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
