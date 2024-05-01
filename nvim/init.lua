@@ -95,7 +95,7 @@ augroup END
 augroup FormatAutogroup
   autocmd!
   autocmd User FormatterPre mkview
-  autocmd User FormatterPost loadview | norm zA
+  autocmd User FormatterPost loadview | norm zO
 augroup END
 ]])
 
