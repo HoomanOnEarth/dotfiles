@@ -65,6 +65,10 @@ nnoremap <leader>e :lua vim.diagnostic.open_float(nil, { focus = false })<CR>
 nnoremap <leader>j :lprev<CR>zz
 nnoremap <leader>k :lnext<CR>zz
 
+" split lines
+command! -range Split '<,'>s/, /,\r/gI
+vmap ,s :Split<CR>:nohl<CR>:Format<CR>
+
 " autocommands 
 augroup c_language_autocmd
   autocmd! BufEnter *.c set makeprg=make
