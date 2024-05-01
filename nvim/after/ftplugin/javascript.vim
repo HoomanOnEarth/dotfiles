@@ -5,7 +5,9 @@ let g:javascript_plugin_jsdoc = 1
 let javaScript_fold = 1
 
 function! MyFold()
-  return substitute(getline(v:foldstart), '[{|\[|(]$', '‹...›', '')
+  let startLine = getline(v:foldstart)
+  let endLine = substitute(getline(v:foldend), '\s', '', 'g')
+  return startLine . ' ... ' . endLine
 endfunction
 
 set foldmethod=syntax
