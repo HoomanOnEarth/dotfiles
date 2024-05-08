@@ -1,3 +1,5 @@
+# vim:foldmethod=indent
+
 -- essentials
 vim.cmd([[
 let g:omni_sql_no_default_maps = 1
@@ -80,15 +82,14 @@ augroup c_language_autocmd
 augroup END
 
 augroup fugitive_mapping_autocmd
-function DiffModeMap()
-  if &diff
-  nnoremap gf <buffer> <cmd>diffget //2<CR> " get the left side
-  nnoremap gh <buffer> <cmd>diffget //3<CR> " get the right side
-  endif
-endfunction
+  function DiffModeMap()
+    if &diff
+    nnoremap gf <buffer> <cmd>diffget //2<CR> " get the left side
+    nnoremap gh <buffer> <cmd>diffget //3<CR> " get the right side
+    endif
+  endfunction
 
-autocmd!
-  autocmd BufEnter * call DiffModeMap()
+  autocmd! BufEnter * call DiffModeMap()
 augroup END
 
 augroup cursor_hold_hints_autocmd
@@ -105,6 +106,32 @@ augroup FormatAutogroup
   autocmd!
   autocmd User FormatterPre mkview
   autocmd User FormatterPost loadview | silent! norm zO
+augroup END
+
+" table mode
+function! s:isAtStartOfLine(mapping)
+  let text_before_cursor = getline('.')[0 : col('.')-1]
+  let mapping_pattern = '\V' . escape(a:mapping, '\')
+  let comment_pattern = '\V' . escape(substitute(&l:commentstring, '%s.*$', '', ''), '\')
+  return (text_before_cursor =~? '^' . ('\v(' . comment_pattern . '\v)?') . '\s*\v' . mapping_pattern . '\v$')
+endfunction
+
+inoreabbrev <expr> <bar><bar>
+          \ <SID>isAtStartOfLine('\|\|') ?
+          \ '<c-o>:TableModeEnable<cr><bar><space><bar><left><left>' : '<bar><bar>'
+inoreabbrev <expr> __
+          \ <SID>isAtStartOfLine('__') ?
+          \ '<c-o>:silent! TableModeDisable<cr>' : '__'
+
+augroup TableModeSetup
+  autocmd! User TableModeEnabled \
+    map dd <Plug>(table-mode-delete-row) \
+    map dcc <Plug>(table-mode-delete-column) \
+    map dca <Plug>(table-mode-delete-column-after) \
+    map dcb <Plug>(table-mode-delete-column-before) \
+    map h <Plug>(table-mode-motion-left) \
+    map l <Plug>(table-mode-motion-right) \
+    map gq <Plug>(table-mode-realign)
 augroup END
 ]])
 
@@ -147,6 +174,7 @@ require("lazy").setup({
   "tpope/vim-markdown",
   "pangloss/vim-javascript",
   "junegunn/vim-easy-align",
+  "dhruvasagar/vim-table-mode",
 
   -- "MaxMEllon/vim-jsx-pretty",
   {
