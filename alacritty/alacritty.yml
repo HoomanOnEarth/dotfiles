@@ -15,7 +15,7 @@ window:
     lines: 20
 
 font:
-  size: 13
+  size: 10
   offset:
     y: 8
   glyph_offset:

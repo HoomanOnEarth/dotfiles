@@ -1,5 +1,7 @@
 -- essentials
 vim.cmd([[
+let g:omni_sql_no_default_maps = 1
+
 colorscheme quiet 
 set lazyredraw
 set mouse=a
@@ -37,7 +39,6 @@ vnoremap > >gv
 " folding
 set fillchars=fold:\ 
 set foldcolumn=1
-set foldlevelstart=1
 
 nnoremap z1f :set foldlevel=1<CR>
 nnoremap z2f :set foldlevel=2<CR>
@@ -68,6 +69,10 @@ nnoremap <leader>k :lnext<CR>zz
 " split lines
 command! -range Split '<,'>s/, /,\r/gI
 vmap ,s :Split<CR>:nohl<CR>:Format<CR>
+
+" easy align
+xmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
 
 " autocommands 
 augroup c_language_autocmd
@@ -141,6 +146,7 @@ require("lazy").setup({
   "tpope/vim-liquid",
   "tpope/vim-markdown",
   "pangloss/vim-javascript",
+  "junegunn/vim-easy-align",
 
   -- "MaxMEllon/vim-jsx-pretty",
   {

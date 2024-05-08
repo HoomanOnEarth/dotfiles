@@ -12,7 +12,7 @@ endfunction
 
 set foldmethod=syntax
 set foldtext=MyFold()
-set foldlevelstart=0
+set foldlevelstart=1
 
 hi Folded guifg=none guibg=none
 
