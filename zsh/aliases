@@ -3,7 +3,10 @@ source $HOME/code/dotfiles/zsh/private_aliases
 # environments
 CONFIG="~/code/dotfiles"
 USE_NIX="ln -s $CONFIG/environments/direnv .envrc | direnv allow ."
-alias newnode="$USE_NIX | ln -s $CONFIG/environments/node/shell.nix shell.nix | ln -s $CONFIG/environments/node/eslintrc-with-style .eslintrc"
+USE_NODE="ln -s $CONFIG/environments/node/shell.nix shell.nix"
+USE_ESLINT="ln $CONFIG/environments/node/eslintrc-with-style .eslintrc"
+alias newnode="$USE_NIX | $USE_NODE | $USE_ESLINT"
+alias nn=newnode
 
 # Basic
 alias free="top -l 1 -s 0 | grep PhysMem | sed \"s/, /\n         /g\""
