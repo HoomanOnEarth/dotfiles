@@ -1,5 +1,10 @@
 source $HOME/code/dotfiles/zsh/private_aliases
 
+# environments
+CONFIG="~/code/dotfiles"
+USE_NIX="ln -s $CONFIG/environments/direnv $(pwd)/.envrc | direnv allow ."
+alias newnode="$USE_NIX | ln -s $CONFIG/environments/node/shell.nix shell.nix"
+
 # Basic
 alias free="top -l 1 -s 0 | grep PhysMem | sed \"s/, /\n         /g\""
 alias code="cd $HOME/code"

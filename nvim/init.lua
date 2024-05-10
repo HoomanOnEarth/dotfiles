@@ -119,20 +119,10 @@ endfunction
 inoreabbrev <expr> <bar><bar>
           \ <SID>isAtStartOfLine('\|\|') ?
           \ '<c-o>:TableModeEnable<cr><bar><space><bar><left><left>' : '<bar><bar>'
+
 inoreabbrev <expr> __
           \ <SID>isAtStartOfLine('__') ?
           \ '<c-o>:silent! TableModeDisable<cr>' : '__'
-
-augroup TableModeSetup
-  autocmd! User TableModeEnabled \
-    map dd <Plug>(table-mode-delete-row) \
-    map dcc <Plug>(table-mode-delete-column) \
-    map dca <Plug>(table-mode-delete-column-after) \
-    map dcb <Plug>(table-mode-delete-column-before) \
-    map h <Plug>(table-mode-motion-left) \
-    map l <Plug>(table-mode-motion-right) \
-    map gq <Plug>(table-mode-realign)
-augroup END
 ]])
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
