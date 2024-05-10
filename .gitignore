@@ -1,4 +1,5 @@
 tmux/plugins
 .undodir
+.luarc.json
 private_aliases
 lazy-lock.json
