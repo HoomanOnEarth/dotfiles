@@ -69,6 +69,7 @@ alias s="search"
 alias header="curl -I"
 
 # Git
+alias gist="gh gist"
 alias ghc="gh repo clone"
 alias gcb="git checkout -b"
 alias gco="git checkout"
@@ -90,7 +91,7 @@ alias ga="git add --verbose"
 alias gaa="git add --all --verbose"
 alias gac="git add --update --verbose"
 
-alias gl="git log --graph --pretty=format:\"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset\" --abbrev-commit"
+alias gl="git log --all --graph --decorate --pretty=format:\"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset\" --abbrev-commit"
 alias glp="gl -p"
 
 # Tmux

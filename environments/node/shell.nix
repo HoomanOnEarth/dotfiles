@@ -2,9 +2,9 @@ let
   pkgs = import <nixpkgs> {};
 in 
   pkgs.mkShell {
-    nativeBuildInputs = with pkgs.buildPackages; [ nodejs ];
-    buildInputs = with pkgs.buildPackages; [ ];
+    packages = [ pkgs.nodejs ];
     shellHook = '' 
+      export NODE_OPTIONS="--no-warnings"
       export PATH="node_modules/.bin:$PATH"
     '';
   }
