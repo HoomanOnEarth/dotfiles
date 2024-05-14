@@ -24,6 +24,7 @@
   view = !$(which gh) browse
   wt = worktree
   cwt = !sh $HOME/code/dotfiles/clone-for-worktree.sh
+  unstage = reset HEAD --
 
 [push]
   autoSetupRemote = true
