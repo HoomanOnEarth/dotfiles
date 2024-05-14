@@ -80,7 +80,6 @@ alias gds="git diffs"
 alias gp="git pull"
 alias gP="git push"
 alias gPf="git push --force"
-alias glf="git log --name-only --oneline"
 
 alias gc="git commit --verbose"
 alias gcm="git commit --verbose --message"
@@ -92,8 +91,9 @@ alias ga="git add --verbose"
 alias gaa="git add --all --verbose"
 alias gac="git add --update --verbose"
 
-alias gl="git log --all --graph --decorate --pretty=format:\"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset\" --abbrev-commit"
-alias glp="gl -p"
+alias gl="git log --graph --decorate --abbrev-commit --pretty=format:\"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset\""
+alias gls="git log --stat -n3"
+alias glc="git last -p"
 
 # Tmux
 alias tks="tmux kill-server"
