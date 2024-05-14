@@ -28,6 +28,7 @@
   untrack = rm --cached --
   last = log -1 HEAD
   diffs = diff --staged --
+  rename = mv --
 
 [push]
   autoSetupRemote = true
