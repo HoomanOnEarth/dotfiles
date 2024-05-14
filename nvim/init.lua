@@ -227,7 +227,7 @@ require("lazy").setup({
       telescope.setup({
         defaults = vim.tbl_deep_extend("force", default_opts, {
           file_ignore_patterns = {
-            ".git",
+            ".git/",
             "node_modules",
           },
           preview = {
