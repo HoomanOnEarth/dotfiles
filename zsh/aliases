@@ -91,7 +91,8 @@ alias ga="git add --verbose"
 alias gaa="git add --all --verbose"
 alias gac="git add --update --verbose"
 
-alias gl='git log --graph --pretty=format:"%C(red)%h%C(reset) - %C(yellow)%d%C(reset) %s %C(green)(%cr) %C(bold blue)<%an>%C(reset)"'
+alias gl="git log --oneline --decorate"
+alias gla="git log --oneline --decorate --graph --all"
 alias gls="git log --stat -n3"
 alias glc="git last -p"
 
