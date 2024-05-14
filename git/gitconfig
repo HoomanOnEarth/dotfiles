@@ -25,6 +25,9 @@
   wt = worktree
   cwt = !sh $HOME/code/dotfiles/clone-for-worktree.sh
   unstage = reset HEAD --
+  untrack = rm --cached --
+  last = log -1 HEAD
+  diffs = diff --staged --
 
 [push]
   autoSetupRemote = true
