@@ -84,8 +84,9 @@ augroup END
 augroup fugitive_mapping_autocmd
   function DiffModeMap()
     if &diff
-    nnoremap gf <buffer> <cmd>diffget //2<CR> " get the left side
-    nnoremap gh <buffer> <cmd>diffget //3<CR> " get the right side
+      set cursorline
+      nmap gj <cmd>diffget LOCAL<CR>
+      nmap gk <cmd>diffget REMOTE<CR>
     endif
   endfunction
 

@@ -47,3 +47,9 @@
 
 [commit]
   gpgsign = true
+
+[merge]
+  tool = nvimdiff2
+
+[mergetool]
+  keepBackup = false
