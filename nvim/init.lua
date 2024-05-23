@@ -5,7 +5,7 @@ vim.cmd([[
 let g:omni_sql_no_default_maps = 1
 
 colorscheme quiet 
-set lazyredraw
+set updatetime=60
 set mouse=a
 set termguicolors
 set clipboard=unnamedplus
@@ -383,9 +383,7 @@ require("lazy").setup({
       end
 
       local servers_settings = {
-        clangd = {
-          cmd = { "clangd" },
-        },
+        clangd = { },
         tsserver = {
           diagnostics = {
             ignoredCodes = {
@@ -529,8 +527,10 @@ require("lazy").setup({
           end,
         },
         mapping = cmp.mapping.preset.insert({
-          ["<C-d>"] = cmp.mapping.scroll_docs(-4),
+          ["<C-d>"] = cmp.mapping.scroll_docs(4),
+          ["<C-u>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
+          ["<C-b>"] = cmp.mapping.scroll_docs(-4),
           ["<CR>"] = cmp.mapping.confirm({ select = true }),
           ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
