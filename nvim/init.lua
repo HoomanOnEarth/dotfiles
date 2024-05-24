@@ -1,4 +1,18 @@
-# vim:foldmethod=indent
+# vim:foldmethod=syntax
+
+vim.api.nvim_create_autocmd('ModeChanged', {
+  pattern = '*:*',
+  callback = function()
+    local transition = vim.v.event.old_mode .. ":" .. vim.v.event.new_mode
+    local mappings = {
+      ['i:n'] = function() vim.cmd("set nocul") end,
+      ['n:i'] = function() vim.cmd("set cul") end
+    }
+
+    if mappings[transition] and vim.bo.ft ~= 'TelescopePrompt'
+      then mappings[transition]() end
+  end,
+})
 
 -- essentials
 vim.cmd([[
@@ -13,6 +27,7 @@ set expandtab
 set shiftwidth=2
 set softtabstop=2
 
+set noshowmode
 set number
 set relativenumber
 set statusline="2"
@@ -62,7 +77,9 @@ vnoremap <M-k> :m '<-2<CR>gv=gv
 
 " diagnostics
 nnoremap <leader>q :lua vim.diagnostic.setloclist()<CR>
-nnoremap <leader>e :lua vim.diagnostic.open_float(nil, { focus = false })<CR>
+nnoremap gl :lua vim.diagnostic.open_float(nil, { focus = false })<CR>
+nnoremap ]d :lua vim.diagnostic.goto_next(nil, { focus = false })<CR>
+nnoremap [d :lua vim.diagnostic.goto_prev(nil, { focus = false })<CR>
 
 " jumps
 nnoremap <leader>j :lprev<CR>zz
@@ -286,7 +303,6 @@ require("lazy").setup({
           javascriptreact = require("formatter.filetypes.javascriptreact").eslint_d,
           typescript = require("formatter.filetypes.typescript").eslint_d,
           typescriptreact = require("formatter.filetypes.typescriptreact").eslint_d,
-          lua = require("formatter.filetypes.lua").stylua,
           rust = require("formatter.filetypes.rust").rustfmt,
         },
       })
@@ -306,7 +322,10 @@ require("lazy").setup({
       -- lsp diagnostics
       vim.lsp.handlers["textDocument/publishDiagnostics"] =
       vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+        severity_sort = false,
         virtual_text = false,
+
+        update_in_insert = true,
         underline = true,
         signs = true,
       })
@@ -383,7 +402,8 @@ require("lazy").setup({
       end
 
       local servers_settings = {
-        clangd = { },
+        clangd = {
+        },
         tsserver = {
           diagnostics = {
             ignoredCodes = {
