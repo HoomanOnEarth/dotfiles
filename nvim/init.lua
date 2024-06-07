@@ -186,18 +186,6 @@ require("lazy").setup({
 
   -- "MaxMEllon/vim-jsx-pretty",
   {
-    "christoomey/vim-tmux-navigator",
-    init = function()
-      vim.cmd([[
-      let g:tmux_navigator_disable_when_zoomed = 1
-      let g:tmux_navigator_no_mappings = 1
-      ]])
-    end,
-    config = function()
-      map("n", "<C-b>", ":TmuxNavigatePrevious<CR>", { silent = true })
-    end,
-  },
-  {
     "rose-pine/neovim",
     lazy = false,
     priority = 1000,
