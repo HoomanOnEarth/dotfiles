@@ -1,4 +1,4 @@
-# vim:foldmethod=syntax
+# vim:foldmethod=indent
 
 vim.api.nvim_create_autocmd('ModeChanged', {
   pattern = '*:*',
@@ -16,131 +16,131 @@ vim.api.nvim_create_autocmd('ModeChanged', {
 
 -- essentials
 vim.cmd([[
-let g:omni_sql_no_default_maps = 1
+  let g:omni_sql_no_default_maps = 1
 
-colorscheme quiet 
-set updatetime=60
-set mouse=a
-set termguicolors
-set clipboard=unnamedplus
-set expandtab
-set shiftwidth=2
-set softtabstop=2
+  colorscheme quiet 
+  set updatetime=60
+  set mouse=a
+  set termguicolors
+  set clipboard=unnamedplus
+  set expandtab
+  set shiftwidth=2
+  set softtabstop=2
 
-set noshowmode
-set number
-set relativenumber
-set statusline="2"
-set signcolumn=yes
+  set noshowmode
+  set number
+  set relativenumber
+  set statusline="2"
+  set signcolumn=yes
 
-set complete-=ti
-set incsearch
-set ignorecase
-set smartcase
-set whichwrap="b,s,<,>,h,l,[,],`"
-set grepprg="rg --vimgrep --smart-case"
-set grepformat=%f:%l:%c:%m,%f:%l:%m
+  set complete-=ti
+  set incsearch
+  set ignorecase
+  set smartcase
+  set whichwrap="b,s,<,>,h,l,[,],`"
+  set grepprg="rg --vimgrep --smart-case"
+  set grepformat=%f:%l:%c:%m,%f:%l:%m
 
-set nowrap
-set linebreak
-set splitright
+  set nowrap
+  set linebreak
+  set splitright
 
-let g:mapleader = ","
-let g:maplocalleader = ","
+  let g:mapleader = ","
+  let g:maplocalleader = ","
 
-nnoremap <space> za
-nnoremap <silent> <leader>cd :cd %:p:h<CR>:pwd<CR>
-vnoremap < <gv
-vnoremap > >gv
+  nnoremap <space> za
+  nnoremap <silent> <leader>cd :cd %:p:h<CR>:pwd<CR>
+  vnoremap < <gv
+  vnoremap > >gv
 
-" folding
-set fillchars=fold:\ 
-set foldcolumn=1
+  " folding
+  set fillchars=fold:\ 
+  set foldcolumn=1
 
-nnoremap z1f :set foldlevel=1<CR>
-nnoremap z2f :set foldlevel=2<CR>
-nnoremap z3f :set foldlevel=3<CR>
-nnoremap z4f :set foldlevel=4<CR>
+  nnoremap z1f :set foldlevel=1<CR>
+  nnoremap z2f :set foldlevel=2<CR>
+  nnoremap z3f :set foldlevel=3<CR>
+  nnoremap z4f :set foldlevel=4<CR>
 
-" keep cursor in place
-nnoremap J mzJ`z
+  " keep cursor in place
+  nnoremap J mzJ`z
 
-nnoremap <leader>x :silent !chmod +x %<CR>
+  nnoremap <leader>x :silent !chmod +x %<CR>
 
-" moving line
-nnoremap <M-j> :m .+1<CR>==
-nnoremap <M-k> :m .-2<CR>==
-inoremap <M-j> <Esc>:m .+1<CR>==gi
-inoremap <M-k> <Esc>:m .-2<CR>==gi
-vnoremap <M-j> :m '>+1<CR>gv=gv
-vnoremap <M-k> :m '<-2<CR>gv=gv
+  " moving line
+  nnoremap <M-j> :m .+1<CR>==
+  nnoremap <M-k> :m .-2<CR>==
+  inoremap <M-j> <Esc>:m .+1<CR>==gi
+  inoremap <M-k> <Esc>:m .-2<CR>==gi
+  vnoremap <M-j> :m '>+1<CR>gv=gv
+  vnoremap <M-k> :m '<-2<CR>gv=gv
 
-" diagnostics
-nnoremap <leader>q :lua vim.diagnostic.setloclist()<CR>
-nnoremap gl :lua vim.diagnostic.open_float(nil, { focus = false })<CR>
-nnoremap ]d :lua vim.diagnostic.goto_next(nil, { focus = false })<CR>
-nnoremap [d :lua vim.diagnostic.goto_prev(nil, { focus = false })<CR>
+  " diagnostics
+  nnoremap <leader>q :lua vim.diagnostic.setloclist()<CR>
+  nnoremap gl :lua vim.diagnostic.open_float(nil, { focus = false })<CR>
+  nnoremap ]d :lua vim.diagnostic.goto_next(nil, { focus = false })<CR>
+  nnoremap [d :lua vim.diagnostic.goto_prev(nil, { focus = false })<CR>
 
-" jumps
-nnoremap <leader>j :lprev<CR>zz
-nnoremap <leader>k :lnext<CR>zz
+  " jumps
+  nnoremap <leader>j :lprev<CR>zz
+  nnoremap <leader>k :lnext<CR>zz
 
-" split lines
-command! -range Split '<,'>s/, /,\r/gI
-vmap ,s :Split<CR>:nohl<CR>:Format<CR>
+  " split lines
+  command! -range Split '<,'>s/, /,\r/gI
+  vmap ,s :Split<CR>:nohl<CR>:Format<CR>
 
-" easy align
-xmap ga <Plug>(EasyAlign)
-nmap ga <Plug>(EasyAlign)
+  " easy align
+  xmap ga <Plug>(EasyAlign)
+  nmap ga <Plug>(EasyAlign)
 
-" autocommands 
-augroup c_language_autocmd
-  autocmd! BufEnter *.c set makeprg=make
-augroup END
+  " autocommands 
+  augroup c_language_autocmd
+    autocmd! BufEnter *.c set makeprg=make
+  augroup END
 
-augroup fugitive_mapping_autocmd
-  function DiffModeMap()
-    if &diff
-      set cursorline
-      nmap gj <cmd>diffget LOCAL<CR>
-      nmap gk <cmd>diffget REMOTE<CR>
-    endif
+  augroup fugitive_mapping_autocmd
+    function DiffModeMap()
+      if &diff
+        set cursorline
+        nmap gj <cmd>diffget LOCAL<CR>
+        nmap gk <cmd>diffget REMOTE<CR>
+      endif
+    endfunction
+
+    autocmd! BufEnter * call DiffModeMap()
+  augroup END
+
+  augroup cursor_hold_hints_autocmd
+    autocmd! CursorHold * lua vim.diagnostic.open_float({ scope = "cursor", focus = false })
+    autocmd! CursorMoved,CursorMovedI * lua vim.lsp.buf.clear_references()
+  augroup END
+
+  augroup chmod_my_script_autocmd
+    autocmd! BufWinEnter ~/code/scripts/* if &ft == "" | setlocal ft=sh | endif
+    autocmd! BufWritePost * if &ft == "sh" | silent! execute "!chmod +x %" | endif
+  augroup END
+
+  augroup FormatAutogroup
+    autocmd!
+    autocmd User FormatterPre mkview
+    autocmd User FormatterPost loadview | silent! norm zO
+  augroup END
+
+  " table mode
+  function! s:isAtStartOfLine(mapping)
+    let text_before_cursor = getline('.')[0 : col('.')-1]
+    let mapping_pattern = '\V' . escape(a:mapping, '\')
+    let comment_pattern = '\V' . escape(substitute(&l:commentstring, '%s.*$', '', ''), '\')
+    return (text_before_cursor =~? '^' . ('\v(' . comment_pattern . '\v)?') . '\s*\v' . mapping_pattern . '\v$')
   endfunction
 
-  autocmd! BufEnter * call DiffModeMap()
-augroup END
+  inoreabbrev <expr> <bar><bar>
+            \ <SID>isAtStartOfLine('\|\|') ?
+            \ '<c-o>:TableModeEnable<cr><bar><space><bar><left><left>' : '<bar><bar>'
 
-augroup cursor_hold_hints_autocmd
-  autocmd! CursorHold * lua vim.diagnostic.open_float({ scope = "cursor", focus = false })
-  autocmd! CursorMoved,CursorMovedI * lua vim.lsp.buf.clear_references()
-augroup END
-
-augroup chmod_my_script_autocmd
-  autocmd! BufWinEnter ~/code/scripts/* if &ft == "" | setlocal ft=sh | endif
-  autocmd! BufWritePost * if &ft == "sh" | silent! execute "!chmod +x %" | endif
-augroup END
-
-augroup FormatAutogroup
-  autocmd!
-  autocmd User FormatterPre mkview
-  autocmd User FormatterPost loadview | silent! norm zO
-augroup END
-
-" table mode
-function! s:isAtStartOfLine(mapping)
-  let text_before_cursor = getline('.')[0 : col('.')-1]
-  let mapping_pattern = '\V' . escape(a:mapping, '\')
-  let comment_pattern = '\V' . escape(substitute(&l:commentstring, '%s.*$', '', ''), '\')
-  return (text_before_cursor =~? '^' . ('\v(' . comment_pattern . '\v)?') . '\s*\v' . mapping_pattern . '\v$')
-endfunction
-
-inoreabbrev <expr> <bar><bar>
-          \ <SID>isAtStartOfLine('\|\|') ?
-          \ '<c-o>:TableModeEnable<cr><bar><space><bar><left><left>' : '<bar><bar>'
-
-inoreabbrev <expr> __
-          \ <SID>isAtStartOfLine('__') ?
-          \ '<c-o>:silent! TableModeDisable<cr>' : '__'
+  inoreabbrev <expr> __
+            \ <SID>isAtStartOfLine('__') ?
+            \ '<c-o>:silent! TableModeDisable<cr>' : '__'
 ]])
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -184,12 +184,11 @@ require("lazy").setup({
   "junegunn/vim-easy-align",
   "dhruvasagar/vim-table-mode",
 
-  -- "MaxMEllon/vim-jsx-pretty",
+  "MaxMEllon/vim-jsx-pretty",
   {
     "rose-pine/neovim",
     lazy = false,
     priority = 1000,
-    dependencies = { "kyazdani42/nvim-web-devicons" },
     config = function()
       vim.o.background = "light"
       vim.cmd("colorscheme rose-pine")
@@ -264,10 +263,9 @@ require("lazy").setup({
         }),
       })
 
-      map("n", "<C-p>", builtin.my_find_files, { desc = "Browse files" })
+      map("n", "<C-p>", builtin.live_grep, { desc = "Browse files" })
       map("n", "<leader>b", builtin.buffers, { desc = "Recent buffers" })
       map("n", "<leader>?", builtin.oldfiles, { desc = "Recent files" })
-      map("n", "<leader>s", builtin.live_grep, { desc = "Live search" })
       map("n", "<leader>w", builtin.grep_string, { desc = "Search" })
       map("n", "<leader>d", builtin.diagnostics, { desc = "List diagnostics" })
       map("n", "<leader>qf", vim.diagnostic.setqflist, { desc = "List diagnostics" })
