@@ -1,5 +1,3 @@
-# vim:foldmethod=indent
-
 vim.api.nvim_create_autocmd('ModeChanged', {
   pattern = '*:*',
   callback = function()
@@ -208,27 +206,6 @@ require("lazy").setup({
       local ivy_theme_config = { sorting_strategy = "ascending", prompt_position = "bottom" }
       local default_opts = themes.get_ivy(ivy_theme_config)
 
-      -- respect folding: https://github.com/nvim-telescope/telescope.nvim/issues/559#issuecomment-864530935
-      local find_files_opts = {
-        hidden = true,
-        attach_mappings = function(_)
-          ---@diagnostic disable-next-line: undefined-field
-          actions.center:replace(function(_)
-            vim.wo.foldmethod = vim.wo.foldmethod or "indent"
-            vim.cmd(":normal! zx")
-            vim.cmd(":normal! zz")
-            ---@diagnostic disable-next-line: param-type-mismatch
-            pcall(vim.cmd, ":loadview") -- silent load view
-          end)
-          return true
-        end,
-      }
-
-      builtin.my_find_files = function(opts)
-        opts = opts or {}
-        return builtin.find_files(vim.tbl_extend("error", find_files_opts, opts))
-      end
-
       telescope.setup({
         defaults = vim.tbl_deep_extend("force", default_opts, {
           file_ignore_patterns = {
@@ -264,13 +241,12 @@ require("lazy").setup({
       })
 
       map("n", "<C-p>", builtin.live_grep, { desc = "Browse files" })
+      map("n", "<C-f>", require("api.telescope").my_find_files, { desc = "Browse files" })
+      map("n", "<C-g>", require("api.telescope").change_directory, { desc = "Change directory" })
       map("n", "<leader>b", builtin.buffers, { desc = "Recent buffers" })
       map("n", "<leader>?", builtin.oldfiles, { desc = "Recent files" })
-      map("n", "<leader>w", builtin.grep_string, { desc = "Search" })
       map("n", "<leader>d", builtin.diagnostics, { desc = "List diagnostics" })
       map("n", "<leader>qf", vim.diagnostic.setqflist, { desc = "List diagnostics" })
-      map("n", "<C-f>", builtin.current_buffer_fuzzy_find, { desc = "Current file fuzzy search" })
-      map("n", "<C-g>", require("api.telescope").change_directory, { desc = "Change directory" })
     end,
   },
   {
@@ -501,6 +477,12 @@ require("lazy").setup({
     },
     config = function()
       local luasnip = require("luasnip")
+
+      luasnip.config.set_config({
+        region_check_events = 'InsertEnter',
+        delete_check_events = 'InsertLeave'
+      })
+
       require("luasnip.loaders.from_vscode").load({
         include = {
           "all",
